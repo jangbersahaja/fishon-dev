@@ -61,28 +61,26 @@ export default function CharterCard({
     s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
 
   return (
-    <div className="group h-full flex flex-col">
+    <Link
+      href={`/charters/view/${c.id}?${params.toString()}`}
+      className="group h-full flex flex-col hover:bg-gray-50 hover:scale-101 rounded-2xl transition-all duration-300 ease-in-out"
+    >
       {/* Cover image */}
-      <div className="relative w-full h-56 md:h-64 rounded-2xl overflow-hidden">
+      <div className="relative w-full h-56 md:h-64 rounded-2xl overflow-hidden ">
         <SafeImage
           src={img}
           alt={`${c.name} cover`}
           fill
-          className="object-cover"
+          className="object-cover group-hover:scale-105 transition-all duration-300 ease-in-out"
         />
       </div>
 
       {/* Body */}
-      <div className="py-2.5 flex-1 flex flex-col gap-3">
+      <div className="p-3 flex-1 flex flex-col gap-3">
         <div className=" flex items-start justify-between gap-2 ">
           <div className="min-w-0">
             <h3 className="text-sm lg:text-lg font-bold leading-tight truncate">
-              <Link
-                href={`/charters/view/${c.id}?${params.toString()}`}
-                className="hover:underline text-lg"
-              >
-                {c.name}
-              </Link>
+              <span className="text-lg">{c.name}</span>
             </h3>
             <div className="mt-1 flex items-center gap-2">
               {avg ? (
@@ -194,6 +192,6 @@ export default function CharterCard({
           )}
         </div>
       </div>
-    </div>
+    </Link>
   );
 }

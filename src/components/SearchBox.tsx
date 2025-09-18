@@ -1,6 +1,7 @@
 "use client";
 
 import charters, { Charter } from "@/dummy/charter";
+import { Search } from "lucide-react";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { IoIosPin } from "react-icons/io";
@@ -179,92 +180,99 @@ const SearchBox = ({ className = "" }: { className?: string }) => {
       <form
         onSubmit={onSubmit}
         autoComplete="off"
-        className="w-full flex flex-col bg-white p-3 rounded-lg gap-3 shadow-lg"
+        className="w-full flex flex-col bg-white p-2 rounded-lg gap-3 shadow-lg ring-2 ring-[#ec2227]"
       >
-        <div className="w-full flex lg:flex-row flex-col gap-3">
+        <div className="w-full flex lg:flex-row flex-col">
           {/* Destination */}
-          <div className="relative flex flex-col w-full lg:w-1/4 border border-gray-300 py-2 px-3 rounded hover:bg-gray-100">
-            <label className="text-xs font-bold" htmlFor="destination">
-              Destination
-            </label>
-            <div className="relative">
-              {/* left icon */}
-              <IoIosPin className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" />
+          <div className="flex w-full lg:flex-1">
+            <div className="relative z-10 flex flex-col w-full lg:border-r border-gray-300 pt-1 px-3 hover:bg-gray-100/50">
+              <label className="text-xs font-bold" htmlFor="destination">
+                Destination
+              </label>
+              <div className="relative">
+                {/* left icon */}
+                <IoIosPin className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-600" />
 
-              <input
-                id="destination"
-                name="search-destination" // non-standard name to avoid browser history/autofill
-                className="w-full text-sm outline-none bg-transparent py-2 pl-8 pr-8"
-                type="text"
-                placeholder="Search Destination"
-                value={destination}
-                onChange={(e) => {
-                  const v = e.target.value;
-                  setDestination(v);
-                }}
-                onFocus={() => {
-                  setShowDestSuggestions(true);
-                  if (!isDesktop) setMobileOpen(true);
-                }}
-                onClick={() => {
-                  if (!isDesktop) setMobileOpen(true);
-                }}
-                onBlur={() =>
-                  setTimeout(() => setShowDestSuggestions(false), 150)
-                }
-                aria-autocomplete="list"
-                role="combobox"
-                aria-expanded={showDestSuggestions}
-                aria-controls="destination-suggestions"
-                autoComplete="off"
-                autoCorrect="off"
-                autoCapitalize="none"
-                spellCheck={false}
-                inputMode="search"
-              />
+                <input
+                  id="destination"
+                  name="search-destination" // non-standard name to avoid browser history/autofill
+                  className="w-full text-sm outline-none bg-transparent py-2 px-8"
+                  type="text"
+                  placeholder="Search Destination"
+                  value={destination}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    setDestination(v);
+                  }}
+                  onFocus={() => {
+                    setShowDestSuggestions(true);
+                    if (!isDesktop) setMobileOpen(true);
+                  }}
+                  onClick={() => {
+                    if (!isDesktop) setMobileOpen(true);
+                  }}
+                  onBlur={() =>
+                    setTimeout(() => setShowDestSuggestions(false), 150)
+                  }
+                  aria-autocomplete="list"
+                  role="combobox"
+                  aria-expanded={showDestSuggestions}
+                  aria-controls="destination-suggestions"
+                  autoComplete="off"
+                  autoCorrect="off"
+                  autoCapitalize="none"
+                  spellCheck={false}
+                  inputMode="search"
+                />
 
-              {/* right clear */}
-              {destination && (
-                <button
-                  type="button"
-                  onClick={() => setDestination("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                  aria-label="Clear destination"
+                {/* right clear */}
+                {destination && (
+                  <button
+                    type="button"
+                    onClick={() => setDestination("")}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    aria-label="Clear destination"
+                  >
+                    ×
+                  </button>
+                )}
+              </div>
+              {showDestSuggestions && destination.trim().length > 0 && (
+                <ul
+                  id="destination-suggestions"
+                  className="absolute left-0 right-0 top-full z-20 mt-2 rounded-md border border-gray-200 bg-white shadow-lg overflow-hidden"
                 >
-                  ×
-                </button>
+                  {destinationSuggestions.map((s) => (
+                    <li
+                      key={s}
+                      className="px-3 py-2 text-sm hover:bg-gray-50 cursor-pointer"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => {
+                        setDestination(s);
+                        setShowDestSuggestions(false);
+                      }}
+                    >
+                      {s}
+                    </li>
+                  ))}
+                </ul>
               )}
             </div>
-            {showDestSuggestions && destination.trim().length > 0 && (
-              <ul
-                id="destination-suggestions"
-                className="absolute left-0 right-0 top-full z-20 mt-2 rounded-md border border-gray-200 bg-white shadow-lg overflow-hidden"
-              >
-                {destinationSuggestions.map((s) => (
-                  <li
-                    key={s}
-                    className="px-3 py-2 text-sm hover:bg-gray-50 cursor-pointer"
-                    onMouseDown={(e) => e.preventDefault()}
-                    onClick={() => {
-                      setDestination(s);
-                      setShowDestSuggestions(false);
-                    }}
-                  >
-                    {s}
-                  </li>
-                ))}
-              </ul>
-            )}
-            {/* NEXT STEP:
-                 - Replace this basic suggestion list with Google Places Autocomplete
-                   restricted to Malaysia (components=country:MY).
-                 - Options: Places API (JS library with Autocomplete), or server-side
-                   geocoding + client debounce. */}
+            <div
+              className={`${
+                showRest ? "hidden " : "flex lg:hidden "
+              } z-0 absolute right-5 top-0 h-full items-center`}
+            >
+              <div className="flex justify-center items-center w-16 h-14 bg-red-600 text-white rounded-sm hover:bg-red-700 transition font-bold">
+                <Search />
+              </div>
+            </div>
           </div>
 
           <div className={showRest ? "contents" : "hidden lg:contents"}>
+            <hr className="border-t border-gray-300 flex lg:hidden my-3" />
             {/* Date (custom popover) */}
-            <div className="relative flex flex-col w-full lg:w-1/4 border border-gray-300 py-2 px-3 rounded hover:bg-gray-100">
+            <div className="relative flex flex-col w-full lg:flex-1 lg:border-r border-gray-300 pt-1 px-3 hover:bg-gray-100/50">
               <label className="text-xs font-bold" htmlFor="date">
                 Date
               </label>
@@ -284,8 +292,10 @@ const SearchBox = ({ className = "" }: { className?: string }) => {
               </div>
             </div>
 
+            <hr className="border-t border-gray-300 flex lg:hidden my-3" />
+
             {/* Guests */}
-            <div className="relative flex flex-col w-full lg:w-1/4 border border-gray-300 py-2 px-3 rounded hover:bg-gray-100">
+            <div className="relative flex flex-col w-full lg:flex-1 pt-1 px-3 rounded hover:bg-gray-100/50">
               <span className="text-xs font-bold">No Of Guest</span>
               <div className="relative">
                 {/* left icon */}
@@ -293,7 +303,7 @@ const SearchBox = ({ className = "" }: { className?: string }) => {
 
                 <button
                   type="button"
-                  className="w-full text-left text-sm bg-transparent pl-8 pr-8 py-2"
+                  className="w-full text-left text-sm bg-transparent py-2 px-8"
                   onClick={() => setGuestsOpen((v) => !v)}
                   aria-haspopup="listbox"
                   aria-expanded={guestsOpen}
@@ -375,8 +385,9 @@ const SearchBox = ({ className = "" }: { className?: string }) => {
             </div>
 
             {/* Submit */}
-            <button className="w-full lg:w-1/4 bg-red-600 text-white p-2 rounded-sm hover:bg-red-700 transition font-bold">
-              Search Trips
+            <button className="flex mt-4 lg:mt-0 justify-center items-center w-full lg:w-14 py-3 gap-2 bg-red-600 text-white rounded-sm hover:bg-red-700 transition font-bold">
+              <Search />
+              <span className="contents lg:hidden">Search</span>
             </button>
           </div>
         </div>

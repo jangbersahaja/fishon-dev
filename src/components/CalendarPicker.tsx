@@ -112,7 +112,7 @@ export default function CalendarPicker({
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={[
-          "w-full rounded-lg border border-gray-300 px-3 py-2 text-left text-sm outline-none",
+          "w-full rounded-lg border border-gray-300 py-2 px-3 text-left text-sm outline-none",
           buttonClassName,
         ].join(" ")}
         aria-haspopup="dialog"

@@ -1,7 +1,7 @@
 "use client";
 
 import type { MapItem } from "@/utils/mapItems";
-import Image from "next/image";
+import { Map } from "lucide-react";
 import { useEffect, useRef } from "react";
 
 export default function ResultsMap({
@@ -519,8 +519,16 @@ export default function ResultsMap({
       {styles}
 
       {/* Mobile skeleton/preview */}
-      <div className="relative mb-6 md:hidden">
-        <div className="h-64 w-full overflow-hidden rounded-xl relative">
+      <div className="z-30 fixed bottom-5 left-0 mx-auto w-full flex justify-center lg:hidden">
+        <button
+          id={openBtnId}
+          type="button"
+          className="flex flex-col items-center rounded-3xl bg-[#ec2227] text-white px-5 py-2 text-sm shadow-lg "
+        >
+          <Map />
+          <span className="text-[10px]">View On Map</span>
+        </button>
+        {/* <div className="h-64 w-full overflow-hidden rounded-xl relative">
           <Image
             src={screenshotSrc}
             alt="Map preview"
@@ -529,22 +537,15 @@ export default function ResultsMap({
             sizes="(max-width: 768px) 100vw, 0px"
             priority
           />
-        </div>
-        <button
-          id={openBtnId}
-          type="button"
-          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white/90 px-5 py-2 text-sm font-medium text-gray-900 shadow-lg ring-1 ring-black/10"
-        >
-          View On Map
-        </button>
+        </div> */}
       </div>
 
       {/* Desktop map */}
-      <div className="hidden md:block">
+      <div className="hidden lg:block">
         <div className="relative mb-8">
           <div
             id={mapId}
-            className="h-80 w-full overflow-hidden rounded-xl md:h-80 lg:h-[32rem]"
+            className="h-80 w-full overflow-hidden md:h-80 lg:h-[32rem]"
             aria-label="Map of nearby charters"
           />
           {/* Recenter control */}

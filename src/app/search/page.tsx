@@ -166,7 +166,7 @@ export default function SearchResults({
       <main className="min-h-dvh bg-white">
         {/* Responsive SearchBox: non-sticky on mobile, sticky on desktop */}
         <div className="sticky top-0 z-30 w-full mx-auto flex flex-col items-center">
-          <div className="h-15 w-full bg-[#ec2227]" />
+          <div className="h-12 w-full bg-[#ec2227]" />
           <div className="absolute top-0 w-full mx-auto px-3 max-w-6xl py-3">
             <SearchBox />
           </div>

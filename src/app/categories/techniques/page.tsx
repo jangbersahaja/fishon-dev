@@ -35,19 +35,6 @@ export default function TechniquesCategoriesPage() {
     });
   });
 
-  // Only expose a curated set of techniques
-  const allowedList = [
-    "Jigging",
-    "Trolling",
-    "Casting",
-    "Bottom Fishing",
-    "Topwater",
-    "Fly Fishing",
-    "Drift Fishing",
-  ];
-  const allowedSet = new Set(allowedList.map((s) => s.toLowerCase()));
-  const orderIndex = new Map(allowedList.map((s, i) => [s.toLowerCase(), i] as const));
-
   const items = Array.from(map.entries())
     .map(([key, count]) => ({
       key,
@@ -55,9 +42,7 @@ export default function TechniquesCategoriesPage() {
       count,
       image: getCoverForTechnique(key),
     }))
-    .filter((t) => allowedSet.has(t.key))
-    // Preserve the order provided in allowedList
-    .sort((a, b) => (orderIndex.get(a.key)! - orderIndex.get(b.key)!));
+    .sort((a, b) => b.count - a.count);
 
   return (
     <div className="mx-auto w-full max-w-6xl px-5 py-8 md:px-5">

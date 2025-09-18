@@ -1,5 +1,3 @@
-"use client";
-
 import Breadcrumbs from "@/components/search/Breadcrumbs";
 import ResultsGrid from "@/components/search/ResultsGrid";
 import ResultsMap from "@/components/search/ResultsMap";
@@ -44,7 +42,7 @@ export default function TypeResultsClient({
           {prettyType} Charters Nearby You
         </h3>
 
-        <div className="w-full grid grid-cols-1 lg:grid-cols-5 gap-4">
+        <div className="w-full grid grid-cols-1 lg:grid-cols-5 rounded-2xl overflow-hidden lg:h-[32rem] lg:shadow-md lg:ring lg:ring-black/10">
           {/* Map (left on desktop) */}
           <div className="col-span-1 lg:col-span-3">
             <ResultsMap
@@ -57,37 +55,24 @@ export default function TypeResultsClient({
           </div>
 
           {/* Related (right on desktop) */}
-          <div className="col-span-1 lg:col-span-2">
-            {/* Mobile: horizontal scroller with portrait 9:16 cards */}
-            <div className="lg:hidden">
-              <div className="-mx-4 sm:-mx-3 px-4 sm:px-3">
-                <div className="flex gap-3 overflow-x-auto pb-2 snap-x snap-mandatory">
-                  {sideItems.map((c) => (
-                    <RelatedCharterCard key={c.id} charter={c} />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Desktop: vertical rail with landscape 16:9 cards, scrollable */}
-            <div className="hidden lg:block">
-              {/* Give the rail a fixed height to force overflow-y to engage */}
-              <div className="h-[32rem] overflow-y-auto pr-1">
-                <div className="flex flex-col gap-3 h-full">
-                  {sideItems.map((c) => (
-                    <RelatedCharterCard
-                      key={c.id}
-                      charter={c}
-                      orientation="landscape"
-                    />
-                  ))}
-                </div>
+          <div className="col-span-1 lg:col-span-2 bg-gray-50 pl-5 hidden lg:block">
+            {/* Give the rail a fixed height to force overflow-y to engage */}
+            <div className="h-[32rem] overflow-y-auto pr-1">
+              <div className="flex flex-col gap-3 h-full">
+                {sideItems.map((c) => (
+                  <RelatedCharterCard
+                    key={c.id}
+                    charter={c}
+                    orientation="landscape"
+                  />
+                ))}
               </div>
             </div>
           </div>
         </div>
-
-        <ResultsGrid items={items} />
+        <div className="flex lg:hidden">
+          <ResultsGrid items={items} />
+        </div>
       </section>
     </main>
   );
@@ -122,25 +107,24 @@ function RelatedCharterCard({
     <Link
       href={href}
       className={[
-        "group overflow-hidden rounded-xl border border-black/10 bg-white shadow-sm hover:shadow-md transition-shadow",
+        "group rounded-xl border border-black/10 bg-white shadow-sm hover:shadow-md transition-shadow ",
         // Sizing & aspect ratios per device/orientation
         isLandscape
-          ? "w-full aspect-[16/9] flex" // desktop rail
-          : "w-56 aspect-[9/16] flex shrink-0 snap-start", // mobile portrait
+          ? "w-full aspect-[16/9] flex h-44" // desktop rail
+          : "w-44 aspect-[9/16] flex shrink-0 snap-start flex-col", // mobile portrait
         className,
       ].join(" ")}
     >
       {/* Square thumbnail for both variants */}
-      <div className="p-3">
-        <div className="relative w-44 h-44 rounded-lg overflow-hidden flex-none">
-          <Image
-            src={img}
-            alt={charter.name}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
-            sizes="176px"
-          />
-        </div>
+
+      <div className="relative w-44 h-44 rounded-lg overflow-hidden flex-none">
+        <Image
+          src={img}
+          alt={charter.name}
+          fill
+          className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+          sizes="176px"
+        />
       </div>
 
       {/* Meta */}

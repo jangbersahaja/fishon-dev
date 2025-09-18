@@ -1,0 +1,278 @@
+// src/app/search/page.tsx
+import CharterCard from "@/components/CharterCard";
+import FiltersBar from "@/components/FiltersBar";
+import SearchBox from "@/components/SearchBox";
+import Link from "next/link";
+import charters, { Charter } from "../../dummy/charter";
+
+// Helpers
+function minPrice(c: Charter): number | undefined {
+  if (!Array.isArray(c.trip) || c.trip.length === 0) return undefined;
+  return Math.min(...c.trip.map((t) => t.price));
+}
+
+function hasTripType(c: Charter, typeNeedle?: string) {
+  if (!typeNeedle) return true;
+  const n = typeNeedle.trim().toLowerCase();
+  return (c.trip || []).some((t) => (t.name || "").toLowerCase().includes(n));
+}
+
+function pickupOk(c: Charter, want?: string) {
+  if (!want) return true;
+  const need = want === "1" || want === "true";
+  if (!need) return true;
+  return !!(c.pickup && (c.pickup.available || c.pickup.included));
+}
+
+function childFriendlyOk(c: Charter, want?: string) {
+  if (!want) return true;
+  const need = want === "1" || want === "true";
+  if (!need) return true;
+  return !!(c.policies && c.policies.childFriendly);
+}
+
+function toInt(v: string | undefined, fallback: number) {
+  const n = Number(v);
+  return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback;
+}
+
+function matchesDestination(c: Charter, dest?: string) {
+  if (!dest) return true;
+  const needle = dest.trim().toLowerCase();
+  return (
+    c.location.toLowerCase().includes(needle) ||
+    c.name.toLowerCase().includes(needle) ||
+    (c.address && c.address.toLowerCase().includes(needle))
+  );
+}
+
+function capacityAllows(c: Charter, guests: number) {
+  if (!guests) return true;
+  return typeof c.boat.capacity === "number" ? c.boat.capacity >= guests : true;
+}
+
+// Price range buckets (RM)
+const PRICE_BUCKETS = [
+  { key: "0-500", label: "RM0 – RM500", min: 0, max: 500 },
+  { key: "501-1000", label: "RM501 – RM1000", min: 501, max: 1000 },
+  { key: "1001-2000", label: "RM1001 – RM2000", min: 1001, max: 2000 },
+  { key: "2001-5000", label: "RM2001 – RM5000", min: 2001, max: 5000 },
+  { key: "5001+", label: "RM5001+", min: 5001, max: Number.POSITIVE_INFINITY },
+];
+
+function priceInBucket(c: Charter, key?: string) {
+  if (!key) return true;
+  const bucket = PRICE_BUCKETS.find((b) => b.key === key);
+  if (!bucket) return true;
+  const p = minPrice(c);
+  if (p == null) return false;
+  return p >= bucket.min && p <= bucket.max;
+}
+
+// (removed unused parseCSV function)
+
+// Minimal uniqSorted helper for trip type options
+function uniqSorted<T>(arr: T[]): T[] {
+  return Array.from(new Set(arr.filter(Boolean) as T[]));
+}
+
+export default function SearchResults({
+  searchParams,
+}: {
+  searchParams: {
+    q?: string;
+    destination?: string;
+    date?: string; // YYYY-MM-DD
+    adults?: string;
+    children?: string;
+    guests?: string; // alternate single number
+    orderby?: string;
+    price_range?: string; // one of PRICE_BUCKETS keys
+    trip_type?: string; // e.g., Half-Day, Full-Day, Night (from trip.name)
+    pickup?: string; // 1/true
+    child_friendly?: string; // 1/true
+  };
+}) {
+  const destination = searchParams.destination || searchParams.q || "";
+  const date = searchParams.date; // (availability integration later)
+
+  // Parse guests; prefer explicit adults/children, but support legacy `guests`
+  const adultsParam = toInt(searchParams.adults, 0);
+  const childrenParam = toInt(searchParams.children, 0);
+  const guestsParam = toInt(searchParams.guests, 0);
+
+  // If only `guests` is provided, treat them all as adults by default
+  const adults = adultsParam || (guestsParam ? guestsParam : 0);
+  const children = childrenParam;
+  const totalGuests = (adults || 0) + (children || 0);
+
+  // Parse filters
+  const orderby = (searchParams.orderby || "recommended").toLowerCase();
+  const priceRange = searchParams.price_range;
+  const tripType = (searchParams.trip_type || "").trim();
+  const pickupParam = searchParams.pickup;
+  const childFriendlyParam = searchParams.child_friendly;
+
+  let filtered = (charters as Charter[])
+    .filter((c) => matchesDestination(c, destination))
+    .filter((c) => capacityAllows(c, totalGuests))
+    .filter((c) => childFriendlyOk(c, childFriendlyParam))
+    .filter((c) => pickupOk(c, pickupParam))
+    .filter((c) => priceInBucket(c, priceRange))
+    .filter((c) => (tripType ? hasTripType(c, tripType) : true));
+  // Helper to build filter chip links
+
+  // Sorting
+  filtered = filtered.sort((a, b) => {
+    const aMin = minPrice(a) ?? Number.POSITIVE_INFINITY;
+    const bMin = minPrice(b) ?? Number.POSITIVE_INFINITY;
+    switch (orderby) {
+      case "price_low_high":
+      case "price_asc":
+        return aMin - bMin;
+      case "price_high_low":
+      case "price_desc":
+        return bMin - aMin;
+      case "capacity_desc":
+        return (b.boat.capacity || 0) - (a.boat.capacity || 0);
+      case "name_asc":
+        return a.name.localeCompare(b.name);
+      case "recommended":
+      default: {
+        // Simple recommendation: destination match score desc, then price asc
+        const nd = (s: string) => (s || "").toLowerCase();
+        const n = nd(destination);
+        const score = (c: Charter) => {
+          if (!n) return 0;
+          const hay = `${nd(c.location)} ${nd(c.name)} ${nd(c.address || "")}`;
+          return hay.includes(n) ? 1 : 0;
+        };
+        const sA = score(a);
+        const sB = score(b);
+        if (sB !== sA) return sB - sA;
+        return aMin - bMin;
+      }
+    }
+  });
+
+  const tripNames = uniqSorted(
+    (charters as Charter[])
+      .flatMap((c) => (c.trip || []).map((t) => t.name))
+      .filter(Boolean)
+  ).sort((a, b) => a.localeCompare(b));
+
+  return (
+    <>
+      <main className="min-h-dvh bg-white">
+        {/* Responsive SearchBox: non-sticky on mobile, sticky on desktop */}
+        <div className="sticky top-0 z-30 w-full mx-auto flex flex-col items-center">
+          <div className="h-15 w-full bg-[#ec2227]" />
+          <div className="absolute top-0 w-full mx-auto px-3 max-w-6xl py-3">
+            <SearchBox />
+          </div>
+        </div>
+        <section className="mt-20 mx-auto max-w-6xl px-5 sm:px-5 py-3">
+          <nav className="text-sm text-gray-500">
+            <Link href="/book" className="hover:underline">
+              Home
+            </Link>{" "}
+            <span>/</span> <span className="text-gray-700">Search</span>
+          </nav>
+          {/* Header / Filters Summary */}
+          <div className="mt-4 flex flex-col gap-1">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+              Search results
+            </h1>
+            <p className="text-sm text-gray-600">
+              {destination ? (
+                <>
+                  Showing trips near{" "}
+                  <span className="font-semibold">{destination}</span>
+                </>
+              ) : (
+                <>All available charters</>
+              )}
+              {(adults > 0 || children > 0) && (
+                <>
+                  {" "}
+                  • for
+                  {adults > 0 && (
+                    <>
+                      {" "}
+                      <span className="font-semibold">{adults}</span> adult
+                      {adults > 1 ? "s" : ""}
+                    </>
+                  )}
+                  {children > 0 && (
+                    <>
+                      {" "}
+                      + <span className="font-semibold">{children}</span> child
+                      {children > 1 ? "ren" : ""}
+                    </>
+                  )}
+                </>
+              )}
+              {date && (
+                <>
+                  {" "}
+                  • on <span className="font-semibold">{date}</span>
+                </>
+              )}
+              {priceRange && (
+                <>
+                  {" "}
+                  • budget{" "}
+                  <span className="font-semibold">
+                    {PRICE_BUCKETS.find((b) => b.key === priceRange)?.label}
+                  </span>
+                </>
+              )}
+              {filtered.length > 0 && (
+                <>
+                  {" "}
+                  • <span className="font-semibold">
+                    {filtered.length}
+                  </span>{" "}
+                  match{filtered.length === 1 ? "" : "es"}
+                </>
+              )}
+            </p>
+          </div>
+
+          {/* Sort & Filters */}
+          <FiltersBar
+            orderby={orderby}
+            priceRange={priceRange}
+            tripType={tripType}
+            pickup={pickupParam}
+            childFriendly={childFriendlyParam}
+            destination={destination}
+            date={date}
+            adults={adults}
+            tripNames={tripNames}
+          />
+
+          {/* Results */}
+          <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+            {filtered.length === 0 && (
+              <div className="col-span-full rounded-xl border border-black/10 bg-white p-6 text-center text-sm text-gray-700">
+                No charters match your search.
+                <div className="mt-2 text-xs text-gray-500">
+                  Try a broader destination or reduce the number of guests.
+                </div>
+              </div>
+            )}
+
+            {filtered.map((c) => (
+              <CharterCard
+                key={c.id}
+                charter={c}
+                context={{ date, adults, children, guestsParam }}
+              />
+            ))}
+          </div>
+        </section>
+      </main>
+    </>
+  );
+}

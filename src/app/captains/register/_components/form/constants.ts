@@ -39,7 +39,11 @@ export const pricingCards = [
     title: "Silver",
     percentage: "20%",
     accent: "bg-slate-50",
-    features: ["Everything in Basic", "Top listing optimization", "Charter ads"],
+    features: [
+      "Everything in Basic",
+      "Top listing optimization",
+      "Charter ads",
+    ],
   },
   {
     id: "gold" as const,
@@ -51,7 +55,7 @@ export const pricingCards = [
 ];
 
 export const PREVIEW_PLACEHOLDER_IMAGES = [
-  "/placeholder-1.jpg",
-  "/placeholder-2.jpg",
-  "/placeholder-3.jpg",
-] as const;
+  { src: "/placeholder-1.jpg" },
+  { src: "/placeholder-2.jpg" },
+  { src: "/placeholder-3.jpg" },
+];

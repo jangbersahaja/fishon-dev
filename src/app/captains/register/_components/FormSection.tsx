@@ -9,7 +9,7 @@ import {
   useState,
   type ChangeEvent,
 } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, type FieldPath } from "react-hook-form";
 
 import { useCharterDraft } from "@/utils/useCharterDraft";
 import { submitCharter, type CharterPayload } from "../actions";
@@ -44,7 +44,7 @@ import { formatTimestamp, getFieldError } from "./form/utils";
 
 type FormStep = StepDefinition & {
   id: StepKey;
-  fields: string[];
+  fields: FieldPath<CharterFormValues>[];
 };
 
 const STEP_SEQUENCE: FormStep[] = [

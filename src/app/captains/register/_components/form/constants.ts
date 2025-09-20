@@ -55,7 +55,7 @@ export const pricingCards = [
 ];
 
 export const PREVIEW_PLACEHOLDER_IMAGES = [
-  { src: "/placeholder-1.jpg" },
-  { src: "/placeholder-2.jpg" },
-  { src: "/placeholder-3.jpg" },
+  "/placeholder-1.jpg",
+  "/placeholder-2.jpg",
+  "/placeholder-3.jpg",
 ];

@@ -15,6 +15,7 @@ const TECHNIQUE_DEFS = [
   "Topwater",
   "Fly Fishing",
   "Drift Fishing",
+  "Squid/Eging",
 ] as const;
 
 function filterByTechnique(list: CharterLite[], technique: string) {

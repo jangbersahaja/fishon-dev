@@ -1775,6 +1775,316 @@ const rawCharters: RawCharter[] = [
       features: ["Enclosed Helm", "Cabin", "Toilet", "GPS/Fishfinder"],
     },
   },
+  {
+    id: 1031,
+    name: "Port Klang Night Squid Lights",
+    location: "Port Klang, Selangor",
+    address: "South Port Jetty, 42000 Port Klang, Selangor",
+    coordinates: { lat: 3.002, lng: 101.392 },
+    images: [
+      "https://images.unsplash.com/photo-1516239325825-7fef83f07afa?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1477959858617-67f85cf4f1df?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?q=80&w=1200&auto=format&fit=crop",
+    ],
+    description:
+      "Night-time light jigging mission targeting squid and cuttlefish under the glow of deck lights off Port Klang.",
+    trip: [
+      {
+        name: "Evening Trip",
+        price: 780,
+        duration: "6 hours",
+        startTimes: ["18:00"],
+        maxAnglers: 6,
+        private: true,
+        description:
+          "Sunset departure focused on squid jigging around well-known light towers.",
+      },
+      {
+        name: "Overnight Trip",
+        price: 1250,
+        duration: "10 hours",
+        startTimes: ["19:00"],
+        maxAnglers: 6,
+        private: true,
+        description:
+          "Longer drift session that adds late-night reef edges for pelagics at first light.",
+      },
+    ],
+    species: SPECIES_COAST,
+    techniques: ["Light Jigging", "Eging", "Drifting"],
+    includes: [...BOAT_INCLUDES, "Deck Lights"],
+    excludes: COMMON_EXCLUDES,
+    licenseProvided: true,
+    pickup: {
+      available: true,
+      included: false,
+      fee: 70,
+      areas: ["Port Klang", "Shah Alam"],
+      notes: "Hotel pickups after 17:00 only.",
+    },
+    policies: {
+      catchAndKeep: true,
+      catchAndRelease: true,
+      childFriendly: false,
+      liveBaitProvided: true,
+    },
+    cancellation: { freeUntilHours: 48, afterPolicy: CXL_AFTER },
+    languages: LANG_BM_EN,
+    boat: {
+      name: "NightGlow",
+      type: "Cabin Cruiser",
+      length: "24 ft",
+      capacity: 8,
+      features: ["Deck Lights", "Toilet", "GPS/Fishfinder", "Livewell"],
+    },
+  },
+  {
+    id: 1032,
+    name: "Putrajaya Lake Electric Pontoon",
+    location: "Putrajaya, Wilayah Persekutuan",
+    address: "Marina Putrajaya, Presint 5, Putrajaya",
+    coordinates: { lat: 2.916, lng: 101.669 },
+    images: [
+      "https://images.unsplash.com/photo-1526336024174-e58f5cdd8e13?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1519669417670-68775a50919c?q=80&w=1200&auto=format&fit=crop",
+    ],
+    description:
+      "Quiet, electric-powered pontoon sessions across Putrajaya Lake—ideal for corporate retreats and relaxed angling.",
+    trip: [
+      {
+        name: "Morning Trip",
+        price: 340,
+        duration: "4 hours",
+        startTimes: ["08:00"],
+        maxAnglers: 8,
+        private: false,
+        description: "Low-noise cruise with light tackle and scenic city views.",
+      },
+      {
+        name: "Sunset Trip",
+        price: 360,
+        duration: "4 hours",
+        startTimes: ["16:30"],
+        maxAnglers: 8,
+        private: false,
+        description: "Golden-hour cruise with optional canapés (pre-order).",
+      },
+      {
+        name: "Full-Day Charter",
+        price: 600,
+        duration: "8 hours",
+        startTimes: ["09:00"],
+        maxAnglers: 8,
+        private: true,
+      },
+    ],
+    species: SPECIES_JUNGLE,
+    techniques: ["Float Fishing", "Light Tackle", "Soft Plastics"],
+    includes: [...SHORE_POND_INCLUDES, "Electric Drive"],
+    excludes: COMMON_EXCLUDES,
+    licenseProvided: false,
+    pickup: {
+      available: true,
+      included: false,
+      fee: 50,
+      areas: ["Putrajaya", "Cyberjaya"],
+      notes: "Corporate transfers available via partner vans.",
+    },
+    policies: {
+      catchAndKeep: false,
+      catchAndRelease: true,
+      childFriendly: true,
+      wheelchairAccessible: true,
+    },
+    cancellation: { freeUntilHours: 24, afterPolicy: CXL_AFTER },
+    languages: LANG_BM_EN,
+    boat: {
+      name: "Putrajaya Glide",
+      type: "Electric Pontoon",
+      length: "22 ft",
+      capacity: 10,
+      features: ["Electric Motor", "Full Shade", "Railings", "Lounge Seating"],
+    },
+  },
+  {
+    id: 1033,
+    name: "Sekinchan Deep Reef Runner",
+    location: "Sekinchan, Selangor",
+    address: "Sekinchan Fishing Jetty, 45400 Sekinchan, Selangor",
+    coordinates: { lat: 3.512, lng: 101.102 },
+    images: [
+      "https://images.unsplash.com/photo-1508182311256-e3f3e78dc8d0?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1452421822248-d4c2b47f0c81?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1458442310124-dde6edb43d10?q=80&w=1200&auto=format&fit=crop",
+    ],
+    description:
+      "High-powered offshore runs to the deep reefs north of Sekinchan for cobia, snapper and pelagics.",
+    trip: [
+      {
+        name: "Full-Day Trip",
+        price: 2600,
+        duration: "10 hours",
+        startTimes: ["06:00"],
+        maxAnglers: 8,
+        private: true,
+      },
+      {
+        name: "Overnight Banks",
+        price: 3600,
+        duration: "16 hours",
+        startTimes: ["17:00"],
+        maxAnglers: 8,
+        private: true,
+        description:
+          "Run-and-gun itinerary hitting deep banks with night-time jigging rotations.",
+      },
+    ],
+    species: SPECIES_COAST,
+    techniques: ["Deep Jigging", "Bottom Fishing", "Trolling"],
+    includes: [...BOAT_INCLUDES, "Deckhand"],
+    excludes: COMMON_EXCLUDES,
+    licenseProvided: true,
+    pickup: {
+      available: true,
+      included: false,
+      fee: 150,
+      areas: ["Sekinchan", "Kuala Selangor"],
+      notes: "Pickup within 30km radius upon request.",
+    },
+    policies: {
+      catchAndKeep: true,
+      catchAndRelease: true,
+      childFriendly: false,
+      liveBaitProvided: true,
+    },
+    cancellation: { freeUntilHours: 72, afterPolicy: CXL_AFTER },
+    languages: LANG_BM_EN,
+    boat: {
+      name: "Reef Runner 32",
+      type: "Offshore Sportfisher",
+      length: "32 ft",
+      capacity: 10,
+      features: ["Twin Engines", "Bunk Berths", "Toilet", "Electronics Suite"],
+    },
+  },
+  {
+    id: 1034,
+    name: "Rawang Highlands Stream Trek",
+    location: "Rawang, Selangor",
+    address: "Sungai Sendat Trailhead, 48000 Rawang, Selangor",
+    coordinates: { lat: 3.417, lng: 101.615 },
+    images: [
+      "https://images.unsplash.com/photo-1520697222860-6c05b12a7b83?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1469474968028-56623f02e42e?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1464851707681-f9d5fdaccea8?q=80&w=1200&auto=format&fit=crop",
+    ],
+    description:
+      "Hike-in stream adventure with ultra-light tackle in the Rawang highlands chasing wild sebarau and toman.",
+    trip: [
+      {
+        name: "Half-Day Trek",
+        price: 280,
+        duration: "5 hours",
+        startTimes: ["07:00"],
+        maxAnglers: 2,
+        private: true,
+        description:
+          "Guided wading with instruction on reading pocket water and current seams.",
+      },
+      {
+        name: "Full-Day Expedition",
+        price: 480,
+        duration: "9 hours",
+        startTimes: ["06:30"],
+        maxAnglers: 2,
+        private: true,
+        description: "Longer hike accessing remote pools with packed lunch option.",
+      },
+    ],
+    species: SPECIES_JUNGLE,
+    techniques: ["Ultra-Light", "Topwater", "Fly Fishing"],
+    includes: SHORE_POND_INCLUDES,
+    excludes: COMMON_EXCLUDES,
+    licenseProvided: false,
+    pickup: {
+      available: true,
+      included: false,
+      fee: 80,
+      areas: ["Rawang", "Kuala Lumpur"],
+      notes: "4x4 transport upgrade available.",
+    },
+    policies: {
+      catchAndKeep: false,
+      catchAndRelease: true,
+      childFriendly: false,
+      smokingAllowed: false,
+    },
+    cancellation: { freeUntilHours: 48, afterPolicy: CXL_AFTER },
+    languages: LANG_BM_EN,
+    boat: {
+      name: "Trail Support Jeep",
+      type: "Support Vehicle",
+      length: "—",
+      capacity: 3,
+      features: ["4x4 Transport", "Dry Storage", "Portable Cooler"],
+    },
+  },
+  {
+    id: 1035,
+    name: "Damansara Sunset Pontoon Social",
+    location: "Damansara, Selangor",
+    address: "The Club Lakeside, Damansara, Selangor",
+    coordinates: { lat: 3.141, lng: 101.623 },
+    images: [
+      "https://images.unsplash.com/photo-1516426122078-c23e76319801?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1517836357463-d25dfeac3438?q=80&w=1200&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1510279770292-4b34de9f5c23?q=80&w=1200&auto=format&fit=crop",
+    ],
+    description:
+      "Late-afternoon social charter with relaxed float fishing and hosted canapés on a modern pontoon around Damansara.",
+    trip: [
+      {
+        name: "Sunset Social",
+        price: 420,
+        duration: "3 hours",
+        startTimes: ["17:30"],
+        maxAnglers: 10,
+        private: false,
+        description:
+          "Shared charter with light tackle, finger food and acoustic playlist.",
+      },
+      {
+        name: "Private Evening",
+        price: 720,
+        duration: "4 hours",
+        startTimes: ["18:00"],
+        maxAnglers: 10,
+        private: true,
+      },
+    ],
+    species: ["Tilapia", "Catfish", "Rohu"],
+    techniques: ["Float Fishing", "Light Tackle"],
+    includes: [...SHORE_POND_INCLUDES, "Canapés"],
+    excludes: COMMON_EXCLUDES,
+    licenseProvided: false,
+    pickup: { available: false, included: false },
+    policies: {
+      catchAndKeep: false,
+      catchAndRelease: true,
+      childFriendly: true,
+      alcoholAllowed: true,
+    },
+    cancellation: { freeUntilHours: 24, afterPolicy: CXL_AFTER },
+    languages: LANG_BM_EN,
+    boat: {
+      name: "Damansara Drift",
+      type: "Pontoon Boat",
+      length: "24 ft",
+      capacity: 12,
+      features: ["Full Shade", "Railings", "Bluetooth Audio", "Lounge Seating"],
+    },
+  },
 ];
 
 // -------- Augment + Export --------
@@ -2025,6 +2335,46 @@ const CAPTAINS: Record<number, Captain> = {
     intro:
       "Pilothouse offshore skipper—enclosed helm comfort, efficient reef circuits south of Klang.",
   },
+  1031: {
+    name: "Capt. Syafiq Noor",
+    avatarUrl: avatar(1031),
+    yearsExperience: 9,
+    crewCount: 2,
+    intro:
+      "Night-squid specialist who balances light placement and drift angles for steady bites through the dark.",
+  },
+  1032: {
+    name: "Coach Melissa",
+    avatarUrl: avatar(1032),
+    yearsExperience: 6,
+    crewCount: 1,
+    intro:
+      "Calm freshwater host focused on corporate and family lake days with inclusive coaching for all skills.",
+  },
+  1033: {
+    name: "Capt. Raymond Lim",
+    avatarUrl: avatar(1033),
+    yearsExperience: 14,
+    crewCount: 3,
+    intro:
+      "Offshore tactician who reads currents and keeps heavy jig rotations organized on busy decks.",
+  },
+  1034: {
+    name: "Guide Hanif",
+    avatarUrl: avatar(1034),
+    yearsExperience: 8,
+    crewCount: 1,
+    intro:
+      "Highland trek guide with a knack for spotting lies and setting up stealthy casts in skinny water.",
+  },
+  1035: {
+    name: "Host Aida",
+    avatarUrl: avatar(1035),
+    yearsExperience: 5,
+    crewCount: 2,
+    intro:
+      "Social pontoon facilitator—curates playlists, plating and relaxed fishing flow for lakeside sunsets.",
+  },
 };
 
 // Fishing type per charter
@@ -2059,6 +2409,11 @@ const FISHING_TYPE: Record<number, FishingType> = {
   1028: "stream",
   1029: "inshore",
   1030: "offshore",
+  1031: "inshore",
+  1032: "lake",
+  1033: "offshore",
+  1034: "stream",
+  1035: "lake",
 };
 
 // Tier per charter
@@ -2093,6 +2448,11 @@ const TIER: Record<number, Tier> = {
   1028: "basic",
   1029: "silver",
   1030: "gold",
+  1031: "silver",
+  1032: "basic",
+  1033: "gold",
+  1034: "basic",
+  1035: "silver",
 };
 
 // Optional meal/drink upgrades (added to includes)
@@ -2108,6 +2468,8 @@ const MEAL_UPGRADES: Record<number, string[]> = {
   1024: ["Drinks"],
   1025: ["Drinks", "Snacks"],
   1029: ["Drinks"],
+  1031: ["Drinks"],
+  1035: ["Drinks", "Snacks"],
 
   // gold
   1008: ["Drinks", "Snacks", "Lunch"],
@@ -2118,6 +2480,7 @@ const MEAL_UPGRADES: Record<number, string[]> = {
   1018: ["Drinks", "Snacks", "Lunch"],
   1026: ["Drinks", "Snacks", "Lunch"],
   1030: ["Drinks", "Snacks", "Lunch"],
+  1033: ["Drinks", "Snacks", "Lunch"],
 };
 
 // Expand to 3–4 paragraphs while reusing existing copy + context

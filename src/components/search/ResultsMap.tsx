@@ -8,13 +8,11 @@ export default function ResultsMap({
   idBase = "search",
   items,
   initialCenter,
-  screenshotSrc = "/static/maps/technique-map-screenshot.png",
 }: {
   idBase?: string;
   items: MapItem[];
   initialCenter: { lat: number; lng: number };
   sectionTitle?: string;
-  screenshotSrc?: string;
 }) {
   const mapInitRan = useRef(false); // prevents double init on Fast Refresh
   const fsInitRan = useRef(false);

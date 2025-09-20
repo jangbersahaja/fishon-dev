@@ -31,9 +31,25 @@ export default function CharterRegisterPage() {
             Become Our First <span className="text-[#EC2227]">Charter</span>
           </h1>
           <p className="mt-3 max-w-3xl text-neutral-700">
-            Add your listing details, trips, pricing, and policies. You’ll be
-            able to review a JSON preview before submitting.
+            Captain, get ready to set sail. Our website is almost here. Register
+            you interest now and get paid as soon as we launch out website.
           </p>
+        </section>
+
+        <section className="rounded-3xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-700 p-8 text-white shadow-lg mb-8">
+          <div className="max-w-3xl space-y-3">
+            <p className="text-sm uppercase tracking-[0.2em] text-white/70">
+              FishOn Charter Partner Program
+            </p>
+            <h1 className="text-3xl font-bold sm:text-4xl">
+              Share your charter details in minutes
+            </h1>
+            <p className="text-sm sm:text-base sm:leading-7 text-white/80">
+              We&apos;ll review your submission, craft a listing, and connect
+              you with anglers when we launch. All information is kept private
+              until you approve the final listing.
+            </p>
+          </div>
         </section>
 
         <FormSection />

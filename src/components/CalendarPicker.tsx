@@ -3,6 +3,12 @@
 import { useEffect, useMemo, useState } from "react";
 
 // Local date helpers (no UTC conversion)
+const DISPLAY_FORMATTER = new Intl.DateTimeFormat("en-US", {
+  year: "numeric",
+  month: "short",
+  day: "numeric",
+});
+
 function formatLocalYMD(d: Date) {
   const y = d.getFullYear();
   const m = String(d.getMonth() + 1).padStart(2, "0");
@@ -120,11 +126,13 @@ export default function CalendarPicker({
       >
         <span className={value ? "" : "text-gray-500"}>
           {value
-            ? new Date(value).toLocaleDateString(undefined, {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })
+            ? (() => {
+                try {
+                  return DISPLAY_FORMATTER.format(new Date(value));
+                } catch {
+                  return value;
+                }
+              })()
             : "Select date"}
         </span>
       </button>

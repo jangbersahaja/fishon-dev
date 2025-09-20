@@ -104,12 +104,12 @@ export default function CharterGallery({
 
   return (
     <>
-      <div className="grid gap-3 sm:grid-cols-4 sm:grid-rows-2">
+      <div className="grid gap-3 sm:grid-cols-[minmax(0,3fr)_minmax(0,1fr)] sm:auto-rows-[minmax(0,1fr)]">
         {/* Main tile (left) */}
         <button
           type="button"
           onClick={() => openAt(0)}
-          className="group relative w-full overflow-hidden rounded-xl bg-gray-100 sm:col-span-3 sm:row-span-2"
+          className="group relative w-full overflow-hidden rounded-xl bg-gray-100 sm:row-span-2"
           aria-label="Open gallery"
           style={{ aspectRatio: "16 / 9" }}
         >
@@ -177,7 +177,7 @@ export default function CharterGallery({
         </button>
 
         {/* Desktop right column (up to 4 extra tiles) */}
-        <div className="hidden sm:grid sm:auto-rows-fr sm:grid-cols-1 sm:gap-3">
+        <div className="hidden sm:grid sm:row-span-2 sm:grid-cols-1 sm:grid-rows-4 sm:gap-3 sm:h-full">
           {tiles.slice(1).map((m, i) => {
             const idx = i + 1;
             const isLast =
@@ -187,7 +187,7 @@ export default function CharterGallery({
                 key={m.src + idx}
                 type="button"
                 onClick={() => openAt(idx)}
-                className="group relative h-full w-full overflow-hidden rounded-xl bg-gray-100"
+                className="group relative flex h-full w-full overflow-hidden rounded-xl bg-gray-100"
                 aria-label={`Open item ${idx + 1}`}
               >
                 {m.type === "video" ? (

@@ -2,6 +2,7 @@
 import CharterCard from "@/components/CharterCard";
 import FiltersBar from "@/components/FiltersBar";
 import SearchBox from "@/components/SearchBox";
+import { expandDestinationSearchTerms } from "@/utils/destinationAliases";
 import Link from "next/link";
 import charters, { Charter } from "../../dummy/charter";
 
@@ -36,14 +37,16 @@ function toInt(v: string | undefined, fallback: number) {
   return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback;
 }
 
-function matchesDestination(c: Charter, dest?: string) {
-  if (!dest) return true;
-  const needle = dest.trim().toLowerCase();
-  return (
-    c.location.toLowerCase().includes(needle) ||
-    c.name.toLowerCase().includes(needle) ||
-    (c.address && c.address.toLowerCase().includes(needle))
-  );
+function matchesDestination(
+  c: Charter,
+  terms: string[],
+  rawDest?: string
+) {
+  if (!rawDest || !rawDest.trim()) return true;
+  if (terms.length === 0) return true;
+
+  const hay = `${c.location} ${c.name} ${c.address ?? ""}`.toLowerCase();
+  return terms.some((term) => term && hay.includes(term));
 }
 
 function capacityAllows(c: Charter, guests: number) {
@@ -94,6 +97,7 @@ export default function SearchResults({
   };
 }) {
   const destination = searchParams.destination || searchParams.q || "";
+  const destinationTerms = expandDestinationSearchTerms(destination);
   const date = searchParams.date; // (availability integration later)
 
   // Parse guests; prefer explicit adults/children, but support legacy `guests`
@@ -114,7 +118,7 @@ export default function SearchResults({
   const childFriendlyParam = searchParams.child_friendly;
 
   let filtered = (charters as Charter[])
-    .filter((c) => matchesDestination(c, destination))
+    .filter((c) => matchesDestination(c, destinationTerms, destination))
     .filter((c) => capacityAllows(c, totalGuests))
     .filter((c) => childFriendlyOk(c, childFriendlyParam))
     .filter((c) => pickupOk(c, pickupParam))
@@ -141,11 +145,10 @@ export default function SearchResults({
       default: {
         // Simple recommendation: destination match score desc, then price asc
         const nd = (s: string) => (s || "").toLowerCase();
-        const n = nd(destination);
         const score = (c: Charter) => {
-          if (!n) return 0;
+          if (destinationTerms.length === 0) return 0;
           const hay = `${nd(c.location)} ${nd(c.name)} ${nd(c.address || "")}`;
-          return hay.includes(n) ? 1 : 0;
+          return destinationTerms.some((term) => hay.includes(term)) ? 1 : 0;
         };
         const sA = score(a);
         const sB = score(b);

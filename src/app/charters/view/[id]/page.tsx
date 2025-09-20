@@ -1,34 +1,26 @@
 import charters, { Charter, Trip } from "@/dummy/charter";
-import {
-  computeStarRatingFromFeedback,
-  receipts,
-  type BookingReview,
-} from "@/dummy/receipts";
+import { receipts, type BookingReview } from "@/dummy/receipts";
 import type { Metadata } from "next";
 import Link from "next/link";
-import BookingWidget from "./BookingWidget";
-import CharterGallery from "./CharterGallery";
+import AboutSection from "@/components/charter/AboutSection";
+import AmenitiesCard from "@/components/charter/AmenitiesCard";
+import BoatCard from "@/components/charter/BoatCard";
+import BookingWidget from "@/components/charter/BookingWidget";
+import CaptainSection from "@/components/charter/CaptainSection";
+import CharterGallery from "@/components/charter/CharterGallery";
+import GuestFeedbackPanel from "@/components/charter/GuestFeedbackPanel";
+import LocationMap from "@/components/charter/LocationMap";
+import PoliciesInfoCard from "@/components/charter/PoliciesInfoCard";
+import ReviewsList from "@/components/charter/ReviewsList";
+import SpeciesTechniquesCard from "@/components/charter/SpeciesTechniquesCard";
+import Stars from "@/components/charter/Stars";
 
-// extracted components
-import AboutSection from "./AboutSection";
-import AmenitiesCard from "./AmenitiesCard";
-import BoatCard from "./BoatCard";
-import CaptainSection from "./CaptainSection";
-import GuestFeedbackPanel from "./GuestFeedbackPanel";
-import LocationMap from "./LocationMap";
-import PoliciesInfoCard from "./PoliciesInfoCard";
-import ReviewsList from "./ReviewsList";
-import SpeciesTechniquesCard from "./SpeciesTechniquesCard";
-import Stars from "./Stars";
-
-type PageProps = {
-  params: { id: string };
-  searchParams: {
-    booking_persons?: string;
-    booking_days?: string;
-    trip_index?: string;
-  };
-};
+type RouteParams = Promise<{ id: string }>;
+type RouteSearchParams = Promise<{
+  booking_persons?: string;
+  booking_days?: string;
+  trip_index?: string;
+}>;
 
 function toInt(v: string | undefined, fallback: number) {
   const n = Number(v);
@@ -40,12 +32,7 @@ function getCharterReviews(charterId: number) {
     (t) => t.charterId === charterId
   );
   const avg = list.length
-    ? list.reduce(
-        (s, r) =>
-          s +
-          (r.feedback ? computeStarRatingFromFeedback(r.feedback) : r.rating),
-        0
-      ) / list.length
+    ? list.reduce((s, r) => s + (r.overallRating || 0), 0) / list.length
     : 0;
 
   return { list, avg, count: list.length };
@@ -59,11 +46,10 @@ function getImagesArray(c?: Charter): string[] {
   return ["/placeholder-1.jpg", "/placeholder-2.jpg", "/placeholder-3.jpg"];
 }
 
-export async function generateMetadata({
-  params,
-}: {
-  params: { id: string };
-}): Promise<Metadata> {
+export async function generateMetadata(
+  props: { params: RouteParams }
+): Promise<Metadata> {
+  const params = await props.params;
   const id = params.id;
   const charter: Charter | undefined = Array.isArray(charters)
     ? (charters as Charter[]).find((c) => String(c.id) === String(id))
@@ -88,8 +74,15 @@ export async function generateMetadata({
   };
 }
 
-export default function CharterViewPage({ params, searchParams }: PageProps) {
-  const id = params.id;
+export default async function CharterViewPage({
+  params,
+  searchParams,
+}: {
+  params: RouteParams;
+  searchParams: RouteSearchParams;
+}) {
+  const { id } = await params;
+  const resolvedSearchParams = await searchParams;
 
   const charter: Charter | undefined = Array.isArray(charters)
     ? (charters as Charter[]).find((c) => String(c.id) === String(id))
@@ -104,11 +97,11 @@ export default function CharterViewPage({ params, searchParams }: PageProps) {
     ? getCharterReviews(cid)
     : { list: [], avg: 0, count: 0 };
 
-  const persons = toInt(searchParams.booking_persons, 2);
+  const persons = toInt(resolvedSearchParams.booking_persons, 2);
 
   const trips: Trip[] = Array.isArray(charter?.trip) ? charter!.trip : [];
   const tripIndex = Math.min(
-    Math.max(toInt(searchParams.trip_index, 0), 0),
+    Math.max(toInt(resolvedSearchParams.trip_index, 0), 0),
     Math.max(trips.length - 1, 0)
   );
   const selectedTrip = trips[tripIndex];

@@ -12,7 +12,7 @@ export function getRatingMap(): RatingMap {
   (receipts as any[]).forEach((r: any) => {
     const id = Number(r.charterId);
     if (!map[id]) map[id] = { avg: 0, count: 0 };
-    map[id].avg += Number(r.rating || 0);
+    map[id].avg += Number(r.overallRating || 0);
     map[id].count += 1;
   });
   Object.keys(map).forEach((k) => {

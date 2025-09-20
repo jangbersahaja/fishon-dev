@@ -1,5 +1,6 @@
 import charters, { Charter } from "@/dummy/charter";
 import destinations from "@/dummy/destination";
+import { expandDestinationSearchTerms } from "@/utils/destinationAliases";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 
@@ -12,43 +13,7 @@ type Destination = {
 function countTripsForDestination(destName: string) {
   const name = destName.trim();
   if (!name) return 0;
-  const needle = name.toLowerCase();
-
-  // Aliases to improve matching between destination labels and charter locations/addresses
-  const ALIASES: Record<string, string[]> = {
-    Klang: ["klang", "port klang", "pulau ketam", "pulau indah"],
-    "Port Klang": ["port klang", "klang", "pulau ketam", "pulau indah"],
-    "Pulau Indah": ["pulau indah", "port klang", "klang"],
-    "Kuala Selangor": [
-      "kuala selangor",
-      "tanjong karang",
-      "sekinchan",
-      "jeram",
-    ],
-    "Tanjong Karang": ["tanjong karang", "kuala selangor"],
-    "Sabak Bernam": ["sabak bernam", "sungai besar"],
-    "Sungai Besar": ["sungai besar", "sabak bernam"],
-    "Carey Island": ["carey island", "pulau carey", "teluk panglima garang"],
-    "Teluk Panglima Garang": [
-      "teluk panglima garang",
-      "pulau carey",
-      "carey island",
-    ],
-    Sepang: ["sepang", "bagan lalang"],
-    Kajang: ["kajang", "bangi"],
-    "Shah Alam": ["shah alam", "jelutong"],
-    "Subang Jaya": ["subang", "subang jaya"],
-    Petaling: ["petaling", "subang"],
-    Puchong: ["puchong", "tasik prima"],
-    Gombak: ["gombak", "ampang jaya", "ampang"],
-    "Ampang Jaya": ["ampang jaya", "gombak", "ampang"],
-    Cyberjaya: ["cyberjaya"],
-  };
-
-  const terms = new Set<string>([
-    needle,
-    ...((ALIASES[name] || []) as string[]),
-  ]);
+  const terms = expandDestinationSearchTerms(name);
 
   const matches = (c: Charter) => {
     const hay = `${c.location || ""} ${c.address || ""}`.toLowerCase();
@@ -83,7 +48,7 @@ const Card = ({ name, trips, image }: Destination) => (
     <div className="flex flex-col">
       <span className="text-sm font-bold">{name}</span>
       <span className="text-xs">
-        {trips} Trip{trips === 1 ? "" : "s"} Available
+        {trips} Charter{trips === 1 ? "" : "s"} Available
       </span>
     </div>
   </Link>

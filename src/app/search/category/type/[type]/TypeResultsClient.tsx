@@ -50,7 +50,6 @@ export default function TypeResultsClient({
               items={mapItems}
               initialCenter={fallbackCenter}
               sectionTitle={`${prettyType} Trips Nearby You`}
-              screenshotSrc="/static/maps/technique-map-screenshot.png"
             />
           </div>
 

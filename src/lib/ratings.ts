@@ -8,6 +8,7 @@ export function getCharterReviews(charterId: number) {
 export function getAverageRating(charterId: number) {
   const reviews = getCharterReviews(charterId);
   if (!reviews.length) return null;
-  const avg = reviews.reduce((a, r) => a + r.rating, 0) / reviews.length;
+  const avg =
+    reviews.reduce((a, r) => a + (r.overallRating || 0), 0) / reviews.length;
   return Math.round(avg * 10) / 10; // 1 decimal
 }

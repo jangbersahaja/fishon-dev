@@ -16,11 +16,15 @@ export default function BookingWidget({
   defaultPersons = 2,
   personsMax,
   childFriendly = true,
+  preview = false,
+  className = "",
 }: {
   trips: Trip[];
   defaultPersons?: number;
   personsMax?: number;
   childFriendly?: boolean;
+  preview?: boolean;
+  className?: string;
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -32,6 +36,8 @@ export default function BookingWidget({
   const spChildren = parseInt(searchParams.get("children") || "", 10);
   const spDate = searchParams.get("date");
   const spDays = parseInt(searchParams.get("days") || "", 10);
+
+  const readOnly = preview === true;
 
   // Compute initial guests from search params with fallbacks
   let initAdults =
@@ -65,9 +71,11 @@ export default function BookingWidget({
   const [days, setDays] = useState<number>(initDays);
   const MAX_DAYS = 14;
   function decDays() {
+    if (readOnly) return;
     setDays((d) => Math.max(1, d - 1));
   }
   function incDays() {
+    if (readOnly) return;
     setDays((d) => Math.min(MAX_DAYS, d + 1));
   }
 
@@ -77,6 +85,7 @@ export default function BookingWidget({
     nextDate: string,
     nextDays: number
   ) {
+    if (readOnly) return;
     const params = new URLSearchParams(searchParams.toString());
     if (Number.isFinite(nextAdults) && nextAdults > 0)
       params.set("adults", String(nextAdults));
@@ -105,17 +114,21 @@ export default function BookingWidget({
   const available = !!date;
 
   function decAdults() {
+    if (readOnly) return;
     setAdults((a) => Math.max(1, a - 1));
   }
   function incAdults() {
+    if (readOnly) return;
     setAdults((a) =>
       maxAllowed ? Math.min(maxAllowed - children, a + 1) : a + 1
     );
   }
   function decChildren() {
+    if (readOnly) return;
     setChildren((c) => Math.max(0, c - 1));
   }
   function incChildren() {
+    if (readOnly) return;
     setChildren((c) => {
       const nextRaw = c + 1;
       return maxAllowed ? Math.min(maxAllowed - adults, nextRaw) : nextRaw;
@@ -124,12 +137,20 @@ export default function BookingWidget({
 
   // Sync URL with current selections after render to avoid Router updates during render
   useEffect(() => {
+    if (readOnly) return;
     replaceQuery(adults, children, date, days);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [adults, children, date, days]);
+  }, [adults, children, date, days, readOnly]);
+
+  const containerClassName = [
+    "rounded-2xl border border-black/10 bg-white p-5 sm:p-6 shadow-lg",
+    className,
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   return (
-    <div className="rounded-2xl border border-black/10 bg-white p-5 sm:p-6 shadow-lg">
+    <div className={containerClassName}>
       <div className="flex items-baseline justify-between">
         <h3 className="text-base font-semibold sm:text-lg">
           Check availability

@@ -422,9 +422,7 @@ export default function FormSection() {
         });
         reset(defaultState);
         clearDraft();
-        lastSerializedRef.current = JSON.stringify(
-          sanitizeForDraft(defaultState)
-        );
+        initializeDraftState(defaultState, null);
         setLastSavedAt(null);
         setCaptainAvatarPreview(null);
       } else if (response?.error) {

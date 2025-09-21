@@ -180,6 +180,17 @@ export async function submitCharter(formData: FormData) {
         },
       });
 
+      // Create Boat first; Charter holds the foreign key (boatId)
+      const boatRecord = await tx.boat.create({
+        data: {
+          name: payload.boat.name,
+          type: payload.boat.type,
+          lengthFt: boatLengthFt,
+          capacity: payload.boat.capacity,
+        },
+        select: { id: true },
+      });
+
       const charterRecord = await tx.charter.create({
         data: {
           captainId: captainProfile.id,
@@ -193,19 +204,12 @@ export async function submitCharter(formData: FormData) {
           longitude: longitude ?? undefined,
           description: payload.description,
           pricingPlan,
+          boatId: boatRecord.id,
           amenities: {
             create: (payload.includes ?? []).map((label) => ({ label })),
           },
           features: {
             create: (payload.boat.features ?? []).map((label) => ({ label })),
-          },
-          boat: {
-            create: {
-              name: payload.boat.name,
-              type: payload.boat.type,
-              lengthFt: boatLengthFt,
-              capacity: payload.boat.capacity,
-            },
           },
           pickup: payload.pickup.available
             ? {
@@ -214,7 +218,9 @@ export async function submitCharter(formData: FormData) {
                   fee: toDecimal(payload.pickup.fee) ?? undefined,
                   notes: payload.pickup.notes ?? null,
                   areas: {
-                    create: (payload.pickup.areas ?? []).map((label) => ({ label })),
+                    create: (payload.pickup.areas ?? []).map((label) => ({
+                      label,
+                    })),
                   },
                 },
               }
@@ -324,7 +330,9 @@ function parseBoatLength(length: string | null | undefined): number | null {
   return match ? Math.round(Number(match[1])) : null;
 }
 
-function parseDurationHours(duration: string | null | undefined): number | null {
+function parseDurationHours(
+  duration: string | null | undefined
+): number | null {
   if (!duration) return null;
   const match = duration.match(/([\d.]+)/);
   return match ? Math.round(Number(match[1])) : null;

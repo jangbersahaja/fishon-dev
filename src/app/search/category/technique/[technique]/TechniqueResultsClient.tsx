@@ -64,8 +64,6 @@ export default function TechniqueResultsClient({ rawTechnique }: Props) {
               </span>
             ) as any
           }
-          // optional: custom preview image path for this section
-          screenshotSrc="/static/maps/technique-map-screenshot.png"
         />
 
         <ResultsGrid items={filtered as Charter[]} />

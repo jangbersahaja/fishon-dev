@@ -12,6 +12,8 @@
     "prisma:migrate-deploy": "prisma migrate deploy"
   },
   "dependencies": {
+    "@ffmpeg/core": "^0.12.6",
+    "@ffmpeg/ffmpeg": "^0.12.15",
     "@hookform/resolvers": "^3.9.0",
     "@neondatabase/serverless": "^1.0.1",
     "@prisma/client": "^6.16.2",

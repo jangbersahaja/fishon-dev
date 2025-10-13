@@ -4,7 +4,8 @@ import FiltersBar from "@/components/FiltersBar";
 import SearchBox from "@/components/SearchBox";
 import { expandDestinationSearchTerms } from "@/utils/destinationAliases";
 import Link from "next/link";
-import charters, { Charter } from "../../dummy/charter";
+import { Charter } from "../../dummy/charter";
+import { getCharters } from "@/lib/charter-service";
 
 // Helpers
 function minPrice(c: Charter): number | undefined {
@@ -79,7 +80,7 @@ function uniqSorted<T>(arr: T[]): T[] {
   return Array.from(new Set(arr.filter(Boolean) as T[]));
 }
 
-export default function SearchResults({
+export default async function SearchResults({
   searchParams,
 }: {
   searchParams: {
@@ -117,7 +118,10 @@ export default function SearchResults({
   const pickupParam = searchParams.pickup;
   const childFriendlyParam = searchParams.child_friendly;
 
-  let filtered = (charters as Charter[])
+  // Fetch charters from backend or dummy data
+  const charters = await getCharters();
+
+  let filtered = charters
     .filter((c) => matchesDestination(c, destinationTerms, destination))
     .filter((c) => capacityAllows(c, totalGuests))
     .filter((c) => childFriendlyOk(c, childFriendlyParam))
@@ -159,7 +163,7 @@ export default function SearchResults({
   });
 
   const tripNames = uniqSorted(
-    (charters as Charter[])
+    charters
       .flatMap((c) => (c.trip || []).map((t) => t.name))
       .filter(Boolean)
   ).sort((a, b) => a.localeCompare(b));

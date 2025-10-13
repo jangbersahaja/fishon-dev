@@ -2,7 +2,7 @@
 
 import SafeImage from "@/components/SafeImage";
 import StarRating from "@/components/ratings/StarRating";
-import charters, { Charter } from "@/dummy/charter";
+import { Charter } from "@/dummy/charter";
 import { getAverageRating, getCharterReviews } from "@/lib/ratings";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -28,7 +28,7 @@ function distanceKm(
 
 type Nearby = Charter & { _distance: number };
 
-export default function TripsNearby() {
+export default function TripsNearby({ charters }: { charters: Charter[] }) {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(
     null
   );
@@ -60,13 +60,13 @@ export default function TripsNearby() {
 
   const nearby: Nearby[] = useMemo(() => {
     if (!coords) return [];
-    const withCoords = (charters as Charter[]).filter((c) => !!c.coordinates);
+    const withCoords = charters.filter((c) => !!c.coordinates);
     return withCoords
       .map((c) => ({ ...c, _distance: distanceKm(coords, c.coordinates!) }))
       .filter((c) => c._distance <= 25)
       .sort((a, b) => a._distance - b._distance)
       .slice(0, 20);
-  }, [coords]);
+  }, [coords, charters]);
 
   const trackRef = useRef<HTMLDivElement | null>(null);
   const [canScrollPrev, setCanScrollPrev] = useState(false);

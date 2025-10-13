@@ -8,8 +8,10 @@ import Link from "next/link";
 import BrowseByType from "./BrowseByType";
 import TopTechniques from "./TopTechniques";
 import TripsNearby from "./TripsNearby";
+import { getCharters } from "@/lib/charter-service";
 
-export default function Home() {
+export default async function Home() {
+  const charters = await getCharters();
   return (
     <div className="font-sans flex min-h-screen flex-col items-center">
       <main className="flex w-full flex-col items-center sm:items-start gap-8 md:gap-10 mb-24 ">
@@ -52,7 +54,7 @@ export default function Home() {
               </div>
             }
           >
-            <TripsNearby />
+            <TripsNearby charters={charters} />
           </Suspense>
         </div>
         <PopularDestination />
@@ -102,10 +104,10 @@ export default function Home() {
         </section>
 
         {/* Browse by type */}
-        <BrowseByType />
+        <BrowseByType charters={charters} />
 
         {/* Top fishing techniques */}
-        <TopTechniques />
+        <TopTechniques charters={charters} />
       </main>
     </div>
   );

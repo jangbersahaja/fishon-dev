@@ -35,21 +35,48 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
+## Backend Integration
+
+This project connects to the **Fishon Captain backend** in read-only mode to fetch charter and captain data. The integration includes automatic fallback to dummy data if the backend is unavailable.
+
+### Configuration
+
+1. Copy the sample environment file:
+
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. Configure the backend API URL (optional):
+
+   ```bash
+   FISHON_CAPTAIN_API_URL="https://api.fishon-captain.example.com"
+   FISHON_CAPTAIN_API_KEY="your-api-key"  # Optional
+   ```
+
+   **Note:** If `FISHON_CAPTAIN_API_URL` is not set, the app will use dummy data automatically.
+
+3. For local database setup (angler registration), update `DATABASE_URL`:
+
+   ```bash
+   DATABASE_URL="postgresql://user:password@localhost:5432/fishon?schema=public"
+   ```
+
+### Documentation
+
+See [docs/BACKEND_INTEGRATION.md](./docs/BACKEND_INTEGRATION.md) for detailed information about:
+- Backend API endpoints
+- Data flow architecture
+- Testing and deployment
+- Troubleshooting
+
 ## Database & Prisma
 
 This project uses [Prisma](https://www.prisma.io/) for data access. A Prisma client singleton is available at `src/lib/prisma.ts`.
 
 ### Local setup
 
-1. Copy the sample environment file and add your own credentials:
-
-   ```bash
-   cp .env.example .env
-   ```
-
-2. Update `DATABASE_URL` to point at a local Postgres instance (or Vercel Postgres connection string).
-
-3. Run the migrations and generate the client:
+1. Run the migrations and generate the client:
 
    ```bash
    npm run prisma:migrate -- --name init
@@ -59,7 +86,11 @@ This project uses [Prisma](https://www.prisma.io/) for data access. A Prisma cli
 ### Deploying on Vercel
 
 1. Provision a Vercel Postgres database and copy the `DATABASE_URL` (and optional `SHADOW_DATABASE_URL`) from the Vercel dashboard.
-2. Add the values to your Vercel project environment variables (`Production` + `Preview` environments).
+2. Add the environment variables to your Vercel project (`Production` + `Preview` environments):
+   - `DATABASE_URL`
+   - `FISHON_CAPTAIN_API_URL` (optional - for backend integration)
+   - `FISHON_CAPTAIN_API_KEY` (optional - if backend requires auth)
+
 3. Add the Prisma migrate step to the build by configuring the **Build & Development Settings** to run:
 
    ```bash

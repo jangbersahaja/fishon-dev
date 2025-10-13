@@ -1,4 +1,4 @@
-import charters, { Charter, Trip } from "@/dummy/charter";
+import { Charter, Trip } from "@/dummy/charter";
 import { receipts, type BookingReview } from "@/dummy/receipts";
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -14,6 +14,7 @@ import PoliciesInfoCard from "@/components/charter/PoliciesInfoCard";
 import ReviewsList from "@/components/charter/ReviewsList";
 import SpeciesTechniquesCard from "@/components/charter/SpeciesTechniquesCard";
 import Stars from "@/components/charter/Stars";
+import { getCharterById } from "@/lib/charter-service";
 
 type RouteParams = Promise<{ id: string }>;
 type RouteSearchParams = Promise<{
@@ -51,9 +52,7 @@ export async function generateMetadata(
 ): Promise<Metadata> {
   const params = await props.params;
   const id = params.id;
-  const charter: Charter | undefined = Array.isArray(charters)
-    ? (charters as Charter[]).find((c) => String(c.id) === String(id))
-    : undefined;
+  const charter = await getCharterById(id);
 
   const title = charter?.name || `Charter #${id}`;
   const location = charter?.location ? ` — ${charter.location}` : "";
@@ -84,9 +83,7 @@ export default async function CharterViewPage({
   const { id } = await params;
   const resolvedSearchParams = await searchParams;
 
-  const charter: Charter | undefined = Array.isArray(charters)
-    ? (charters as Charter[]).find((c) => String(c.id) === String(id))
-    : undefined;
+  const charter = await getCharterById(id);
 
   const cid = Number(id);
   const {

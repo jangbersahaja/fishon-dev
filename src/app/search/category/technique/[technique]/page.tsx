@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import TechniqueResultsClient from "./TechniqueResultsClient";
+import { getChartersByTechnique } from "@/lib/charter-service";
 
 type Params = { technique: string };
 
@@ -16,8 +17,9 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
   };
 }
 
-export default function TechniqueResultsPage({ params }: { params: Params }) {
+export default async function TechniqueResultsPage({ params }: { params: Params }) {
   // pass through the raw segment to the client component
   const raw = decodeURIComponent(params.technique || "");
-  return <TechniqueResultsClient rawTechnique={raw} />;
+  const charters = await getChartersByTechnique(raw);
+  return <TechniqueResultsClient rawTechnique={raw} charters={charters} />;
 }

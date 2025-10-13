@@ -1,6 +1,6 @@
 import CategoryCard from "@/components/CategoryCard";
-import charters from "@/dummy/charter";
 import Link from "next/link";
+import { Charter } from "@/dummy/charter";
 
 type CharterLite = {
   images?: string[];
@@ -27,9 +27,9 @@ function filterByTechnique(list: CharterLite[], technique: string) {
   );
 }
 
-function getCoverForTechnique(technique: string) {
+function getCoverForTechnique(charters: Charter[], technique: string) {
   const t = technique.toLowerCase();
-  const item = (charters as any[]).find(
+  const item = charters.find(
     (c) =>
       Array.isArray(c.techniques) &&
       c.techniques.some((x: string) => (x || "").toLowerCase() === t) &&
@@ -39,9 +39,9 @@ function getCoverForTechnique(technique: string) {
   return item?.images?.[0] as string | undefined;
 }
 
-export default function TopTechniques() {
+export default function TopTechniques({ charters }: { charters: Charter[] }) {
   const withCounts = TECHNIQUE_DEFS.map((tech) => {
-    const count = filterByTechnique(charters as any, tech).length;
+    const count = filterByTechnique(charters, tech).length;
     return { tech, count };
   })
     .filter((x) => x.count > 0)
@@ -72,7 +72,7 @@ export default function TopTechniques() {
                 label={tech}
                 count={count}
                 subtitle={`Charters using ${tech.toLowerCase()}`}
-                image={getCoverForTechnique(tech)}
+                image={getCoverForTechnique(charters, tech)}
                 alt={`${tech} technique`}
               />
             ))}

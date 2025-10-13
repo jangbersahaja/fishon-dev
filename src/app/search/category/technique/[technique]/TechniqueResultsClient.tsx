@@ -2,24 +2,17 @@ import Breadcrumbs from "@/components/search/Breadcrumbs";
 import ResultsGrid from "@/components/search/ResultsGrid";
 import ResultsMap from "@/components/search/ResultsMap";
 import SearchResultsHeader from "@/components/search/SearchResultsHeader";
-import charters, { Charter } from "@/dummy/charter";
+import { Charter } from "@/dummy/charter";
 import { buildMapItems } from "@/utils/mapItems";
 
-type Props = { rawTechnique: string };
+type Props = { 
+  rawTechnique: string;
+  charters: Charter[];
+};
 
-function normalizeTechnique(v: string) {
-  return v.toLowerCase();
-}
-
-export default function TechniqueResultsClient({ rawTechnique }: Props) {
+export default function TechniqueResultsClient({ rawTechnique, charters }: Props) {
   const raw = rawTechnique || "";
-  const t = normalizeTechnique(raw);
-
-  const filtered = (charters as Charter[]).filter(
-    (c) =>
-      Array.isArray(c.techniques) &&
-      c.techniques.some((x: string) => (x || "").toLowerCase() === t)
-  );
+  const filtered = charters;
 
   const pretty =
     raw

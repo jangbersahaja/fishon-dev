@@ -1,9 +1,9 @@
 // src/app/search/category/type/[type]/page.tsx
-import charters from "@/dummy/charter";
 import { buildMapItems } from "@/utils/mapItems";
 import { getRatingMap } from "@/utils/ratings";
 import type { Metadata } from "next";
 import TypeResultsClient from "./TypeResultsClient";
+import { getChartersByType } from "@/lib/charter-service";
 
 type Params = { type?: string };
 
@@ -26,17 +26,12 @@ export function generateMetadata({ params }: { params: Params }): Metadata {
   };
 }
 
-export default function Page({ params }: { params: Params }) {
+export default async function Page({ params }: { params: Params }) {
   const rawType = decodeURIComponent(params.type || "");
   const key = rawType.toLowerCase().trim();
 
-  // Filter by fishingType (case-insensitive)
-  const items = (charters as any[]).filter((c) => {
-    const t = String(c.fishingType || "")
-      .toLowerCase()
-      .trim();
-    return t === key;
-  });
+  // Fetch charters by type
+  const items = await getChartersByType(key);
 
   // Ratings for grid badges / map infowindows
   const ratingMap = getRatingMap();

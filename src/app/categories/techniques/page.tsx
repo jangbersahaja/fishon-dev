@@ -1,11 +1,12 @@
 // src/app/charters/categories/techniques/page.tsx
 import CategoryCard from "@/components/CategoryCard";
-import charters from "@/dummy/charter"; // path from /charters/categories/techniques
 import Link from "next/link";
+import { getCharters } from "@/lib/charter-service";
+import { Charter } from "@/dummy/charter";
 
-function getCoverForTechnique(technique: string) {
+function getCoverForTechnique(charters: Charter[], technique: string) {
   const t = technique.toLowerCase();
-  const item = (charters as any[]).find(
+  const item = charters.find(
     (c) =>
       Array.isArray(c.images) &&
       c.images.length > 0 &&
@@ -23,11 +24,13 @@ function normalizeLabel(s: string) {
     .join(" ");
 }
 
-export default function TechniquesCategoriesPage() {
+export default async function TechniquesCategoriesPage() {
+  const charters = await getCharters();
+  
   // Build a unique list of techniques with counts (case-insensitive)
   const map = new Map<string, number>();
 
-  (charters as any[]).forEach((c) => {
+  charters.forEach((c) => {
     (c.techniques || []).forEach((raw: string) => {
       const key = (raw || "").toLowerCase().trim();
       if (!key) return;
@@ -40,7 +43,7 @@ export default function TechniquesCategoriesPage() {
       key,
       label: normalizeLabel(key),
       count,
-      image: getCoverForTechnique(key),
+      image: getCoverForTechnique(charters, key),
     }))
     .sort((a, b) => b.count - a.count);
 

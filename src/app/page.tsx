@@ -23,31 +23,49 @@ export default function Home() {
               Fishon
               <span className="sr-only">
                 {" "}
-                — Malaysia’s fishing & charter booking
+                — Malaysia&apos;s fishing & charter booking
               </span>
               .my
             </h1>
           </header>
 
           <p className="mt-5 text-lg md:text-xl/relaxed text-black/80">
-            Malaysia’s first{" "}
+            Malaysia&apos;s first{" "}
             <span className="font-semibold text-black">
               fishing &amp; charter booking
             </span>{" "}
-            platform. We’re currently{" "}
-            <span className="font-semibold text-black">building</span> the
-            experience — launching soon.
+            platform. The marketplace experience is coming soon!
           </p>
 
           <div className="mt-6 flex flex-wrap items-center gap-3 text-sm">
             <span
-              aria-label="Status: In development"
+              aria-label="Status: Marketplace in development"
               className="inline-flex items-center gap-2 rounded-full border border-[#ec2227]/20 bg-[#ec2227] px-3 py-1 text-white"
             >
               <span className="size-2 rounded-full bg-white shadow-[0_0_12px_2px_rgba(255,255,255,.6)]" />
-              In development
+              Marketplace in development
             </span>
             <span className="opacity-80 text-black/70">plan • book • fish</span>
+          </div>
+
+          <div className="mt-6 rounded-2xl border border-black/10 bg-gray-50 p-5">
+            <h2 className="text-base md:text-lg font-semibold text-black">
+              🎣 Are you a Captain or Charter Operator?
+            </h2>
+            <p className="mt-2 text-sm md:text-base text-black/80">
+              Captain and charter registration is now available at{" "}
+              <Link
+                href="https://fishon-captain.vercel.app"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-semibold text-[#ec2227] underline decoration-[#ec2227]/40 underline-offset-4 hover:decoration-[#ec2227]"
+              >
+                fishon-captain.vercel.app
+              </Link>
+            </p>
+            <p className="mt-2 text-xs md:text-sm text-black/60">
+              Register your charter, manage bookings, and reach anglers across Malaysia.
+            </p>
           </div>
 
           <footer className="mt-8 flex flex-wrap items-center justify-between gap-3 text-sm text-white/90 bg-[#ec2227] border border-white/10 rounded-xl px-4 py-3">

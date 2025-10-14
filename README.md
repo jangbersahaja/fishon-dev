@@ -1,5 +1,21 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
+## 🎉 New: Blog Features
+
+FishOn.my now includes a comprehensive blog system with:
+- **Admin Dashboard** for content management (`/admin/blog`)
+- **WYSIWYG Editor** for creating rich blog posts
+- **Comments System** with moderation
+- **Newsletter Integration** with subscription management
+- **Social Media Sharing** (Facebook, Twitter, LinkedIn, WhatsApp)
+- **Advanced Search** with filters
+- **Table of Contents** auto-generated from headings
+- **Reading Progress Indicator**
+- **Author Profiles** with bio and social links
+
+See [BLOG_IMPLEMENTATION_SUMMARY.md](./BLOG_IMPLEMENTATION_SUMMARY.md) for quick start guide.  
+See [docs/BLOG_FEATURES_IMPLEMENTATION.md](./docs/BLOG_FEATURES_IMPLEMENTATION.md) for detailed documentation.
+
 ## Getting Started
 
 First, run the development server:

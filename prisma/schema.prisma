@@ -8,12 +8,21 @@ datasource db {
 }
 
 model User {
-  id           String      @id @default(cuid())
-  email        String      @unique
+  id           String         @id @default(cuid())
+  email        String         @unique
   passwordHash String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   blogPosts    BlogPost[]
+  blogComments BlogComment[]
+  // Author profile fields
+  name         String?
+  bio          String?        @db.Text
+  avatar       String?
+  website      String?
+  twitter      String?
+  facebook     String?
+  instagram    String?
 // ...existing code...
 }
 
@@ -33,6 +42,7 @@ model BlogPost {
   author          User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
   categories      BlogCategory[]
   tags            BlogTag[]
+  comments        BlogComment[]
   metaTitle       String?
   metaDescription String?           @db.Text
   metaKeywords    String?
@@ -64,5 +74,33 @@ model BlogTag {
   posts     BlogPost[]
 
   @@index([slug])
+}
+
+model BlogComment {
+  id        String   @id @default(cuid())
+  content   String   @db.Text
+  postId    String
+  post      BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([postId])
+  @@index([authorId])
+  @@index([approved])
+}
+
+model NewsletterSubscription {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String?
+  active      Boolean  @default(true)
+  subscribedAt DateTime @default(now())
+  unsubscribedAt DateTime?
+
+  @@index([email])
+  @@index([active])
 }
 

@@ -32,19 +32,18 @@ export default async function NewsletterPage() {
       </div>
 
       <div className="mb-4 flex justify-end">
-        <button
-          onClick={() => {
-            const emails = subscribers
-              .filter((s) => s.active)
-              .map((s) => s.email)
-              .join("\n");
-            navigator.clipboard.writeText(emails);
-            alert("Email list copied to clipboard!");
-          }}
+        <a
+          href={`data:text/csv;charset=utf-8,${encodeURIComponent(
+            "Email,Name,Status,Subscribed\n" +
+            subscribers
+              .map((s) => `${s.email},${s.name || ""},${s.active ? "Active" : "Unsubscribed"},${new Date(s.subscribedAt).toISOString()}`)
+              .join("\n")
+          )}`}
+          download="newsletter-subscribers.csv"
           className="rounded-md bg-[#EC2227] px-4 py-2 text-white hover:opacity-90"
         >
-          Export Email List
-        </button>
+          Export Email List (CSV)
+        </a>
       </div>
 
       <div className="rounded-lg bg-white shadow-sm">

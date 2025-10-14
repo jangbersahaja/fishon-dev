@@ -42,7 +42,7 @@ async function seedBlog() {
   // Seed blog posts
   console.log("\n📝 Seeding blog posts...");
   for (const post of dummyBlogPosts) {
-    const { categorySlug, tagSlugs, ...postData } = post as any;
+    const { categories, tags, ...postData } = post as any;
 
     await prisma.blogPost.upsert({
       where: { slug: post.slug },
@@ -50,14 +50,16 @@ async function seedBlog() {
       create: {
         ...postData,
         authorId: adminUser.id,
-        categories: categorySlug
+        published: true,
+        publishedAt: new Date(),
+        categories: categories
           ? {
-              connect: { slug: categorySlug },
+              connect: categories.map((slug: string) => ({ slug })),
             }
           : undefined,
-        tags: tagSlugs
+        tags: tags
           ? {
-              connect: tagSlugs.map((slug: string) => ({ slug })),
+              connect: tags.map((slug: string) => ({ slug })),
             }
           : undefined,
       },

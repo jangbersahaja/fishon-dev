@@ -4,6 +4,10 @@ import Image from "next/image";
 import Link from "next/link";
 import { getBlogPostBySlug, getRelatedPosts } from "@/lib/blog-service";
 import BlogPostCard from "@/components/blog/BlogPostCard";
+import ReadingProgress from "@/components/blog/ReadingProgress";
+import TableOfContents from "@/components/blog/TableOfContents";
+import SocialShare from "@/components/blog/SocialShare";
+import NewsletterWidget from "@/components/blog/NewsletterWidget";
 import { Clock, Calendar, User } from "lucide-react";
 
 type Props = {
@@ -133,6 +137,9 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-white">
+      {/* Reading Progress Indicator */}
+      <ReadingProgress />
+      
       {/* JSON-LD */}
       <script
         type="application/ld+json"
@@ -167,9 +174,12 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       </nav>
 
-      <article className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-        {/* Article Header */}
-        <header className="mb-8">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+          {/* Main Content */}
+          <article className="lg:col-span-8">
+            {/* Article Header */}
+            <header className="mb-8">
           {/* Categories */}
           {post.categories.length > 0 && (
             <div className="mb-4 flex flex-wrap gap-2">
@@ -257,35 +267,25 @@ export default async function BlogPostPage({ params }: Props) {
 
         {/* Share Section */}
         <div className="mt-12 border-t border-gray-200 pt-8">
-          <h3 className="text-lg font-semibold">Share this article</h3>
-          <div className="mt-4 flex gap-3">
-            <a
-              href={`https://www.facebook.com/sharer/sharer.php?u=https://www.fishon.my/blog/${slug}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full bg-[#1877f2] px-4 py-2 text-sm font-medium text-white hover:bg-[#0d65d9] transition"
-            >
-              Facebook
-            </a>
-            <a
-              href={`https://twitter.com/intent/tweet?url=https://www.fishon.my/blog/${slug}&text=${encodeURIComponent(post.title)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full bg-[#1da1f2] px-4 py-2 text-sm font-medium text-white hover:bg-[#0d8bd9] transition"
-            >
-              Twitter
-            </a>
-            <a
-              href={`https://wa.me/?text=${encodeURIComponent(post.title + " - https://www.fishon.my/blog/" + slug)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded-full bg-[#25d366] px-4 py-2 text-sm font-medium text-white hover:bg-[#1fbc57] transition"
-            >
-              WhatsApp
-            </a>
-          </div>
+          <SocialShare 
+            url={`https://www.fishon.my/blog/${slug}`}
+            title={post.title}
+          />
         </div>
       </article>
+
+          {/* Sidebar */}
+          <aside className="lg:col-span-4">
+            <div className="sticky top-24 space-y-6">
+              {/* Table of Contents */}
+              <TableOfContents />
+              
+              {/* Newsletter Widget */}
+              <NewsletterWidget />
+            </div>
+          </aside>
+        </div>
+      </div>
 
       {/* Related Posts */}
       {relatedPosts.length > 0 && (

@@ -31,7 +31,7 @@ const abouts = [
   },
   {
     name: "Blog",
-    link: "",
+    link: "/blog",
   },
   {
     name: "Affiliate Program",

@@ -1,4 +1,4 @@
-import prisma from "@/lib/prisma";
+import { prisma } from "@/lib/prisma";
 import type { BlogPost, BlogCategory, BlogTag } from "@prisma/client";
 
 export type BlogPostWithRelations = BlogPost & {

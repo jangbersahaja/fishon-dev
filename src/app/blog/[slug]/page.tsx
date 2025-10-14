@@ -1,10 +1,10 @@
-import { notFound } from "next/navigation";
+import BlogPostCard from "@/components/blog/BlogPostCard";
+import { getBlogPostBySlug, getRelatedPosts } from "@/lib/blog-service";
+import { Calendar, Clock, User } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { getBlogPostBySlug, getRelatedPosts } from "@/lib/blog-service";
-import BlogPostCard from "@/components/blog/BlogPostCard";
-import { Clock, Calendar, User } from "lucide-react";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -86,7 +86,7 @@ export default async function BlogPostPage({ params }: Props) {
     dateModified: post.updatedAt.toISOString(),
     author: {
       "@type": "Person",
-      name: post.author.email.split("@")[0],
+      name: post.author.displayName || post.author.email.split("@")[0],
       url: `https://www.fishon.my/author/${post.author.id}`,
     },
     publisher: {
@@ -196,8 +196,19 @@ export default async function BlogPostPage({ params }: Props) {
           {/* Meta info */}
           <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-gray-600">
             <div className="flex items-center gap-2">
-              <User size={16} />
-              <span>By {post.author.email.split("@")[0]}</span>
+              {post.author.avatarUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={post.author.avatarUrl}
+                  alt={post.author.displayName || post.author.email}
+                  className="h-6 w-6 rounded-full object-cover"
+                />
+              ) : (
+                <User size={16} />
+              )}
+              <span>
+                By {post.author.displayName || post.author.email.split("@")[0]}
+              </span>
             </div>
             {post.publishedAt && (
               <div className="flex items-center gap-2">
@@ -249,11 +260,15 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         )}
 
+        {/* TODO: Reading progress bar component goes above the article header */}
+
         {/* Article Content */}
         <div
           className="prose prose-lg max-w-none prose-headings:font-bold prose-headings:tracking-tight prose-a:text-[#ec2227] prose-a:no-underline hover:prose-a:underline prose-img:rounded-lg"
           dangerouslySetInnerHTML={{ __html: post.content }}
         />
+
+        {/* TODO: Insert Table of Contents component here (derived from post.content) */}
 
         {/* Share Section */}
         <div className="mt-12 border-t border-gray-200 pt-8">
@@ -268,7 +283,9 @@ export default async function BlogPostPage({ params }: Props) {
               Facebook
             </a>
             <a
-              href={`https://twitter.com/intent/tweet?url=https://www.fishon.my/blog/${slug}&text=${encodeURIComponent(post.title)}`}
+              href={`https://twitter.com/intent/tweet?url=https://www.fishon.my/blog/${slug}&text=${encodeURIComponent(
+                post.title
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-full bg-[#1da1f2] px-4 py-2 text-sm font-medium text-white hover:bg-[#0d8bd9] transition"
@@ -276,7 +293,9 @@ export default async function BlogPostPage({ params }: Props) {
               Twitter
             </a>
             <a
-              href={`https://wa.me/?text=${encodeURIComponent(post.title + " - https://www.fishon.my/blog/" + slug)}`}
+              href={`https://wa.me/?text=${encodeURIComponent(
+                post.title + " - https://www.fishon.my/blog/" + slug
+              )}`}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-full bg-[#25d366] px-4 py-2 text-sm font-medium text-white hover:bg-[#1fbc57] transition"

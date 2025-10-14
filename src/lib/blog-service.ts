@@ -1,8 +1,8 @@
 import { prisma } from "@/lib/prisma";
-import type { BlogPost, BlogCategory, BlogTag } from "@prisma/client";
+import type { BlogCategory, BlogPost, BlogTag, User } from "@prisma/client";
 
 export type BlogPostWithRelations = BlogPost & {
-  author: { id: string; email: string };
+  author: Pick<User, "id" | "email" | "displayName" | "avatarUrl" | "bio">;
   categories: BlogCategory[];
   tags: BlogTag[];
 };
@@ -23,7 +23,15 @@ export async function getBlogPosts({
     prisma.blogPost.findMany({
       where: { published: true },
       include: {
-        author: { select: { id: true, email: true } },
+        author: {
+          select: {
+            id: true,
+            email: true,
+            displayName: true,
+            avatarUrl: true,
+            bio: true,
+          },
+        },
         categories: true,
         tags: true,
       },
@@ -44,7 +52,15 @@ export async function getFeaturedPosts(limit = 3) {
   return prisma.blogPost.findMany({
     where: { published: true },
     include: {
-      author: { select: { id: true, email: true } },
+      author: {
+        select: {
+          id: true,
+          email: true,
+          displayName: true,
+          avatarUrl: true,
+          bio: true,
+        },
+      },
       categories: true,
       tags: true,
     },
@@ -62,7 +78,15 @@ export async function getBlogPostBySlug(
   return prisma.blogPost.findUnique({
     where: { slug },
     include: {
-      author: { select: { id: true, email: true } },
+      author: {
+        select: {
+          id: true,
+          email: true,
+          displayName: true,
+          avatarUrl: true,
+          bio: true,
+        },
+      },
       categories: true,
       tags: true,
     },
@@ -93,7 +117,15 @@ export async function getRelatedPosts(postId: string, limit = 3) {
       ],
     },
     include: {
-      author: { select: { id: true, email: true } },
+      author: {
+        select: {
+          id: true,
+          email: true,
+          displayName: true,
+          avatarUrl: true,
+          bio: true,
+        },
+      },
       categories: true,
       tags: true,
     },
@@ -127,7 +159,15 @@ export async function getBlogPostsByCategory(
         categories: { some: { slug: categorySlug } },
       },
       include: {
-        author: { select: { id: true, email: true } },
+        author: {
+          select: {
+            id: true,
+            email: true,
+            displayName: true,
+            avatarUrl: true,
+            bio: true,
+          },
+        },
         categories: true,
         tags: true,
       },
@@ -171,7 +211,15 @@ export async function getBlogPostsByTag(
         tags: { some: { slug: tagSlug } },
       },
       include: {
-        author: { select: { id: true, email: true } },
+        author: {
+          select: {
+            id: true,
+            email: true,
+            displayName: true,
+            avatarUrl: true,
+            bio: true,
+          },
+        },
         categories: true,
         tags: true,
       },

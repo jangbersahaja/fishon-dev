@@ -45,9 +45,10 @@ jobs:
       # Generate Prisma client if schema exists (helps build succeed)
       - name: Generate Prisma client
         if: ${{ hashFiles('prisma/schema.prisma') != '' }}
-        run: npx prisma generate
-        # ensure a DATABASE_URL is present for generator if it needs it (we set it at job-level)
-
+        run: |
+          export DATABASE_URL="${DATABASE_URL:-file:./dev.db}"
+          npx prisma generate
+        # ensure a DATABASE_URL is present for generator if it needs it (we set it at job-level, fallback here if missing)
       - name: Run build
         run: npm run build
         env:

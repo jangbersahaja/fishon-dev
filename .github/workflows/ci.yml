@@ -17,6 +17,12 @@ jobs:
       matrix:
         node-version: [18.x, 20.x]
 
+    # Make the DB secret available to all steps in the job.
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      # Optional: set SHADOW_DATABASE_URL if you use prisma migrate in CI and want a shadow DB
+      # SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -36,6 +42,12 @@ jobs:
       - name: Run typecheck
         run: npm run typecheck
 
+      # Generate Prisma client if schema exists (helps build succeed)
+      - name: Generate Prisma client
+        if: ${{ hashFiles('prisma/schema.prisma') != '' }}
+        run: npx prisma generate
+        # ensure a DATABASE_URL is present for generator if it needs it (we set it at job-level)
+
       - name: Run build
         run: npm run build
         env:
@@ -43,12 +55,11 @@ jobs:
           NEXT_TELEMETRY_DISABLED: 1
 
       - name: Validate Prisma schema
-        if: hashFiles('prisma/schema.prisma') != ''
+        if: ${{ hashFiles('prisma/schema.prisma') != '' }}
         run: npx prisma validate
-        env:
-          # Provide dummy DATABASE_URL for schema validation
-          DATABASE_URL: postgresql://user:pass@localhost:5432/fishon
+        # DATABASE_URL is provided from env above (uses the repo secret)
 
       - name: Run tests
-        run: npm test || true
-        continue-on-error: true
+        run: npm test
+        # If you want tests to be non-blocking for now, you can uncomment the following line:
+        # continue-on-error: true

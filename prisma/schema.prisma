@@ -8,15 +8,23 @@ datasource db {
 }
 
 model User {
-  id           String     @id @default(cuid())
-  email        String     @unique
+  id           String      @id @default(cuid())
+  email        String      @unique
   passwordHash String
-  displayName  String?
-  bio          String?
-  avatarUrl    String?
-  createdAt    DateTime   @default(now())
-  updatedAt    DateTime   @updatedAt
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
   blogPosts    BlogPost[]
+  blogComments BlogComment[]
+  // Author profile fields
+  name         String?
+  bio          String?        @db.Text
+  avatar       String?
+  website      String?
+  twitter      String?
+  facebook     String?
+  instagram    String?
+// ...existing code...
+>>>>>>> theirs
 }
 
 model BlogPost {
@@ -32,6 +40,11 @@ model BlogPost {
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   authorId        String
+<<<<<<< ours
+=======
+  author          User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categories      BlogCategory[]
+  tags            BlogTag[]
   metaTitle       String?
   metaDescription String?
   metaKeywords    String?
@@ -67,3 +80,4 @@ model BlogTag {
 
   @@index([slug])
 }
+

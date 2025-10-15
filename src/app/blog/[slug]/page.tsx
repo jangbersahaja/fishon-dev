@@ -4,7 +4,17 @@ import { Calendar, Clock, User } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
+<<<<<<< ours
 import { notFound } from "next/navigation";
+=======
+import { getBlogPostBySlug, getRelatedPosts } from "@/lib/blog-service";
+import BlogPostCard from "@/components/blog/BlogPostCard";
+import ReadingProgress from "@/components/blog/ReadingProgress";
+import TableOfContents from "@/components/blog/TableOfContents";
+import SocialShare from "@/components/blog/SocialShare";
+import NewsletterWidget from "@/components/blog/NewsletterWidget";
+import { Clock, Calendar, User } from "lucide-react";
+>>>>>>> theirs
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -133,6 +143,9 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <main className="min-h-screen bg-white">
+      {/* Reading Progress Indicator */}
+      <ReadingProgress />
+      
       {/* JSON-LD */}
       <script
         type="application/ld+json"
@@ -167,9 +180,12 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
       </nav>
 
-      <article className="mx-auto max-w-4xl px-4 py-12 sm:px-6 lg:px-8">
-        {/* Article Header */}
-        <header className="mb-8">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-12">
+          {/* Main Content */}
+          <article className="lg:col-span-8">
+            {/* Article Header */}
+            <header className="mb-8">
           {/* Categories */}
           {post.categories.length > 0 && (
             <div className="mb-4 flex flex-wrap gap-2">
@@ -283,9 +299,7 @@ export default async function BlogPostPage({ params }: Props) {
               Facebook
             </a>
             <a
-              href={`https://twitter.com/intent/tweet?url=https://www.fishon.my/blog/${slug}&text=${encodeURIComponent(
-                post.title
-              )}`}
+              href={`https://twitter.com/intent/tweet?url=https://www.fishon.my/blog/${slug}&text=${encodeURIComponent(post.title)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-full bg-[#1da1f2] px-4 py-2 text-sm font-medium text-white hover:bg-[#0d8bd9] transition"
@@ -293,9 +307,7 @@ export default async function BlogPostPage({ params }: Props) {
               Twitter
             </a>
             <a
-              href={`https://wa.me/?text=${encodeURIComponent(
-                post.title + " - https://www.fishon.my/blog/" + slug
-              )}`}
+              href={`https://wa.me/?text=${encodeURIComponent(post.title + " - https://www.fishon.my/blog/" + slug)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="rounded-full bg-[#25d366] px-4 py-2 text-sm font-medium text-white hover:bg-[#1fbc57] transition"
@@ -305,6 +317,19 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </div>
       </article>
+
+          {/* Sidebar */}
+          <aside className="lg:col-span-4">
+            <div className="sticky top-24 space-y-6">
+              {/* Table of Contents */}
+              <TableOfContents />
+              
+              {/* Newsletter Widget */}
+              <NewsletterWidget />
+            </div>
+          </aside>
+        </div>
+      </div>
 
       {/* Related Posts */}
       {relatedPosts.length > 0 && (

@@ -3,6 +3,7 @@ import type { Metadata } from "next";
 import { getBlogPosts, getFeaturedPosts } from "@/lib/blog-service";
 import BlogPostCard from "@/components/blog/BlogPostCard";
 import FeaturedPostCard from "@/components/blog/FeaturedPostCard";
+import SearchBar from "@/components/blog/SearchBar";
 
 export const metadata: Metadata = {
   title: "Fishing Blog & Guides | FishOn.my",
@@ -64,6 +65,11 @@ export default async function BlogPage({
             Expert tips, destination guides, and fishing techniques for Malaysian
             waters. Learn from experienced anglers and charter captains.
           </p>
+
+          {/* Search Bar */}
+          <div className="mt-6">
+            <SearchBar />
+          </div>
 
           {/* Categories */}
           <nav

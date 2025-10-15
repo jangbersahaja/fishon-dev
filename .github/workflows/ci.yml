@@ -17,6 +17,8 @@ jobs:
       matrix:
         node-version: [18.x, 20.x]
 
+   
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -36,19 +38,28 @@ jobs:
       - name: Run typecheck
         run: npm run typecheck
 
+      # Generate Prisma client if schema exists (helps build succeed)
+      - name: Generate Prisma client
+        if: ${{ hashFiles('prisma/schema.prisma') != '' }}
+        run: |
+          export DATABASE_URL="${DATABASE_URL:-postgresql://user:pass@localhost:5432/db}"
+          npx prisma generate
+        # ensure a DATABASE_URL is present for generator if it needs it (we set it at job-level, fallback here if missing)
       - name: Run build
         run: npm run build
         env:
-          # Skip telemetry during CI
+          DATABASE_URL: ${{ secrets.DATABASE_URL != '' && secrets.DATABASE_URL || 'postgresql://user:pass@localhost:5432/db' }}
+          SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
           NEXT_TELEMETRY_DISABLED: 1
 
       - name: Validate Prisma schema
-        if: hashFiles('prisma/schema.prisma') != ''
+        if: ${{ hashFiles('prisma/schema.prisma') != '' }}
         run: npx prisma validate
         env:
-          # Provide dummy DATABASE_URL for schema validation
-          DATABASE_URL: postgresql://user:pass@localhost:5432/fishon
+          DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://user:pass@localhost:5432/db' }}
+        # DATABASE_URL is provided from env above (uses the repo secret or a dummy fallback for forked PRs)
 
       - name: Run tests
-        run: npm test || true
-        continue-on-error: true
+        run: npm test
+        # If you want tests to be non-blocking for now, you can uncomment the following line:
+        # continue-on-error: true

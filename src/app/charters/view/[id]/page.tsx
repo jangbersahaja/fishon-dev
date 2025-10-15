@@ -1,7 +1,3 @@
-import { Charter, Trip } from "@/dummy/charter";
-import { receipts, type BookingReview } from "@/dummy/receipts";
-import type { Metadata } from "next";
-import Link from "next/link";
 import AboutSection from "@/components/charter/AboutSection";
 import AmenitiesCard from "@/components/charter/AmenitiesCard";
 import BoatCard from "@/components/charter/BoatCard";
@@ -14,7 +10,11 @@ import PoliciesInfoCard from "@/components/charter/PoliciesInfoCard";
 import ReviewsList from "@/components/charter/ReviewsList";
 import SpeciesTechniquesCard from "@/components/charter/SpeciesTechniquesCard";
 import Stars from "@/components/charter/Stars";
+import { Charter, Trip } from "@/dummy/charter";
+import { receipts, type BookingReview } from "@/dummy/receipts";
 import { getCharterById } from "@/lib/charter-service";
+import type { Metadata } from "next";
+import Link from "next/link";
 
 type RouteParams = Promise<{ id: string }>;
 type RouteSearchParams = Promise<{
@@ -47,9 +47,9 @@ function getImagesArray(c?: Charter): string[] {
   return ["/placeholder-1.jpg", "/placeholder-2.jpg", "/placeholder-3.jpg"];
 }
 
-export async function generateMetadata(
-  props: { params: RouteParams }
-): Promise<Metadata> {
+export async function generateMetadata(props: {
+  params: RouteParams;
+}): Promise<Metadata> {
   const params = await props.params;
   const id = params.id;
   const charter = await getCharterById(id);
@@ -150,7 +150,7 @@ export default async function CharterViewPage({
 
   return (
     <main className="min-h-dvh bg-white">
-      <section className="mx-auto max-w-6xl px-4 sm:px-6">
+      <section className="mx-auto max-w-7xl px-4 sm:px-6">
         {/* Breadcrumbs */}
         <nav className="pt-6 text-sm text-gray-500">
           <Link href="/book" className="hover:underline">

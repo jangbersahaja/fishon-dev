@@ -8,21 +8,24 @@ datasource db {
 }
 
 model User {
-  id           String      @id @default(cuid())
-  email        String      @unique
+  id           String        @id @default(cuid())
+  email        String        @unique
   passwordHash String
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  displayName  String?
+  bio          String?
+  avatarUrl    String?
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
   blogPosts    BlogPost[]
-// ...existing code...
+  comments     BlogComment[]
 }
 
 model BlogPost {
   id              String            @id @default(cuid())
   slug            String            @unique
   title           String
-  excerpt         String?           @db.Text
-  content         String            @db.Text
+  excerpt         String?
+  content         String
   coverImage      String?
   coverImageAlt   String?
   published       Boolean           @default(false)
@@ -30,14 +33,16 @@ model BlogPost {
   createdAt       DateTime          @default(now())
   updatedAt       DateTime          @updatedAt
   authorId        String
-  author          User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  categories      BlogCategory[]
-  tags            BlogTag[]
   metaTitle       String?
-  metaDescription String?           @db.Text
+  metaDescription String?
   metaKeywords    String?
-  readingTime     Int?              // in minutes
+  readingTime     Int?
   viewCount       Int               @default(0)
+
+  author          User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categories      BlogCategory[]    @relation("BlogPostToCategory")
+  tags            BlogTag[]         @relation("BlogPostToTag")
+  comments        BlogComment[]
 
   @@index([slug])
   @@index([published, publishedAt])
@@ -48,10 +53,10 @@ model BlogCategory {
   id          String     @id @default(cuid())
   slug        String     @unique
   name        String
-  description String?    @db.Text
+  description String?
   createdAt   DateTime   @default(now())
   updatedAt   DateTime   @updatedAt
-  posts       BlogPost[]
+  posts       BlogPost[] @relation("BlogPostToCategory")
 
   @@index([slug])
 }
@@ -61,8 +66,37 @@ model BlogTag {
   slug      String     @unique
   name      String
   createdAt DateTime   @default(now())
-  posts     BlogPost[]
+  posts     BlogPost[] @relation("BlogPostToTag")
 
   @@index([slug])
+}
+
+model BlogComment {
+  id        String   @id @default(cuid())
+  content   String
+  approved  Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  authorId  String
+  postId    String
+
+  author User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  post   BlogPost @relation(fields: [postId], references: [id], onDelete: Cascade)
+
+  @@index([postId])
+  @@index([authorId])
+  @@index([approved])
+}
+
+model NewsletterSubscription {
+  id             String    @id @default(cuid())
+  email          String    @unique
+  name           String?
+  active         Boolean   @default(true)
+  createdAt      DateTime  @default(now())
+  unsubscribedAt DateTime?
+
+  @@index([email])
+  @@index([active])
 }
 

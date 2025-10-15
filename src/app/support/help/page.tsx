@@ -35,7 +35,7 @@ export default function HelpCenterPage() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(236,34,39,0.08),transparent_55%)]" />
-        <div className="relative mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <nav className="text-sm text-neutral-500">
             <Link href="/" className="hover:underline">
               Home
@@ -85,7 +85,7 @@ export default function HelpCenterPage() {
       </section>
 
       {/* Content with sticky TOC */}
-      <section className="mx-auto w-full max-w-6xl px-4 pb-20 pt-6 sm:px-6 lg:px-8">
+      <section className="mx-auto w-full max-w-7xl px-4 pb-20 pt-6 sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[260px_1fr]">
           {/* TOC (sticky) */}
           <aside className="lg:block">

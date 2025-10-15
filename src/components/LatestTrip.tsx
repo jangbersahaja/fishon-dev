@@ -6,7 +6,7 @@ import { IoIosPin, IoIosStar } from "react-icons/io";
 
 const LatestTrip = () => {
   return (
-    <div className="w-full flex mt-[200px] lg:mt-[50px] max-w-6xl justify-center mx-auto">
+    <div className="w-full flex mt-[200px] lg:mt-[50px] max-w-7xl justify-center mx-auto">
       <div className="w-full flex flex-col px-5">
         <h2 className="text-xl font-bold mb-5">
           Latest Trip Available For You

@@ -1,8 +1,9 @@
-import Link from "next/link";
-import type { Metadata } from "next";
-import { getBlogPosts, getFeaturedPosts } from "@/lib/blog-service";
 import BlogPostCard from "@/components/blog/BlogPostCard";
 import FeaturedPostCard from "@/components/blog/FeaturedPostCard";
+import SearchBar from "@/components/blog/SearchBar";
+import { getBlogPosts, getFeaturedPosts } from "@/lib/blog-service";
+import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
   title: "Fishing Blog & Guides | FishOn.my",
@@ -36,13 +37,31 @@ const blogSchema = {
 export default async function BlogPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    q?: string;
+    category?: string;
+    tag?: string;
+    from?: string;
+    to?: string;
+  }>;
 }) {
   const params = await searchParams;
   const page = Number(params.page) || 1;
   const perPage = 12;
 
-  const { posts, total } = await getBlogPosts({ page, perPage });
+  // Parse search filters
+  const filters = {
+    page,
+    perPage,
+    query: params.q,
+    categorySlug: params.category,
+    tagSlug: params.tag,
+    dateFrom: params.from ? new Date(params.from) : undefined,
+    dateTo: params.to ? new Date(params.to) : undefined,
+  };
+
+  const { posts, total } = await getBlogPosts(filters);
   const featuredPosts = await getFeaturedPosts(3);
   const totalPages = Math.ceil(total / perPage);
 
@@ -56,14 +75,20 @@ export default async function BlogPage({
 
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-[#ec2227] to-[#c41d22] text-white">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <h1 className="text-4xl font-bold tracking-tight sm:text-5xl">
             Fishing Blog & Guides
           </h1>
           <p className="mt-4 text-lg/7 text-white/90">
-            Expert tips, destination guides, and fishing techniques for Malaysian
-            waters. Learn from experienced anglers and charter captains.
+            Expert tips, destination guides, and fishing techniques for
+            Malaysian waters. Learn from experienced anglers and charter
+            captains.
           </p>
+
+          {/* Search Bar */}
+          <div className="mt-6">
+            <SearchBar />
+          </div>
 
           {/* Categories */}
           <nav
@@ -104,7 +129,7 @@ export default async function BlogPage({
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         {/* Featured Posts */}
         {featuredPosts.length > 0 && (
           <section className="mb-12">
@@ -120,7 +145,7 @@ export default async function BlogPage({
         {/* Recent Posts */}
         <section>
           <h2 className="mb-6 text-2xl font-bold">Recent Articles</h2>
-          
+
           {posts.length === 0 ? (
             <div className="rounded-lg border border-gray-200 bg-gray-50 p-12 text-center">
               <p className="text-gray-600">

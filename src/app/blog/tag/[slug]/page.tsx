@@ -1,8 +1,8 @@
-import { notFound } from "next/navigation";
+import BlogPostCard from "@/components/blog/BlogPostCard";
+import { getBlogPostsByTag, getBlogTag } from "@/lib/blog-service";
 import type { Metadata } from "next";
 import Link from "next/link";
-import { getBlogTag, getBlogPostsByTag } from "@/lib/blog-service";
-import BlogPostCard from "@/components/blog/BlogPostCard";
+import { notFound } from "next/navigation";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -47,7 +47,7 @@ export default async function BlogTagPage({ params, searchParams }: Props) {
     <main className="min-h-screen bg-white">
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-[#ec2227] to-[#c41d22] text-white">
-        <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <nav className="mb-4 text-sm text-white/80" aria-label="Breadcrumb">
             <Link href="/blog" className="hover:text-white">
               Blog
@@ -63,7 +63,7 @@ export default async function BlogTagPage({ params, searchParams }: Props) {
         </div>
       </section>
 
-      <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         {posts.length === 0 ? (
           <div className="rounded-lg border border-gray-200 bg-gray-50 p-12 text-center">
             <p className="text-gray-600">

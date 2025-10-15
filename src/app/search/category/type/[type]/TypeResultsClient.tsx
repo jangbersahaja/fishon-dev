@@ -28,7 +28,7 @@ export default function TypeResultsClient({
       {/* use real count instead of string length */}
       <SearchResultsHeader title={title} count={items.length} />
 
-      <section className="mx-auto w-full max-w-6xl mt-10 px-5 sm:px-5 py-3">
+      <section className="mx-auto w-full max-w-7xl mt-10 px-5 sm:px-5 py-3">
         <Breadcrumbs
           items={[
             { href: "/", label: "Home" },

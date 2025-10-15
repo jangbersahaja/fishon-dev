@@ -42,7 +42,7 @@ jobs:
       - name: Generate Prisma client
         if: ${{ hashFiles('prisma/schema.prisma') != '' }}
         run: |
-          export DATABASE_URL="${DATABASE_URL:-file:./dev.db}"
+          export DATABASE_URL="${DATABASE_URL:-postgresql://user:pass@localhost:5432/db}"
           npx prisma generate
         # ensure a DATABASE_URL is present for generator if it needs it (we set it at job-level, fallback here if missing)
       - name: Run build

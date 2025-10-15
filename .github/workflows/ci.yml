@@ -17,11 +17,7 @@ jobs:
       matrix:
         node-version: [18.x, 20.x]
 
-    # Make the DB secret available to all steps in the job.
-    env:
-      DATABASE_URL: ${{ secrets.DATABASE_URL }}
-      # Optional: set SHADOW_DATABASE_URL if you use prisma migrate in CI and want a shadow DB
-      # SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
+   
 
     steps:
       - name: Checkout code
@@ -52,7 +48,8 @@ jobs:
       - name: Run build
         run: npm run build
         env:
-          # Skip telemetry during CI
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
           NEXT_TELEMETRY_DISABLED: 1
 
       - name: Validate Prisma schema

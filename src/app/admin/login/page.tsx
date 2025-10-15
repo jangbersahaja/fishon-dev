@@ -10,7 +10,8 @@ async function login(formData: FormData) {
   const expected = process.env.ADMIN_PASSWORD || "admin";
 
   if (password === expected) {
-    cookies().set("admin_auth", "1", {
+    const cookieStore = await cookies();
+    cookieStore.set("admin_auth", "1", {
       httpOnly: true,
       path: "/",
       maxAge: 60 * 60 * 8,

@@ -54,7 +54,7 @@ export default function NewsletterWidget() {
             placeholder="Your name (optional)"
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="w-full rounded-md border-0 px-4 py-2 text-gray-900 placeholder-gray-500"
+            className="w-full rounded-md border-2 border-white/30 bg-white px-4 py-2 text-gray-900 placeholder-gray-500 focus:border-white focus:outline-none focus:ring-2 focus:ring-white/50"
           />
           <input
             type="email"
@@ -62,7 +62,7 @@ export default function NewsletterWidget() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="w-full rounded-md border-0 px-4 py-2 text-gray-900 placeholder-gray-500"
+            className="w-full rounded-md border-2 border-white/30 bg-white px-4 py-2 text-gray-900 placeholder-gray-500 focus:border-white focus:outline-none focus:ring-2 focus:ring-white/50"
           />
           <button
             type="submit"

@@ -5,12 +5,15 @@ import SearchResultsHeader from "@/components/search/SearchResultsHeader";
 import { Charter } from "@/dummy/charter";
 import { buildMapItems } from "@/utils/mapItems";
 
-type Props = { 
+type Props = {
   rawTechnique: string;
   charters: Charter[];
 };
 
-export default function TechniqueResultsClient({ rawTechnique, charters }: Props) {
+export default function TechniqueResultsClient({
+  rawTechnique,
+  charters,
+}: Props) {
   const raw = rawTechnique || "";
   const filtered = charters;
 
@@ -33,7 +36,7 @@ export default function TechniqueResultsClient({ rawTechnique, charters }: Props
         subtitleSuffix={`${filtered.length === 1 ? "trip" : "trips"}`}
       />
 
-      <section className="mx-auto w-full max-w-6xl mt-10 px-5 sm:px-5 py-3">
+      <section className="mx-auto w-full max-w-7xl mt-10 px-5 sm:px-5 py-3">
         <Breadcrumbs
           items={[
             { href: "/", label: "Home" },

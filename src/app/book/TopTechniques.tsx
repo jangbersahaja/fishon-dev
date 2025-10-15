@@ -1,6 +1,6 @@
 import CategoryCard from "@/components/CategoryCard";
-import Link from "next/link";
 import { Charter } from "@/dummy/charter";
+import Link from "next/link";
 
 type CharterLite = {
   images?: string[];
@@ -49,7 +49,7 @@ export default function TopTechniques({ charters }: { charters: Charter[] }) {
     .slice(0, 4);
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-2 md:px-0">
+    <section className="mx-auto w-full max-w-7xl px-2 md:px-0">
       <div className="w-full px-5">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-xl font-bold">Top Fishing Techniques</h2>

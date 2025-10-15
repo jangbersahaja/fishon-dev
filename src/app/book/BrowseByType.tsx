@@ -21,7 +21,10 @@ function filterByType(
   return list.filter((c) => (c.fishingType || "").toLowerCase() === type);
 }
 
-function getCoverForType(charters: Charter[], type: "lake" | "stream" | "inshore" | "offshore") {
+function getCoverForType(
+  charters: Charter[],
+  type: "lake" | "stream" | "inshore" | "offshore"
+) {
   const item = charters.find(
     (c) =>
       (c.fishingType || "").toLowerCase() === type &&
@@ -33,7 +36,7 @@ function getCoverForType(charters: Charter[], type: "lake" | "stream" | "inshore
 
 export default function BrowseByType({ charters }: { charters: Charter[] }) {
   return (
-    <section className="mx-auto w-full max-w-6xl px-2 md:px-0">
+    <section className="mx-auto w-full max-w-7xl px-2 md:px-0">
       <div className="w-full px-5">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-xl font-bold">Browse By Type</h2>

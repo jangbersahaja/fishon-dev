@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { prisma } from "@/lib/prisma";
 import BlogPostCard from "@/components/blog/BlogPostCard";
 import SearchBar from "@/components/blog/SearchBar";
+import { prisma } from "@/lib/prisma";
+import Link from "next/link";
 
 async function searchPosts(query: string, category?: string, tag?: string) {
   const where: any = { published: true };
@@ -25,7 +25,15 @@ async function searchPosts(query: string, category?: string, tag?: string) {
   return prisma.blogPost.findMany({
     where,
     include: {
-      author: { select: { id: true, email: true } },
+      author: {
+        select: {
+          id: true,
+          email: true,
+          displayName: true,
+          bio: true,
+          avatarUrl: true,
+        },
+      },
       categories: true,
       tags: true,
     },
@@ -74,10 +82,7 @@ export default async function BlogSearchPage({
         ) : (
           <div className="rounded-lg bg-gray-50 p-12 text-center">
             <p className="mb-4 text-lg text-gray-600">No posts found</p>
-            <Link
-              href="/blog"
-              className="text-[#EC2227] hover:underline"
-            >
+            <Link href="/blog" className="text-[#EC2227] hover:underline">
               View all posts →
             </Link>
           </div>

@@ -149,7 +149,7 @@ export default function TripsNearby({ charters }: { charters: Charter[] }) {
 
   return (
     <section className="w-full">
-      <div className="mx-auto w-full max-w-6xl px-5">
+      <div className="mx-auto w-full max-w-7xl px-5">
         {/* Status */}
         {!coords && !error && (
           <div className="text-sm text-white">Detecting your location…</div>

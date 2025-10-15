@@ -56,7 +56,7 @@ const Card = ({ name, trips, image }: Destination) => (
 
 const PopularDestination = () => {
   return (
-    <div className="flex px-2 md:px-0 w-full max-w-6xl items-center justify-center mx-auto">
+    <div className="flex px-2 md:px-0 w-full max-w-7xl items-center justify-center mx-auto">
       <div className="w-full flex flex-col px-5">
         <h2 className="text-xl font-bold mb-5">Popular Destinations</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-5">

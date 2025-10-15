@@ -1,7 +1,7 @@
-import Link from "next/link";
-import Image from "next/image";
-import { Calendar } from "lucide-react";
 import type { BlogPostWithRelations } from "@/lib/blog-service";
+import { Calendar } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
 
 type FeaturedPostCardProps = {
   post: BlogPostWithRelations;
@@ -23,7 +23,7 @@ export default function FeaturedPostCard({ post }: FeaturedPostCardProps) {
             />
           ) : (
             <div className="absolute inset-0 bg-gradient-to-br from-[#ec2227]/40 to-[#ec2227]/20 flex items-center justify-center">
-              <span className="text-6xl">🎣</span>
+              <span className="text-7xl">🎣</span>
             </div>
           )}
           {/* Gradient Overlay */}

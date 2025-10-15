@@ -1,6 +1,6 @@
-import { notFound } from "next/navigation";
-import { prisma } from "@/lib/prisma";
 import BlogPostForm from "@/components/admin/BlogPostForm";
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
 import { updateBlogPost } from "../../actions";
 
 async function getPost(id: string) {
@@ -29,7 +29,7 @@ export default async function EditBlogPostPage({
 }) {
   const { id } = await params;
   const post = await getPost(id);
-  
+
   if (!post) {
     notFound();
   }
@@ -38,16 +38,14 @@ export default async function EditBlogPostPage({
 
   const handleUpdate = async (formData: FormData) => {
     "use server";
-    return updateBlogPost(id, formData);
+    await updateBlogPost(id, formData);
   };
 
   return (
     <div>
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Edit Post</h1>
-        <p className="text-sm text-gray-600">
-          Update your blog post
-        </p>
+        <p className="text-sm text-gray-600">Update your blog post</p>
       </div>
 
       <BlogPostForm

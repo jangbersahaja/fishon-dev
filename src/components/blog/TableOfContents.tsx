@@ -65,7 +65,7 @@ export default function TableOfContents() {
   };
 
   return (
-    <nav className="sticky top-24 rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
+    <nav className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm">
       <h3 className="mb-3 text-sm font-semibold text-gray-900">
         Table of Contents
       </h3>

@@ -29,7 +29,7 @@ export default async function AdminHome() {
         <div className="flex items-center justify-between">
           <h2 className="text-lg font-semibold">Manage Posts</h2>
           <Link
-            href="/admin/posts/new"
+            href="/admin/blog/posts/new"
             className="rounded bg-[#ec2227] px-3 py-2 text-sm font-semibold text-white"
           >
             New Post

@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function createBlogPost(formData: FormData) {
   const title = formData.get("title") as string;
@@ -19,7 +20,7 @@ export async function createBlogPost(formData: FormData) {
   const wordCount = content.split(/\s+/).length;
   const readingTime = Math.ceil(wordCount / 200);
 
-  const post = await prisma.blogPost.create({
+  await prisma.blogPost.create({
     data: {
       title,
       slug,
@@ -47,7 +48,7 @@ export async function createBlogPost(formData: FormData) {
   revalidatePath("/blog");
   revalidatePath("/admin/blog/posts");
 
-  return { success: true, postId: post.id };
+  redirect("/admin/blog/posts");
 }
 
 export async function updateBlogPost(postId: string, formData: FormData) {

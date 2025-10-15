@@ -49,7 +49,7 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
 
   return (
     <header className={headerClass}>
-      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-4 sm:px-6">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6">
         {/* Logo */}
         <Link
           href="/"
@@ -116,7 +116,7 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
         } border-t border-white/20`}
       >
         <nav
-          className="mx-auto flex max-w-6xl flex-col gap-1 px-4 py-3"
+          className="mx-auto flex max-w-7xl flex-col gap-1 px-4 py-3"
           aria-label="Mobile"
         >
           {links.map((l) => (

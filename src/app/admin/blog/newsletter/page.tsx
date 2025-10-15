@@ -2,7 +2,7 @@ import { prisma } from "@/lib/prisma";
 
 async function getNewsletterSubscribers() {
   return prisma.newsletterSubscription.findMany({
-    orderBy: { subscribedAt: "desc" },
+    orderBy: { createdAt: "desc" },
   });
 }
 
@@ -26,8 +26,9 @@ export default async function NewsletterPage() {
           Integration Instructions
         </h2>
         <p className="text-sm text-blue-800">
-          To send newsletters, integrate with a service like Mailchimp, SendGrid, or Zoho Campaigns.
-          Export the subscriber list below and import it into your email marketing platform.
+          To send newsletters, integrate with a service like Mailchimp,
+          SendGrid, or Zoho Campaigns. Export the subscriber list below and
+          import it into your email marketing platform.
         </p>
       </div>
 
@@ -35,9 +36,14 @@ export default async function NewsletterPage() {
         <a
           href={`data:text/csv;charset=utf-8,${encodeURIComponent(
             "Email,Name,Status,Subscribed\n" +
-            subscribers
-              .map((s) => `${s.email},${s.name || ""},${s.active ? "Active" : "Unsubscribed"},${new Date(s.subscribedAt).toISOString()}`)
-              .join("\n")
+              subscribers
+                .map(
+                  (s) =>
+                    `${s.email},${s.name || ""},${
+                      s.active ? "Active" : "Unsubscribed"
+                    },${new Date(s.createdAt).toISOString()}`
+                )
+                .join("\n")
           )}`}
           download="newsletter-subscribers.csv"
           className="rounded-md bg-[#EC2227] px-4 py-2 text-white hover:opacity-90"
@@ -86,7 +92,7 @@ export default async function NewsletterPage() {
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-600">
-                    {new Date(subscriber.subscribedAt).toLocaleDateString()}
+                    {new Date(subscriber.createdAt).toLocaleDateString()}
                   </td>
                 </tr>
               ))}

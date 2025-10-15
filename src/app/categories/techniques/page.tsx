@@ -1,8 +1,8 @@
 // src/app/charters/categories/techniques/page.tsx
 import CategoryCard from "@/components/CategoryCard";
-import Link from "next/link";
-import { getCharters } from "@/lib/charter-service";
 import { Charter } from "@/dummy/charter";
+import { getCharters } from "@/lib/charter-service";
+import Link from "next/link";
 
 function getCoverForTechnique(charters: Charter[], technique: string) {
   const t = technique.toLowerCase();
@@ -26,7 +26,7 @@ function normalizeLabel(s: string) {
 
 export default async function TechniquesCategoriesPage() {
   const charters = await getCharters();
-  
+
   // Build a unique list of techniques with counts (case-insensitive)
   const map = new Map<string, number>();
 
@@ -48,7 +48,7 @@ export default async function TechniquesCategoriesPage() {
     .sort((a, b) => b.count - a.count);
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-5 py-8 md:px-5">
+    <div className="mx-auto w-full max-w-7xl px-5 py-8 md:px-5">
       {/* Breadcrumb */}
       <nav className="mb-4 text-sm text-gray-500">
         <Link href="/book" className="hover:underline">

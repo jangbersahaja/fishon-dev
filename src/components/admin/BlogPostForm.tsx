@@ -1,16 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import type { BlogCategory, BlogPost, BlogTag } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import RichTextEditor from "./RichTextEditor";
-import type { BlogPost, BlogCategory, BlogTag } from "@prisma/client";
 
 interface BlogPostFormProps {
   post?: BlogPost & { categories: BlogCategory[]; tags: BlogTag[] };
   allCategories: BlogCategory[];
   allTags: BlogTag[];
   authorId: string;
-  onSubmit: (formData: FormData) => Promise<{ success: boolean; postId: string }>;
+  onSubmit: (formData: FormData) => Promise<void>;
 }
 
 export default function BlogPostForm({
@@ -55,11 +55,8 @@ export default function BlogPostForm({
     }
 
     try {
-      const result = await onSubmit(formData);
-      if (result.success) {
-        router.push("/admin/blog/posts");
-        router.refresh();
-      }
+      await onSubmit(formData);
+      // The server action will handle the redirect
     } catch (error) {
       console.error("Error submitting form:", error);
       alert("Error saving post. Please try again.");
@@ -88,10 +85,13 @@ export default function BlogPostForm({
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="rounded-lg bg-white p-6 shadow-sm">
         <h2 className="mb-4 text-lg font-semibold">Post Details</h2>
-        
+
         <div className="space-y-4">
           <div>
-            <label htmlFor="title" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="title"
+              className="block text-sm font-medium text-gray-700"
+            >
               Title *
             </label>
             <input
@@ -105,7 +105,10 @@ export default function BlogPostForm({
           </div>
 
           <div>
-            <label htmlFor="slug" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="slug"
+              className="block text-sm font-medium text-gray-700"
+            >
               Slug (auto-generated if empty)
             </label>
             <input
@@ -118,7 +121,10 @@ export default function BlogPostForm({
           </div>
 
           <div>
-            <label htmlFor="excerpt" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="excerpt"
+              className="block text-sm font-medium text-gray-700"
+            >
               Excerpt
             </label>
             <textarea
@@ -141,7 +147,10 @@ export default function BlogPostForm({
         <h2 className="mb-4 text-lg font-semibold">Cover Image</h2>
         <div className="space-y-4">
           <div>
-            <label htmlFor="coverImage" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="coverImage"
+              className="block text-sm font-medium text-gray-700"
+            >
               Image URL
             </label>
             <input
@@ -154,7 +163,10 @@ export default function BlogPostForm({
           </div>
 
           <div>
-            <label htmlFor="coverImageAlt" className="block text-sm font-medium text-gray-700">
+            <label
+              htmlFor="coverImageAlt"
+              className="block text-sm font-medium text-gray-700"
+            >
               Alt Text
             </label>
             <input

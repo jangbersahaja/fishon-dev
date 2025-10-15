@@ -1,27 +1,71 @@
 import { prisma } from "@/lib/prisma";
-import type { BlogCategory, BlogPost, BlogTag, User } from "@prisma/client";
+import type {
+  BlogCategory,
+  BlogComment,
+  BlogPost,
+  BlogTag,
+  User,
+} from "@prisma/client";
 
 export type BlogPostWithRelations = BlogPost & {
   author: Pick<User, "id" | "email" | "displayName" | "avatarUrl" | "bio">;
   categories: BlogCategory[];
   tags: BlogTag[];
+  comments?: (BlogComment & {
+    author: Pick<User, "email" | "displayName">;
+  })[];
 };
 
 /**
- * Get paginated blog posts (published only)
+ * Get paginated blog posts (published only) with advanced filters
  */
 export async function getBlogPosts({
   page = 1,
   perPage = 12,
+  query,
+  categorySlug,
+  tagSlug,
+  dateFrom,
+  dateTo,
 }: {
   page?: number;
   perPage?: number;
+  query?: string;
+  categorySlug?: string;
+  tagSlug?: string;
+  dateFrom?: Date;
+  dateTo?: Date;
 } = {}) {
   const skip = (page - 1) * perPage;
 
+  // Build where clause with filters
+  const where: any = { published: true };
+
+  if (query) {
+    where.OR = [
+      { title: { contains: query, mode: "insensitive" } },
+      { excerpt: { contains: query, mode: "insensitive" } },
+      { content: { contains: query, mode: "insensitive" } },
+    ];
+  }
+
+  if (categorySlug) {
+    where.categories = { some: { slug: categorySlug } };
+  }
+
+  if (tagSlug) {
+    where.tags = { some: { slug: tagSlug } };
+  }
+
+  if (dateFrom || dateTo) {
+    where.publishedAt = {};
+    if (dateFrom) where.publishedAt.gte = dateFrom;
+    if (dateTo) where.publishedAt.lte = dateTo;
+  }
+
   const [posts, total] = await Promise.all([
     prisma.blogPost.findMany({
-      where: { published: true },
+      where,
       include: {
         author: {
           select: {
@@ -39,7 +83,7 @@ export async function getBlogPosts({
       skip,
       take: perPage,
     }),
-    prisma.blogPost.count({ where: { published: true } }),
+    prisma.blogPost.count({ where }),
   ]);
 
   return { posts, total };
@@ -89,6 +133,18 @@ export async function getBlogPostBySlug(
       },
       categories: true,
       tags: true,
+      comments: {
+        where: { approved: true },
+        include: {
+          author: {
+            select: {
+              email: true,
+              displayName: true,
+            },
+          },
+        },
+        orderBy: { createdAt: "desc" },
+      },
     },
   });
 }

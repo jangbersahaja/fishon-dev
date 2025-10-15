@@ -50,7 +50,7 @@ export default function Home() {
 
           <div className="mt-6 rounded-2xl border border-black/10 bg-gray-50 p-5">
             <h2 className="text-base md:text-lg font-semibold text-black">
-              🎣 Are you a Captain or Charter Operator?
+              Are you a Captain or Charter Operator?
             </h2>
             <p className="mt-2 text-sm md:text-base text-black/80">
               Captain and charter registration is now available at{" "}
@@ -60,11 +60,12 @@ export default function Home() {
                 rel="noopener noreferrer"
                 className="font-semibold text-[#ec2227] underline decoration-[#ec2227]/40 underline-offset-4 hover:decoration-[#ec2227]"
               >
-                fishon-captain.vercel.app
+                Fishon Captain App
               </Link>
             </p>
             <p className="mt-2 text-xs md:text-sm text-black/60">
-              Register your charter, manage bookings, and reach anglers across Malaysia.
+              Register your charter, manage bookings, and reach anglers across
+              Malaysia.
             </p>
           </div>
 

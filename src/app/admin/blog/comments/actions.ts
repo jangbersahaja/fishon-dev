@@ -12,7 +12,6 @@ export async function approveComment(formData: FormData) {
   });
 
   revalidatePath("/admin/blog/comments");
-  return { success: true };
 }
 
 export async function deleteComment(formData: FormData) {
@@ -23,7 +22,6 @@ export async function deleteComment(formData: FormData) {
   });
 
   revalidatePath("/admin/blog/comments");
-  return { success: true };
 }
 
 export async function createComment(formData: FormData) {
@@ -41,5 +39,4 @@ export async function createComment(formData: FormData) {
   });
 
   revalidatePath(`/blog/${postId}`);
-  return { success: true };
 }

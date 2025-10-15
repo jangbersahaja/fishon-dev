@@ -56,7 +56,7 @@ jobs:
         if: ${{ hashFiles('prisma/schema.prisma') != '' }}
         run: npx prisma validate
         env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL != '' && secrets.DATABASE_URL || 'postgresql://user:pass@localhost:5432/db' }}
+          DATABASE_URL: ${{ secrets.DATABASE_URL || 'postgresql://user:pass@localhost:5432/db' }}
         # DATABASE_URL is provided from env above (uses the repo secret or a dummy fallback for forked PRs)
 
       - name: Run tests

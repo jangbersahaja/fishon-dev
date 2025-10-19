@@ -1,0 +1,31 @@
+"use client";
+
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
+import { usePathname } from "next/navigation";
+import { ReactNode } from "react";
+
+export default function Chrome({ children }: { children: ReactNode }) {
+  const pathname = usePathname() || "/";
+
+  // 1) Hide Navbar & Footer on main page
+  const hideChrome = pathname === "/";
+
+  // 2) Default: solid (#EC2227) background via Navbar default
+  // 3) Transparent on top for hero pages (e.g., book pages)
+  const transparentOnTop = pathname.startsWith("/book");
+
+  if (hideChrome) return <>{children}</>;
+
+  return (
+    <>
+      <Navbar transparentOnTop={transparentOnTop} />
+      {/* Dynamic spacer: uses --nav-offset (set by Navbar) to avoid gap when navbar hides */}
+      {!transparentOnTop && (
+        <div aria-hidden style={{ height: "var(--nav-offset, 64px)" }} />
+      )}
+      {children}
+      <Footer />
+    </>
+  );
+}

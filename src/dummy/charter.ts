@@ -1859,7 +1859,8 @@ const rawCharters: RawCharter[] = [
         startTimes: ["08:00"],
         maxAnglers: 8,
         private: false,
-        description: "Low-noise cruise with light tackle and scenic city views.",
+        description:
+          "Low-noise cruise with light tackle and scenic city views.",
       },
       {
         name: "Sunset Trip",
@@ -1999,7 +2000,8 @@ const rawCharters: RawCharter[] = [
         startTimes: ["06:30"],
         maxAnglers: 2,
         private: true,
-        description: "Longer hike accessing remote pools with packed lunch option.",
+        description:
+          "Longer hike accessing remote pools with packed lunch option.",
       },
     ],
     species: SPECIES_JUNGLE,

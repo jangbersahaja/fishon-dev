@@ -24,11 +24,11 @@ export default function TypeResultsClient({
   const sideItems = items.slice(0, 12);
 
   return (
-    <main className="mx-auto w-full">
+    <main className="w-full mx-auto">
       {/* use real count instead of string length */}
       <SearchResultsHeader title={title} count={items.length} />
 
-      <section className="mx-auto w-full max-w-7xl mt-10 px-5 sm:px-5 py-3">
+      <section className="w-full px-5 py-3 mx-auto mt-10 max-w-7xl sm:px-5">
         <Breadcrumbs
           items={[
             { href: "/", label: "Home" },
@@ -38,7 +38,7 @@ export default function TypeResultsClient({
           ]}
         />
 
-        <h3 className="mb-3 md:mb-4 text-base md:text-lg font-semibold text-gray-900">
+        <h3 className="mb-3 text-base font-semibold text-gray-900 md:mb-4 md:text-lg">
           {prettyType} Charters Nearby You
         </h3>
 
@@ -54,10 +54,10 @@ export default function TypeResultsClient({
           </div>
 
           {/* Related (right on desktop) */}
-          <div className="col-span-1 lg:col-span-2 bg-gray-50 pl-5 hidden lg:block">
+          <div className="hidden col-span-1 pl-5 lg:col-span-2 bg-gray-50 lg:block">
             {/* Give the rail a fixed height to force overflow-y to engage */}
             <div className="h-[32rem] overflow-y-auto pr-1">
-              <div className="flex flex-col gap-3 h-full">
+              <div className="flex flex-col h-full gap-3">
                 {sideItems.map((c) => (
                   <RelatedCharterCard
                     key={c.id}
@@ -116,7 +116,7 @@ function RelatedCharterCard({
     >
       {/* Square thumbnail for both variants */}
 
-      <div className="relative w-44 h-44 rounded-lg overflow-hidden flex-none">
+      <div className="relative flex-none overflow-hidden rounded-lg w-44 h-44">
         <Image
           src={img}
           alt={charter.name}
@@ -127,7 +127,7 @@ function RelatedCharterCard({
       </div>
 
       {/* Meta */}
-      <div className="flex min-w-0 flex-1 flex-col p-3 pt-4">
+      <div className="flex flex-col flex-1 min-w-0 p-3 pt-4">
         <h5 className="text-sm font-semibold text-gray-900 line-clamp-2">
           {charter.name}
         </h5>
@@ -136,7 +136,7 @@ function RelatedCharterCard({
         </p>
 
         {/* Price pinned to bottom, brand color */}
-        <div className="mt-auto pt-2">
+        <div className="pt-2 mt-auto">
           <span className="mr-1 text-xs text-gray-500">Trips From</span>
           <span className="text-sm font-semibold text-[#EC2227]">
             RM{minPrice}

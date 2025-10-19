@@ -1,5 +1,4 @@
 import FishonDP from "@/aset/img/fishonDP.png";
-import HeroWallPaper from "@/aset/img/wallpaper02.png";
 import PopularDestination from "@/components/PopularDestination";
 import SearchBox from "@/components/SearchBox";
 import { getCharters } from "@/lib/charter-service";
@@ -13,33 +12,35 @@ import TripsNearby from "./TripsNearby";
 export default async function Home() {
   const charters = await getCharters();
   return (
-    <div className="font-sans flex min-h-screen flex-col items-center">
-      <main className="flex w-full flex-col items-center sm:items-start gap-8 md:gap-10 mb-24 ">
+    <div className="flex flex-col items-center min-h-screen font-sans">
+      <main className="flex flex-col items-center w-full gap-8 mb-24 sm:items-start md:gap-10 ">
         {/* In /book/page.tsx (simplified idea) */}
-        <section className="relative w-full ">
+        <section className="relative w-full h-[40vh] md:h-[50vh] lg:h-[60vh]">
           {/* wallpaper */}
           <Image
-            src={HeroWallPaper}
+            src="/images/hero/hero-wallpaper.png"
             alt="Fishing wallpaper"
-            className="w-full h-[50vh] md:h-[60vh] object-cover"
+            className="object-cover"
             priority
+            sizes="100vw"
+            fill
           />
-          <div className="absolute bottom-0 w-full bg-gradient-to-t from-[#ec2227] to-white/0 h-1/2"></div>
-          <div className="absolute bottom-16 w-full flex justify-center">
-            <div className="p-5 flex-col flex max-w-7xl w-full">
-              <h2 className="text-4xl md:text-7xl font-bold text-white drop-shadow-lg">
+          <div className="absolute bottom-0 w-full bg-gradient-to-t from-[#ec2227] to-white/0 h-1/4"></div>
+          <div className="absolute flex justify-center w-full bottom-10">
+            <div className="flex flex-col w-full p-5 max-w-7xl">
+              <h2 className="text-4xl font-bold text-white md:text-7xl drop-shadow-lg">
                 Discover top-rated <br /> fishing charters
               </h2>
-              <h3 className="font-bold text-xl md:text-3xl text-white drop-shadow-lg">
+              <h3 className="text-xl font-bold text-white md:text-3xl drop-shadow-lg">
                 Book your next fishing trip
               </h3>
             </div>
           </div>
           {/* overlayed search box */}
-          <div className="absolute inset-x-0 -bottom-10 lg:-bottom-10 mx-auto px-3 max-w-7xl py-3">
+          <div className="absolute inset-x-0 px-3 py-3 mx-auto -bottom-10 lg:-bottom-10 max-w-7xl">
             <Suspense
               fallback={
-                <div className="w-full flex flex-col bg-white p-3 rounded-lg gap-3 shadow-lg min-h-16" />
+                <div className="flex flex-col w-full gap-3 p-3 bg-white rounded-lg shadow-lg min-h-16" />
               }
             >
               <SearchBox />
@@ -49,7 +50,7 @@ export default async function Home() {
         <div className="flex w-full -mt-10 pt-20 pb-10 justify-center mx-auto bg-[#ec2227]">
           <Suspense
             fallback={
-              <div className="mx-auto w-full max-w-7xl px-5 py-7 text-white/80">
+              <div className="w-full px-5 mx-auto max-w-7xl py-7 text-white/80">
                 Loading nearby trips…
               </div>
             }
@@ -61,7 +62,7 @@ export default async function Home() {
 
         {/* Brand explainer + CTA */}
         <section className="w-full bg-gray-100">
-          <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-10 p-5 md:flex-row">
+          <div className="flex flex-col items-center w-full gap-10 p-5 mx-auto max-w-7xl md:flex-row">
             <div className="flex-1">
               <h3 className="text-lg font-bold">
                 FishOn.my — Malaysia&apos;s first online fishing booking
@@ -76,7 +77,7 @@ export default async function Home() {
             </div>
 
             <div className="flex items-center gap-5">
-              <div className="relative ml-auto h-40 w-40 md:h-56 md:w-56">
+              <div className="relative w-40 h-40 ml-auto md:h-56 md:w-56">
                 <Image
                   src={FishonDP}
                   alt="Fishon brand graphic"

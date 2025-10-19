@@ -7,6 +7,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  ANGLER
+  ADMIN
+}
+
 model User {
   id           String        @id @default(cuid())
   email        String        @unique
@@ -14,10 +19,12 @@ model User {
   displayName  String?
   bio          String?
   avatarUrl    String?
+  role         UserRole      @default(ANGLER)
   createdAt    DateTime      @default(now())
   updatedAt    DateTime      @updatedAt
   blogPosts    BlogPost[]
   comments     BlogComment[]
+  bookings     Booking[]
 }
 
 model BlogPost {
@@ -98,5 +105,50 @@ model NewsletterSubscription {
 
   @@index([email])
   @@index([active])
+}
+
+// Booking system
+enum BookingStatus {
+  PENDING     // awaiting captain approval
+  APPROVED    // captain approved, awaiting payment
+  REJECTED    // captain rejected
+  EXPIRED     // hold expired
+  PAID        // payment completed, confirmed
+  CANCELLED   // cancelled by angler
+}
+
+model Booking {
+  id               String         @id @default(cuid())
+  userId           String
+  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Captain backend charter identifier (cuid) or dummy numeric id string
+  captainCharterId String
+  charterName      String
+  location         String
+
+  // Selected trip snapshot
+  tripName         String
+  unitPrice        Int            // RM per day
+  startTime        String?        // e.g., "07:00" when trips have multiple start times
+
+  // Booking selections
+  date             DateTime
+  days             Int
+  adults           Int
+  children         Int
+
+  totalPrice       Int            // computed = unitPrice * days
+  status           BookingStatus  @default(PENDING)
+  expiresAt        DateTime       // hold expires at (e.g., now + 12h)
+  captainDecisionAt DateTime?
+
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  @@index([userId])
+  @@index([captainCharterId])
+  @@index([status])
+  @@index([createdAt])
 }
 

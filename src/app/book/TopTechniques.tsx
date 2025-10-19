@@ -1,5 +1,5 @@
 import CategoryCard from "@/components/CategoryCard";
-import charters from "@/dummy/charter";
+import { Charter } from "@/dummy/charter";
 import Link from "next/link";
 
 type CharterLite = {
@@ -27,9 +27,9 @@ function filterByTechnique(list: CharterLite[], technique: string) {
   );
 }
 
-function getCoverForTechnique(technique: string) {
+function getCoverForTechnique(charters: Charter[], technique: string) {
   const t = technique.toLowerCase();
-  const item = (charters as any[]).find(
+  const item = charters.find(
     (c) =>
       Array.isArray(c.techniques) &&
       c.techniques.some((x: string) => (x || "").toLowerCase() === t) &&
@@ -39,9 +39,9 @@ function getCoverForTechnique(technique: string) {
   return item?.images?.[0] as string | undefined;
 }
 
-export default function TopTechniques() {
+export default function TopTechniques({ charters }: { charters: Charter[] }) {
   const withCounts = TECHNIQUE_DEFS.map((tech) => {
-    const count = filterByTechnique(charters as any, tech).length;
+    const count = filterByTechnique(charters, tech).length;
     return { tech, count };
   })
     .filter((x) => x.count > 0)
@@ -49,7 +49,7 @@ export default function TopTechniques() {
     .slice(0, 4);
 
   return (
-    <section className="mx-auto w-full max-w-6xl px-2 md:px-0">
+    <section className="mx-auto w-full max-w-7xl px-2 md:px-0">
       <div className="w-full px-5">
         <div className="mb-5 flex items-center justify-between">
           <h2 className="text-xl font-bold">Top Fishing Techniques</h2>
@@ -72,7 +72,7 @@ export default function TopTechniques() {
                 label={tech}
                 count={count}
                 subtitle={`Charters using ${tech.toLowerCase()}`}
-                image={getCoverForTechnique(tech)}
+                image={getCoverForTechnique(charters, tech)}
                 alt={`${tech} technique`}
               />
             ))}

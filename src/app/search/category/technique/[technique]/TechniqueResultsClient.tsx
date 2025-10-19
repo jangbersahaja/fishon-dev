@@ -2,24 +2,20 @@ import Breadcrumbs from "@/components/search/Breadcrumbs";
 import ResultsGrid from "@/components/search/ResultsGrid";
 import ResultsMap from "@/components/search/ResultsMap";
 import SearchResultsHeader from "@/components/search/SearchResultsHeader";
-import charters, { Charter } from "@/dummy/charter";
+import { Charter } from "@/dummy/charter";
 import { buildMapItems } from "@/utils/mapItems";
 
-type Props = { rawTechnique: string };
+type Props = {
+  rawTechnique: string;
+  charters: Charter[];
+};
 
-function normalizeTechnique(v: string) {
-  return v.toLowerCase();
-}
-
-export default function TechniqueResultsClient({ rawTechnique }: Props) {
+export default function TechniqueResultsClient({
+  rawTechnique,
+  charters,
+}: Props) {
   const raw = rawTechnique || "";
-  const t = normalizeTechnique(raw);
-
-  const filtered = (charters as Charter[]).filter(
-    (c) =>
-      Array.isArray(c.techniques) &&
-      c.techniques.some((x: string) => (x || "").toLowerCase() === t)
-  );
+  const filtered = charters;
 
   const pretty =
     raw
@@ -40,7 +36,7 @@ export default function TechniqueResultsClient({ rawTechnique }: Props) {
         subtitleSuffix={`${filtered.length === 1 ? "trip" : "trips"}`}
       />
 
-      <section className="mx-auto w-full max-w-6xl mt-10 px-5 sm:px-5 py-3">
+      <section className="mx-auto w-full max-w-7xl mt-10 px-5 sm:px-5 py-3">
         <Breadcrumbs
           items={[
             { href: "/", label: "Home" },

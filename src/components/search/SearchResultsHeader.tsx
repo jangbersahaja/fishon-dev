@@ -20,7 +20,7 @@ export default function SearchResultsHeader({
         priority
       />
       <header className="absolute bottom-14 w-full flex justify-center">
-        <div className="p-5 flex-col flex max-w-6xl w-full">
+        <div className="p-5 flex-col flex max-w-7xl w-full">
           <h2 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">
             {title}
           </h2>
@@ -33,7 +33,7 @@ export default function SearchResultsHeader({
           </p>
         </div>
       </header>
-      <div className="absolute inset-x-0 -bottom-10 lg:-bottom-10 mx-auto px-3 max-w-6xl py-3">
+      <div className="absolute inset-x-0 -bottom-10 lg:-bottom-10 mx-auto px-3 max-w-7xl py-3">
         <SearchBox />
       </div>
     </section>

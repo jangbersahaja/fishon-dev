@@ -1,11 +1,12 @@
 // src/app/charters/categories/types/page.tsx
 import CategoryCard from "@/components/CategoryCard";
-import charters from "@/dummy/charter"; // from /charters/categories/types
+import { Charter } from "@/dummy/charter";
+import { getCharters } from "@/lib/charter-service";
 import Link from "next/link";
 
-function getCoverForType(type: string) {
+function getCoverForType(charters: Charter[], type: string) {
   const t = (type || "").toLowerCase();
-  const item = (charters as any[]).find(
+  const item = charters.find(
     (c) =>
       ((c.fishingType || "") as string).toLowerCase() === t &&
       Array.isArray(c.images) &&
@@ -24,11 +25,13 @@ function normalizeLabel(s: string) {
     .join(" ");
 }
 
-export default function TypesCategoriesPage() {
+export default async function TypesCategoriesPage() {
+  const charters = await getCharters();
+
   // Gather counts per fishingType (case-insensitive)
   const counts = new Map<string, number>();
 
-  (charters as any[]).forEach((c) => {
+  charters.forEach((c) => {
     const key = ((c.fishingType || "") as string).toLowerCase().trim();
     if (!key) return;
     counts.set(key, (counts.get(key) || 0) + 1);
@@ -41,12 +44,12 @@ export default function TypesCategoriesPage() {
       key,
       label: normalizeLabel(key),
       count: counts.get(key) || 0,
-      image: getCoverForType(key),
+      image: getCoverForType(charters, key),
     }))
     .filter((x) => x.count > 0);
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-4 py-8 md:px-5">
+    <div className="mx-auto w-full max-w-7xl px-4 py-8 md:px-5">
       {/* Breadcrumb */}
       <nav className="mb-4 text-sm text-gray-500">
         <Link href="/book" className="hover:underline">

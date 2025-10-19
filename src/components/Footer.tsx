@@ -31,7 +31,7 @@ const abouts = [
   },
   {
     name: "Blog",
-    link: "",
+    link: "/blog",
   },
   {
     name: "Affiliate Program",
@@ -83,8 +83,8 @@ const support = [
 
 const Footer = () => {
   return (
-    <main className="flex flex-col w-full mt-10  bg-gray-100">
-      <section className="mx-auto w-full max-w-6xl grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 px-5 py-10 gap-7">
+    <main className="flex flex-col w-full bg-gray-100">
+      <section className="mx-auto w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 px-5 py-10 gap-7">
         <div className="flex flex-col gap-3 text-sm">
           <span className="font-bold">About FishOn.my</span>
           <ul className="flex flex-col gap-2">
@@ -137,7 +137,7 @@ const Footer = () => {
         </div>
       </section>
       <section className="w-full bg-[#ec2227] ">
-        <div className="mx-auto w-full max-w-6xl flex h-24 flex-wrap items-center justify-between gap-3 text-white/90 px-5 py-3">
+        <div className="mx-auto w-full max-w-7xl flex h-24 flex-wrap items-center justify-between gap-3 text-white/90 px-5 py-3">
           <h3 className="font-bold">© 2025 Fishon. All rights reserved.</h3>
           <nav aria-label="Social links">
             <ul className="flex items-center gap-4 text-xl">

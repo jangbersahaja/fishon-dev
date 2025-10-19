@@ -56,7 +56,7 @@ export default function AboutPage() {
   return (
     <>
       <Navbar />
-      <main className="mx-auto max-w-6xl px-4 py-16 sm:px-6 lg:px-8">
+      <main className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
         {/* JSON-LD */}
         <script
           type="application/ld+json"

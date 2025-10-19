@@ -2,14 +2,16 @@ import FishonDP from "@/aset/img/fishonDP.png";
 import HeroWallPaper from "@/aset/img/wallpaper02.png";
 import PopularDestination from "@/components/PopularDestination";
 import SearchBox from "@/components/SearchBox";
+import { getCharters } from "@/lib/charter-service";
 import Image from "next/image";
-import { Suspense } from "react";
 import Link from "next/link";
+import { Suspense } from "react";
 import BrowseByType from "./BrowseByType";
 import TopTechniques from "./TopTechniques";
 import TripsNearby from "./TripsNearby";
 
-export default function Home() {
+export default async function Home() {
+  const charters = await getCharters();
   return (
     <div className="font-sans flex min-h-screen flex-col items-center">
       <main className="flex w-full flex-col items-center sm:items-start gap-8 md:gap-10 mb-24 ">
@@ -24,8 +26,8 @@ export default function Home() {
           />
           <div className="absolute bottom-0 w-full bg-gradient-to-t from-[#ec2227] to-white/0 h-1/2"></div>
           <div className="absolute bottom-16 w-full flex justify-center">
-            <div className="p-5 flex-col flex max-w-6xl w-full">
-              <h2 className="text-4xl md:text-6xl font-bold text-white drop-shadow-lg">
+            <div className="p-5 flex-col flex max-w-7xl w-full">
+              <h2 className="text-4xl md:text-7xl font-bold text-white drop-shadow-lg">
                 Discover top-rated <br /> fishing charters
               </h2>
               <h3 className="font-bold text-xl md:text-3xl text-white drop-shadow-lg">
@@ -34,7 +36,7 @@ export default function Home() {
             </div>
           </div>
           {/* overlayed search box */}
-          <div className="absolute inset-x-0 -bottom-10 lg:-bottom-10 mx-auto px-3 max-w-6xl py-3">
+          <div className="absolute inset-x-0 -bottom-10 lg:-bottom-10 mx-auto px-3 max-w-7xl py-3">
             <Suspense
               fallback={
                 <div className="w-full flex flex-col bg-white p-3 rounded-lg gap-3 shadow-lg min-h-16" />
@@ -47,19 +49,19 @@ export default function Home() {
         <div className="flex w-full -mt-10 pt-20 pb-10 justify-center mx-auto bg-[#ec2227]">
           <Suspense
             fallback={
-              <div className="mx-auto w-full max-w-6xl px-5 py-7 text-white/80">
+              <div className="mx-auto w-full max-w-7xl px-5 py-7 text-white/80">
                 Loading nearby trips…
               </div>
             }
           >
-            <TripsNearby />
+            <TripsNearby charters={charters} />
           </Suspense>
         </div>
         <PopularDestination />
 
         {/* Brand explainer + CTA */}
         <section className="w-full bg-gray-100">
-          <div className="mx-auto flex w-full max-w-6xl flex-col items-center gap-10 p-5 md:flex-row">
+          <div className="mx-auto flex w-full max-w-7xl flex-col items-center gap-10 p-5 md:flex-row">
             <div className="flex-1">
               <h3 className="text-lg font-bold">
                 FishOn.my — Malaysia&apos;s first online fishing booking
@@ -102,10 +104,10 @@ export default function Home() {
         </section>
 
         {/* Browse by type */}
-        <BrowseByType />
+        <BrowseByType charters={charters} />
 
         {/* Top fishing techniques */}
-        <TopTechniques />
+        <TopTechniques charters={charters} />
       </main>
     </div>
   );

@@ -2,9 +2,10 @@
 import CharterCard from "@/components/CharterCard";
 import FiltersBar from "@/components/FiltersBar";
 import SearchBox from "@/components/SearchBox";
+import { getCharters } from "@/lib/charter-service";
 import { expandDestinationSearchTerms } from "@/utils/destinationAliases";
 import Link from "next/link";
-import charters, { Charter } from "../../dummy/charter";
+import { Charter } from "../../dummy/charter";
 
 // Helpers
 function minPrice(c: Charter): number | undefined {
@@ -37,11 +38,7 @@ function toInt(v: string | undefined, fallback: number) {
   return Number.isFinite(n) && n >= 0 ? Math.floor(n) : fallback;
 }
 
-function matchesDestination(
-  c: Charter,
-  terms: string[],
-  rawDest?: string
-) {
+function matchesDestination(c: Charter, terms: string[], rawDest?: string) {
   if (!rawDest || !rawDest.trim()) return true;
   if (terms.length === 0) return true;
 
@@ -79,7 +76,7 @@ function uniqSorted<T>(arr: T[]): T[] {
   return Array.from(new Set(arr.filter(Boolean) as T[]));
 }
 
-export default function SearchResults({
+export default async function SearchResults({
   searchParams,
 }: {
   searchParams: {
@@ -117,7 +114,10 @@ export default function SearchResults({
   const pickupParam = searchParams.pickup;
   const childFriendlyParam = searchParams.child_friendly;
 
-  let filtered = (charters as Charter[])
+  // Fetch charters from backend or dummy data
+  const charters = await getCharters();
+
+  let filtered = charters
     .filter((c) => matchesDestination(c, destinationTerms, destination))
     .filter((c) => capacityAllows(c, totalGuests))
     .filter((c) => childFriendlyOk(c, childFriendlyParam))
@@ -159,9 +159,7 @@ export default function SearchResults({
   });
 
   const tripNames = uniqSorted(
-    (charters as Charter[])
-      .flatMap((c) => (c.trip || []).map((t) => t.name))
-      .filter(Boolean)
+    charters.flatMap((c) => (c.trip || []).map((t) => t.name)).filter(Boolean)
   ).sort((a, b) => a.localeCompare(b));
 
   return (
@@ -170,11 +168,11 @@ export default function SearchResults({
         {/* Responsive SearchBox: non-sticky on mobile, sticky on desktop */}
         <div className="sticky top-0 z-30 w-full mx-auto flex flex-col items-center">
           <div className="h-12 w-full bg-[#ec2227]" />
-          <div className="absolute top-0 w-full mx-auto px-3 max-w-6xl py-3">
+          <div className="absolute top-0 w-full mx-auto px-3 max-w-7xl py-3">
             <SearchBox />
           </div>
         </div>
-        <section className="mt-20 mx-auto max-w-6xl px-5 sm:px-5 py-3">
+        <section className="mt-20 mx-auto max-w-7xl px-5 sm:px-5 py-3">
           <nav className="text-sm text-gray-500">
             <Link href="/book" className="hover:underline">
               Home

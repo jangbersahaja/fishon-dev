@@ -7,9 +7,12 @@
     "build": "next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "echo \"No tests yet\" && exit 0",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:migrate-deploy": "prisma migrate deploy"
+    "prisma:migrate-deploy": "prisma migrate deploy",
+    "seed:blog": "tsx prisma/seed-blog.ts"
   },
   "dependencies": {
     "@ffmpeg/core": "^0.12.6",
@@ -17,6 +20,12 @@
     "@hookform/resolvers": "^3.9.0",
     "@neondatabase/serverless": "^1.0.1",
     "@prisma/client": "^6.16.2",
+    "@tiptap/extension-image": "^3.7.0",
+    "@tiptap/extension-link": "^3.7.0",
+    "@tiptap/extension-text-align": "^3.7.0",
+    "@tiptap/pm": "^3.7.0",
+    "@tiptap/react": "^3.7.0",
+    "@tiptap/starter-kit": "^3.7.0",
     "clsx": "^2.1.1",
     "lucide-react": "^0.544.0",
     "next": "15.5.2",
@@ -37,6 +46,7 @@
     "eslint-config-next": "15.5.2",
     "prisma": "^6.16.2",
     "tailwindcss": "^4",
+    "tsx": "^4.20.6",
     "typescript": "^5"
   },
   "engines": {

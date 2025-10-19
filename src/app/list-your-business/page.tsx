@@ -610,7 +610,7 @@ export default function ListYourBusinessPage() {
         </section>
       </main>
       <footer className="w-full bg-[#ec2227] text-white py-6 mt-10">
-        <div className="max-w-6xl mx-auto text-center">
+        <div className="max-w-7xl mx-auto text-center">
           <p className="text-sm">
             © {new Date().getFullYear()} Fishon.my. All rights reserved.
           </p>

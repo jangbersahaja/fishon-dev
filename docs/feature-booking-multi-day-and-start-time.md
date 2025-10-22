@@ -35,7 +35,10 @@ Introduce an end-to-end booking flow on Fishon.my that supports:
 - [x] Confirmation page shows start time
 - [x] Advanced overlap: multi-day span conflicts (implemented in API create route)
 - [x] Expiry job route: POST /api/bookings/expire (secured with x-expire-secret)
-- [ ] Payments and captain approval flow (WIP)
+- [x] Captain approval webhook: POST /api/bookings/status-webhook (secured with x-captain-secret)
+- [x] Outbound create webhook to captain app (non-blocking)
+- [x] Minimal pay endpoint: POST /api/bookings/pay (owner-only; APPROVED → PAID)
+- [ ] Full payment integration (WIP)
 
 ## Implementation Details
 
@@ -72,18 +75,30 @@ Introduce an end-to-end booking flow on Fishon.my that supports:
   - Behavior: Sets `status = EXPIRED` for PENDING bookings with `expiresAt < now`. Returns `{ expired: count }`.
   - Persist booking and return `{ booking }`.
 
-### 4) Checkout Page
+  ### 4) API Route: Captain Approval Webhook
+
+  - File: `src/app/api/bookings/status-webhook/route.ts`
+  - Input: `POST` with header `x-captain-secret` matching `CAPTAIN_WEBHOOK_SECRET`.
+  - Behavior: Transitions `status: PENDING → APPROVED|REJECTED`, sets `captainDecisionAt`.
+
+  ### 5) API Route: Pay
+
+  - File: `src/app/api/bookings/pay/route.ts`
+  - Input: `POST` with JSON `{ id }` by the authenticated booking owner.
+  - Behavior: Transitions `status: APPROVED → PAID`.
+
+### 6) Checkout Page
 
 - File: `src/app/checkout/page.tsx`
 - Server component fetches charter and selected trip, passes `startTimes` and `defaultStartTime` to client `CheckoutForm`.
 
-### 5) Client Form
+### 7) Client Form
 
 - File: `src/app/checkout/ui/CheckoutForm.tsx`
 - Renders traveler inputs and a start time `<select>` when `startTimes` exist. The selection is required.
 - Posts `startTime` with other booking info to the API.
 
-### 6) Confirmation Page
+### 8) Confirmation Page
 
 - File: `src/app/checkout/confirmation/page.tsx`
 - Retrieves booking by id and renders a summary including `startTime` when present.
@@ -98,7 +113,7 @@ Introduce an end-to-end booking flow on Fishon.my that supports:
 
 - Overlap across multi-day spans: extend conflict detection to check date ranges (`date`..`date + days - 1`) and time collisions.
 - Hold expiry: scheduled job (cron/edge) to mark stale PENDING bookings EXPIRED, and to release slots.
-- Captain approval: add captain-side workflow, status transitions, and notifications.
+- Captain approval: complete captain-side workflow and notifications.
 - Payments: integrate payment intent/checkout, transition to PAID on success.
 - Notifications: email confirmations/updates to anglers and captains; optional chat thread.
 - Webhook integration: mirror reservation into captain app, signed payload with idempotency.
@@ -106,6 +121,7 @@ Introduce an end-to-end booking flow on Fishon.my that supports:
 ## Review Notes
 
 - Ensure `.env` contains `DATABASE_URL`; verify migrations run in CI/CD.
+- Add these envs: `BOOKINGS_EXPIRE_SECRET`, `CAPTAIN_WEBHOOK_SECRET`, `CAPTAIN_WEBHOOK_URL`.
 - Verify `getCharterById` continues to set/forward `backendId` for `captainCharterId` stability.
 - Security: API requires auth, consider rate limiting and audit logging in a later iteration.
 

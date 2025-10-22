@@ -27,29 +27,43 @@ model User {
   bookings     Booking[]
 }
 
+model VerificationCode {
+  id        String    @id @default(cuid())
+  email     String
+  code      String
+  type      String // "TAC", "PASSWORD_RESET", etc.
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([email, type])
+  @@index([code])
+  @@index([expiresAt])
+}
+
 model BlogPost {
-  id              String            @id @default(cuid())
-  slug            String            @unique
+  id              String    @id @default(cuid())
+  slug            String    @unique
   title           String
   excerpt         String?
   content         String
   coverImage      String?
   coverImageAlt   String?
-  published       Boolean           @default(false)
+  published       Boolean   @default(false)
   publishedAt     DateTime?
-  createdAt       DateTime          @default(now())
-  updatedAt       DateTime          @updatedAt
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
   authorId        String
   metaTitle       String?
   metaDescription String?
   metaKeywords    String?
   readingTime     Int?
-  viewCount       Int               @default(0)
+  viewCount       Int       @default(0)
 
-  author          User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  categories      BlogCategory[]    @relation("BlogPostToCategory")
-  tags            BlogTag[]         @relation("BlogPostToTag")
-  comments        BlogComment[]
+  author     User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  categories BlogCategory[] @relation("BlogPostToCategory")
+  tags       BlogTag[]      @relation("BlogPostToTag")
+  comments   BlogComment[]
 
   @@index([slug])
   @@index([published, publishedAt])
@@ -109,18 +123,18 @@ model NewsletterSubscription {
 
 // Booking system
 enum BookingStatus {
-  PENDING     // awaiting captain approval
-  APPROVED    // captain approved, awaiting payment
-  REJECTED    // captain rejected
-  EXPIRED     // hold expired
-  PAID        // payment completed, confirmed
-  CANCELLED   // cancelled by angler
+  PENDING // awaiting captain approval
+  APPROVED // captain approved, awaiting payment
+  REJECTED // captain rejected
+  EXPIRED // hold expired
+  PAID // payment completed, confirmed
+  CANCELLED // cancelled by angler
 }
 
 model Booking {
-  id               String         @id @default(cuid())
-  userId           String
-  user             User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   // Captain backend charter identifier (cuid) or dummy numeric id string
   captainCharterId String
@@ -128,27 +142,28 @@ model Booking {
   location         String
 
   // Selected trip snapshot
-  tripName         String
-  unitPrice        Int            // RM per day
-  startTime        String?        // e.g., "07:00" when trips have multiple start times
+  tripName  String
+  unitPrice Int // RM per day
+  startTime String? // e.g., "07:00" when trips have multiple start times
 
   // Booking selections
-  date             DateTime
-  days             Int
-  adults           Int
-  children         Int
+  date     DateTime
+  days     Int
+  adults   Int
+  children Int
 
-  totalPrice       Int            // computed = unitPrice * days
-  status           BookingStatus  @default(PENDING)
-  expiresAt        DateTime       // hold expires at (e.g., now + 12h)
+  totalPrice        Int // computed = unitPrice * days
+  status            BookingStatus @default(PENDING)
+  expiresAt         DateTime // hold expires at (e.g., now + 12h)
   captainDecisionAt DateTime?
 
-  createdAt        DateTime       @default(now())
-  updatedAt        DateTime       @updatedAt
+  cancellationReason String? // angler-provided reason for cancellation
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@index([userId])
   @@index([captainCharterId])
   @@index([status])
   @@index([createdAt])
 }
-

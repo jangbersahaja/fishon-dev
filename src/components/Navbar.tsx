@@ -8,16 +8,12 @@ import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
+import { useAuthModal } from "./auth/AuthModalContext";
 
 type NavbarProps = {
   /** When true, navbar is transparent at the top and becomes solid on scroll. */
   transparentOnTop?: boolean;
 };
-
-const anonLinks = [
-  { href: "/login", label: "Sign in" },
-  { href: "/register", label: "Register" },
-];
 
 export default function Navbar({ transparentOnTop = false }: NavbarProps) {
   const [open, setOpen] = useState(false);
@@ -27,6 +23,7 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
   const { data: session } = useSession();
   const isAuthed = !!session?.user;
   const lastY = useRef(0);
+  const { openModal } = useAuthModal();
 
   useEffect(() => {
     // Initialize values on mount
@@ -129,20 +126,18 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
             </>
           ) : (
             <>
-              {anonLinks.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  aria-current={isActive(l.href) ? "page" : undefined}
-                  className={`text-sm font-medium underline-offset-4 decoration-white/40 ${
-                    isActive(l.href)
-                      ? "underline"
-                      : "hover:underline hover:decoration-white"
-                  }`}
-                >
-                  {l.label}
-                </Link>
-              ))}
+              <button
+                onClick={() => openModal("signin")}
+                className="text-sm font-medium underline-offset-4 decoration-white/40 hover:underline hover:decoration-white"
+              >
+                Sign in
+              </button>
+              <button
+                onClick={() => openModal("register")}
+                className="text-sm font-medium underline-offset-4 decoration-white/40 hover:underline hover:decoration-white"
+              >
+                Register
+              </button>
             </>
           )}
           <Link
@@ -205,19 +200,24 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
             </>
           ) : (
             <>
-              {anonLinks.map((l) => (
-                <Link
-                  key={l.href}
-                  href={l.href}
-                  aria-current={isActive(l.href) ? "page" : undefined}
-                  className={`rounded-md px-3 py-2 text-sm font-medium ${
-                    isActive(l.href) ? "bg-white/15" : "hover:bg-white/10"
-                  }`}
-                  onClick={() => setOpen(false)}
-                >
-                  {l.label}
-                </Link>
-              ))}
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  openModal("signin");
+                }}
+                className="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 text-left"
+              >
+                Sign in
+              </button>
+              <button
+                onClick={() => {
+                  setOpen(false);
+                  openModal("register");
+                }}
+                className="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 text-left"
+              >
+                Register
+              </button>
             </>
           )}
           <Link

@@ -1,5 +1,6 @@
 "use client";
 
+import { CalendarIcon } from "lucide-react";
 import { useEffect, useMemo, useState } from "react";
 
 // Local date helpers (no UTC conversion)
@@ -118,13 +119,18 @@ export default function CalendarPicker({
         type="button"
         onClick={() => setOpen((v) => !v)}
         className={[
-          "w-full rounded-lg border border-gray-300 py-2 px-3 text-left text-sm outline-none",
+          "w-full rounded-lg flex gap-2 items-center border border-gray-300 py-2 px-3 text-left text-sm outline-none",
           buttonClassName,
         ].join(" ")}
         aria-haspopup="dialog"
         aria-expanded={open}
       >
-        <span className={value ? "" : "text-gray-500"}>
+        <CalendarIcon className="w-4 h-4 text-gray-500" />
+        <span
+          className={`w-full flex justify-center ${
+            value ? "" : "text-gray-500"
+          }`}
+        >
           {value
             ? (() => {
                 try {
@@ -144,10 +150,10 @@ export default function CalendarPicker({
           className="absolute z-20 mt-2 w-[min(20rem,100%)] rounded-xl border border-black/10 bg-white shadow-lg"
         >
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-black/10 px-3 py-2">
+          <div className="flex items-center justify-between px-3 py-2 border-b border-black/10">
             <button
               type="button"
-              className="rounded p-1 text-gray-700 hover:bg-gray-100"
+              className="p-1 text-gray-700 rounded hover:bg-gray-100"
               onClick={() => {
                 if (viewMonth === 0) {
                   setViewMonth(11);
@@ -165,7 +171,7 @@ export default function CalendarPicker({
             </div>
             <button
               type="button"
-              className="rounded p-1 text-gray-700 hover:bg-gray-100"
+              className="p-1 text-gray-700 rounded hover:bg-gray-100"
               onClick={() => {
                 if (viewMonth === 11) {
                   setViewMonth(0);
@@ -181,13 +187,13 @@ export default function CalendarPicker({
           </div>
 
           {/* Grid */}
-          <div className="px-3 pb-3 pt-2">
+          <div className="px-3 pt-2 pb-3">
             <div className="grid grid-cols-7 gap-1 text-center text-[11px] text-gray-500">
               {dow.map((d) => (
                 <div key={d}>{d}</div>
               ))}
             </div>
-            <div className="mt-1 grid grid-cols-7 gap-1 text-center">
+            <div className="grid grid-cols-7 gap-1 mt-1 text-center">
               {weeks.map((w, wi) =>
                 w.map((d, di) => {
                   if (d === null)
@@ -225,7 +231,7 @@ export default function CalendarPicker({
                 })
               )}
             </div>
-            <div className="mt-2 flex items-center justify-between">
+            <div className="flex items-center justify-between mt-2">
               <button
                 type="button"
                 onClick={() => {
@@ -234,14 +240,14 @@ export default function CalendarPicker({
                   setViewYear(today.getFullYear()); // keep view synced
                   setViewMonth(today.getMonth());
                 }}
-                className="rounded px-2 py-1 text-xs text-gray-700 hover:bg-gray-100"
+                className="px-2 py-1 text-xs text-gray-700 rounded hover:bg-gray-100"
               >
                 Today
               </button>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="rounded px-3 py-1 text-xs font-semibold text-gray-700 hover:bg-gray-100"
+                className="px-3 py-1 text-xs font-semibold text-gray-700 rounded hover:bg-gray-100"
               >
                 Close
               </button>

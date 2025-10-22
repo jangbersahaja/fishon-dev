@@ -2,12 +2,13 @@
  * Charter data service
  *
  * This service provides a unified interface for fetching charter data.
- * It attempts to fetch from the Fishon Captain backend API first,
- * and falls back to dummy data if the API is not available.
+ * Data sources (in priority order):
+ * 1. Direct DB connection (if USE_CAPTAIN_DB=1 and CAPTAIN_DATABASE_URL is set)
+ * 2. fishon-captain Public API (if FISHON_CAPTAIN_API_URL is set)
+ * 3. Throws error if no data source is configured
  */
 
-import type { Charter } from "@/dummy/charter";
-import dummyCharters from "@/dummy/charter";
+import type { Charter } from "@fishon/ui";
 import { fetchCharterById, fetchCharters, searchCharters } from "./captain-api";
 import {
   fetchCharterByIdFromDb,
@@ -35,74 +36,65 @@ function isDbPreferred(): boolean {
 
 /**
  * Get all charters
- * Tries backend API first, falls back to dummy data
+ * Priority: DB (if USE_CAPTAIN_DB=1) → API → Error
  */
 export async function getCharters(): Promise<Charter[]> {
-  // Preference order: DB (if configured + flag) → API → dummy
+  // Preference order: DB (if configured + flag) → API → error
   if (isDbPreferred() && isCaptainDbConfigured()) {
     try {
       const backendCharters = await fetchChartersFromDb();
       if (backendCharters.length)
         return convertBackendChartersToFrontend(backendCharters);
-      console.log("Captain DB returned 0 charters; falling back to API/dummy");
+      console.log("Captain DB returned 0 charters; falling back to API");
     } catch (e) {
-      console.error(
-        "Error reading from Captain DB, falling back to API/dummy",
-        e
-      );
+      console.error("Error reading from Captain DB, falling back to API", e);
     }
   }
 
   if (!isBackendConfigured()) {
-    console.log("Using dummy charter data (backend not configured)");
-    return dummyCharters;
+    throw new Error(
+      "No data source configured. Please set FISHON_CAPTAIN_API_URL or configure CAPTAIN_DATABASE_URL with USE_CAPTAIN_DB=1"
+    );
   }
 
   try {
     const backendCharters = await fetchCharters();
 
     if (backendCharters.length === 0) {
-      console.log("No charters from backend, using dummy data");
-      return dummyCharters;
+      console.warn("No charters from backend API");
+      return [];
     }
 
     return convertBackendChartersToFrontend(backendCharters);
   } catch (error) {
-    console.error(
-      "Error fetching charters from backend, falling back to dummy data:",
-      error
+    console.error("Error fetching charters from backend API:", error);
+    throw new Error(
+      "Failed to fetch charters. Please check backend connection."
     );
-    return dummyCharters;
   }
 }
 
 /**
  * Get a single charter by ID
- * Tries backend API first, falls back to dummy data
+ * Priority: DB (if USE_CAPTAIN_DB=1) → API → Error
  */
 export async function getCharterById(
   id: string | number
 ): Promise<Charter | undefined> {
-  const numericId = typeof id === "string" ? parseInt(id, 10) : id;
-
   // Try DB first when enabled
   if (isDbPreferred() && isCaptainDbConfigured()) {
     try {
       const backend = await fetchCharterByIdFromDb(String(id));
       if (backend) return convertBackendCharterToFrontend(backend);
     } catch (e) {
-      console.error(
-        "Error reading charter from Captain DB; will try API/dummy",
-        e
-      );
+      console.error("Error reading charter from Captain DB; will try API", e);
     }
   }
 
   if (!isBackendConfigured()) {
-    console.log(
-      `Using dummy charter data for ID ${numericId} (backend not configured)`
+    throw new Error(
+      "No data source configured. Please set FISHON_CAPTAIN_API_URL or configure CAPTAIN_DATABASE_URL with USE_CAPTAIN_DB=1"
     );
-    return dummyCharters.find((c) => c.id === numericId);
   }
 
   try {
@@ -113,21 +105,20 @@ export async function getCharterById(
       return convertBackendCharterToFrontend(backendCharter);
     }
 
-    // If not found in backend, try dummy data
-    console.log(`Charter ${id} not found in backend, checking dummy data`);
-    return dummyCharters.find((c) => c.id === numericId);
+    // Not found
+    console.log(`Charter ${id} not found in backend`);
+    return undefined;
   } catch (error) {
-    console.error(
-      `Error fetching charter ${id} from backend, falling back to dummy data:`,
-      error
+    console.error(`Error fetching charter ${id} from backend:`, error);
+    throw new Error(
+      `Failed to fetch charter ${id}. Please check backend connection.`
     );
-    return dummyCharters.find((c) => c.id === numericId);
   }
 }
 
 /**
  * Search charters by various criteria
- * Tries backend API first, falls back to dummy data filtering
+ * Priority: DB (if USE_CAPTAIN_DB=1) → API → Error
  */
 export async function searchChartersByCriteria(criteria: {
   location?: string;
@@ -150,41 +141,41 @@ export async function searchChartersByCriteria(criteria: {
       );
       if (backendCharters.length) {
         const converted = convertBackendChartersToFrontend(backendCharters);
-        return filterDummyCharters(converted as any, criteria);
+        return filterCharters(converted, criteria);
       }
     } catch (e) {
-      console.error("Error searching via Captain DB; will try API/dummy", e);
+      console.error("Error searching via Captain DB; will try API", e);
     }
   }
 
   if (!isBackendConfigured()) {
-    console.log("Using dummy charter data for search (backend not configured)");
-    return filterDummyCharters(dummyCharters, criteria);
+    throw new Error(
+      "No data source configured. Please set FISHON_CAPTAIN_API_URL or configure CAPTAIN_DATABASE_URL with USE_CAPTAIN_DB=1"
+    );
   }
 
   try {
     const backendCharters = await searchCharters(criteria);
 
     if (backendCharters.length === 0) {
-      console.log("No results from backend search, using filtered dummy data");
-      return filterDummyCharters(dummyCharters, criteria);
+      console.log("No results from backend search");
+      return [];
     }
 
     return convertBackendChartersToFrontend(backendCharters);
   } catch (error) {
-    console.error(
-      "Error searching charters from backend, falling back to dummy data:",
-      error
+    console.error("Error searching charters from backend:", error);
+    throw new Error(
+      "Failed to search charters. Please check backend connection."
     );
-    return filterDummyCharters(dummyCharters, criteria);
   }
 }
 
 /**
- * Filter dummy charters based on search criteria
- * Used as fallback when backend is not available
+ * Filter charters based on search criteria
+ * Used for client-side filtering when needed
  */
-function filterDummyCharters(
+function filterCharters(
   charters: Charter[],
   criteria: {
     location?: string;

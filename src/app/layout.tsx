@@ -1,5 +1,7 @@
 import Chrome from "@/components/Chrome";
 import SessionProvider from "@/components/SessionProvider";
+import AuthModal from "@/components/auth/AuthModal";
+import { AuthModalProvider } from "@/components/auth/AuthModalContext";
 import { auth } from "@/lib/auth";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
@@ -36,7 +38,10 @@ export default async function RootLayout({
     <html lang="en" className="h-full">
       <body className={`${inter.className} h-full`}>
         <SessionProvider session={session}>
-          <Chrome>{children}</Chrome>
+          <AuthModalProvider>
+            <Chrome>{children}</Chrome>
+            <AuthModal />
+          </AuthModalProvider>
         </SessionProvider>
       </body>
     </html>

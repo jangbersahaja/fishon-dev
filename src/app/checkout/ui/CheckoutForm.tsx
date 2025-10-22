@@ -1,31 +1,93 @@
 "use client";
 
+import { useAuthModal } from "@/components/auth/AuthModalContext";
+import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+
+import BookingSummaryCard from "./BookingSummaryCard";
+import DateGuestsCard from "./DateGuestsCard";
+import StartConversationCard from "./StartConversationCard";
+import StartTimeSelection from "./StartTimeSelection";
+import TripSelectionCard from "./TripSelectionCard";
+import YourDetailsCard from "./YourDetailsCard";
 
 function toInt(v: string | null, fallback: number) {
   const n = Number(v);
   return Number.isFinite(n) ? Math.floor(n) : fallback;
 }
 
+type Trip = {
+  name: string;
+  duration?: string;
+  description?: string;
+  price: number;
+  maxAnglers?: number;
+  startTimes?: string[];
+  targetSpecies?: string[];
+  techniques?: string[];
+};
+
+interface Boat {
+  name?: string;
+  type?: string;
+  features?: string[];
+  capacity?: number;
+}
+
+interface Captain {
+  name: string;
+  avatarUrl?: string;
+  yearsExperience: number;
+  crewCount: number;
+  intro?: string;
+}
+
+type CharterData = {
+  id?: string;
+  name?: string;
+  location?: string;
+  images?: string[];
+  boat?: Boat;
+  includes?: string[];
+  coordinates?: { lat: number; lng: number };
+  captain?: Captain | null;
+  species?: string[];
+  techniques?: string[];
+};
+
 export default function CheckoutForm({
   startTimes,
   defaultStartTime,
+  trips,
+  selectedTripIndex,
+  charter,
+  defaultUser,
 }: {
   startTimes?: string[];
   defaultStartTime?: string;
+  trips?: Trip[];
+  selectedTripIndex?: number;
+  charter?: CharterData;
+  defaultUser?: { firstName?: string; lastName?: string; email?: string };
 }) {
   const sp = useSearchParams();
   const router = useRouter();
+  const { data: session } = useSession();
+  const { openModal } = useAuthModal();
+  const isLoggedIn = !!session?.user;
 
-  const charterId = sp.get("charterId"); // cuid or numeric string
-  const tripIndex = toInt(sp.get("trip_index"), 0);
+  const charterId = sp.get("charterId");
   const date = sp.get("date") || "";
   const days = toInt(sp.get("days"), 1);
   const adults = toInt(sp.get("adults"), 2);
   const children = toInt(sp.get("children"), 0);
+  const tripIndexParam = toInt(sp.get("trip_index"), selectedTripIndex ?? 0);
 
-  const [fullName, setFullName] = useState("");
+  const [tripIndex, setTripIndex] = useState<number>(tripIndexParam);
+  const [firstName, setFirstName] = useState(defaultUser?.firstName || "");
+  const [lastName, setLastName] = useState(defaultUser?.lastName || "");
+  const [email, setEmail] = useState(defaultUser?.email || "");
   const [phone, setPhone] = useState("");
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -34,19 +96,82 @@ export default function CheckoutForm({
     defaultStartTime
   );
 
+  // Prefill after in-page login if fields are still blank
+  useEffect(() => {
+    if (!session?.user) return;
+    if (!email && session.user.email) setEmail(session.user.email);
+    if (!firstName && session.user.name) {
+      const [fn, ...rest] = (session.user.name || "").split(" ");
+      setFirstName(fn || "");
+      const ln = rest.join(" ").trim();
+      if (!lastName && ln) setLastName(ln);
+    }
+  }, [session?.user, email, firstName, lastName]);
+
+  const effectiveStartTimes = useMemo(() => {
+    const t = trips?.[tripIndex];
+    if (Array.isArray(t?.startTimes) && t!.startTimes!.length > 0)
+      return t!.startTimes as string[];
+    return startTimes;
+  }, [trips, tripIndex, startTimes]);
+
   const canSubmit = useMemo(() => {
     const startTimeOk =
-      Array.isArray(startTimes) && startTimes.length > 0
+      Array.isArray(effectiveStartTimes) && effectiveStartTimes.length > 0
         ? Boolean(startTime)
         : true;
     return Boolean(
-      charterId && date && days > 0 && adults >= 1 && fullName && startTimeOk
+      charterId &&
+        date &&
+        days > 0 &&
+        adults >= 1 &&
+        firstName &&
+        lastName &&
+        email &&
+        startTimeOk
     );
-  }, [charterId, date, days, adults, fullName, startTime, startTimes]);
+  }, [
+    charterId,
+    date,
+    days,
+    adults,
+    firstName,
+    lastName,
+    email,
+    startTime,
+    effectiveStartTimes,
+  ]);
+
+  function handleTripSelect(idx: number) {
+    setTripIndex(idx);
+    const params = new URLSearchParams(sp as any);
+    params.set("trip_index", String(idx));
+    if (startTime) params.set("start_time", startTime);
+    router.replace(`/checkout?${params.toString()}`, { scroll: false });
+    // reset start time when switching trips
+    setStartTime(undefined);
+  }
+
+  const updateSearchParam = useCallback(
+    (key: string, value: string) => {
+      const params = new URLSearchParams(sp as any);
+      params.set(key, value);
+      router.replace(`/checkout?${params.toString()}`, { scroll: false });
+    },
+    [sp, router]
+  );
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    if (!canSubmit || !charterId) return;
+    if (!charterId) return;
+
+    // Enforce login before proceeding
+    if (!isLoggedIn) {
+      openModal("signin", undefined, { showHomeButton: true });
+      return;
+    }
+
+    if (!canSubmit) return;
     setSubmitting(true);
     setError(null);
     try {
@@ -61,7 +186,11 @@ export default function CheckoutForm({
           adults,
           children,
           startTime,
-          // customer info kept client-side for now; add to model later
+          firstName,
+          lastName,
+          email,
+          phone,
+          note,
         }),
       });
       if (!res.ok) {
@@ -83,113 +212,195 @@ export default function CheckoutForm({
     }
   }
 
-  return (
-    <section className="grid gap-4 mt-6 md:grid-cols-3">
-      <form onSubmit={onSubmit} className="p-4 border rounded md:col-span-2">
-        <h2 className="mb-2 font-semibold">Traveler details</h2>
-        {Array.isArray(startTimes) && startTimes.length > 0 && (
-          <label className="block mt-1 text-sm">
-            <span className="block text-xs text-gray-600">
-              Choose start time
-            </span>
-            <select
-              className="w-full px-3 py-2 mt-1 border rounded"
-              value={startTime || ""}
-              onChange={(e) => setStartTime(e.target.value || undefined)}
-              required
-            >
-              <option value="" disabled>
-                Select a time
-              </option>
-              {startTimes.map((t) => (
-                <option key={t} value={t}>
-                  {t}
-                </option>
-              ))}
-            </select>
-          </label>
-        )}
-        <div className="grid gap-3 sm:grid-cols-2">
-          <label className="text-sm">
-            <span className="block text-xs text-gray-600">Full name</span>
-            <input
-              className="w-full px-3 py-2 mt-1 border rounded"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="Your name"
-              required
-            />
-          </label>
-          <label className="text-sm">
-            <span className="block text-xs text-gray-600">Phone</span>
-            <input
-              className="w-full px-3 py-2 mt-1 border rounded"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              placeholder="e.g. +60..."
-            />
-          </label>
-        </div>
-        <label className="block mt-3 text-sm">
-          <span className="block text-xs text-gray-600">Notes (optional)</span>
-          <textarea
-            className="w-full px-3 py-2 mt-1 border rounded"
-            rows={3}
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Any special requests"
-          />
-        </label>
-        {error && <p className="mt-3 text-sm text-red-600">{error}</p>}
-        <div className="mt-4">
-          <button
-            type="submit"
-            className="rounded bg-[#ec2227] text-white px-4 py-2 text-sm font-semibold disabled:opacity-50"
-            disabled={!canSubmit || submitting}
-          >
-            {submitting ? "Creating booking…" : "Confirm booking"}
-          </button>
-        </div>
-      </form>
+  const chosenTrip = trips?.[tripIndex];
+  const maxGuests = useMemo(() => {
+    const tripMax =
+      chosenTrip?.maxAnglers && chosenTrip.maxAnglers > 0
+        ? chosenTrip.maxAnglers
+        : undefined;
+    const boatCap =
+      charter?.boat?.capacity && charter.boat.capacity > 0
+        ? charter.boat.capacity
+        : undefined;
+    return tripMax ?? boatCap;
+  }, [chosenTrip?.maxAnglers, charter?.boat?.capacity]);
 
-      <aside className="p-4 border rounded">
-        <h2 className="mb-2 font-semibold">Trip summary</h2>
-        <dl className="text-sm text-black/70">
-          <div className="flex justify-between py-1">
-            <dt>Charter</dt>
-            <dd>{charterId}</dd>
-          </div>
-          <div className="flex justify-between py-1">
-            <dt>Date</dt>
-            <dd>{date || "–"}</dd>
-          </div>
-          <div className="flex justify-between py-1">
-            <dt>Days</dt>
-            <dd>{days}</dd>
-          </div>
-          <div className="flex justify-between py-1">
-            <dt>Adults</dt>
-            <dd>{adults}</dd>
-          </div>
-          <div className="flex justify-between py-1">
-            <dt>Children</dt>
-            <dd>{children}</dd>
-          </div>
-          <div className="flex justify-between py-1">
-            <dt>Trip</dt>
-            <dd>#{tripIndex + 1}</dd>
-          </div>
-          {Array.isArray(startTimes) && startTimes.length > 0 && (
-            <div className="flex justify-between py-1">
-              <dt>Start time</dt>
-              <dd>{startTime || "–"}</dd>
-            </div>
+  // Clamp adults/children when maxGuests changes
+  useEffect(() => {
+    if (!maxGuests) return;
+    const total = adults + children;
+    if (total > maxGuests) {
+      // Prefer reducing children first
+      const excess = total - maxGuests;
+      const newChildren = Math.max(0, children - excess);
+      const rem = excess - (children - newChildren);
+      const newAdults = Math.max(1, adults - rem);
+      updateSearchParam("children", String(newChildren));
+      updateSearchParam("adults", String(newAdults));
+    }
+  }, [maxGuests, adults, children, updateSearchParam]);
+  const estTotal = useMemo(() => {
+    const p = chosenTrip?.price ?? 0;
+    return p * Math.max(1, days);
+  }, [chosenTrip?.price, days]);
+
+  return (
+    <form onSubmit={onSubmit} className="mt-6">
+      {/* Error display */}
+      {error && (
+        <div className="p-4 mb-6 border border-red-200 rounded-lg bg-red-50">
+          <p className="text-sm text-red-800">{error}</p>
+        </div>
+      )}
+
+      {/* Mobile: Summary first */}
+      <div className="mb-6 lg:hidden">
+        <BookingSummaryCard
+          charter={charter}
+          captain={charter?.captain}
+          date={date}
+          days={days}
+          adults={adults}
+          childrenCount={children}
+          tripName={chosenTrip?.name}
+          startTime={startTime}
+          totalPrice={estTotal}
+        />
+      </div>
+
+      {/* Main grid */}
+      <section className="grid gap-6 lg:grid-cols-5">
+        {/* Left column: Form sections */}
+        <div className="space-y-6 lg:col-span-3">
+          {/* Your Details */}
+          <YourDetailsCard
+            firstName={firstName}
+            lastName={lastName}
+            email={email}
+            phone={phone}
+            disabled={!isLoggedIn}
+            onFirstNameChange={setFirstName}
+            onLastNameChange={setLastName}
+            onEmailChange={setEmail}
+            onPhoneChange={setPhone}
+          />
+
+          {/* Date + Guests (Search box style) */}
+          <DateGuestsCard
+            date={date}
+            onDateChange={(d) => updateSearchParam("date", d)}
+            days={days}
+            onDaysChange={(v) => updateSearchParam("days", String(v))}
+            adults={adults}
+            onAdultsChange={(nextAdults) => {
+              const max = maxGuests ?? Infinity;
+              const clampedAdults = Math.max(
+                1,
+                Math.min(nextAdults, max - children)
+              );
+              updateSearchParam("adults", String(clampedAdults));
+            }}
+            childrenCount={children}
+            onChildrenChange={(nextChildren) => {
+              const max = maxGuests ?? Infinity;
+              const clampedChildren = Math.max(
+                0,
+                Math.min(nextChildren, max - adults)
+              );
+              updateSearchParam("children", String(clampedChildren));
+            }}
+            maxGuests={maxGuests}
+          />
+
+          {/* Trip Selection */}
+          <TripSelectionCard
+            trips={trips || []}
+            selectedIndex={tripIndex}
+            days={days}
+            charterSpecies={charter?.species || []}
+            charterTechniques={charter?.techniques || []}
+            onTripSelect={handleTripSelect}
+          />
+
+          {/* Start Time Selection */}
+          {effectiveStartTimes && effectiveStartTimes.length > 0 && (
+            <StartTimeSelection
+              startTimes={effectiveStartTimes}
+              selectedTime={startTime}
+              onTimeSelect={setStartTime}
+            />
           )}
-        </dl>
-        <p className="mt-3 text-xs text-black/50">
-          Final price is calculated server-side from the trip snapshot.
-        </p>
-      </aside>
-    </section>
+
+          {/* Start Conversation */}
+          <StartConversationCard
+            captain={charter?.captain}
+            charterName={charter?.name}
+            location={charter?.location}
+            species={charter?.species || []}
+            techniques={charter?.techniques || []}
+            note={note}
+            onNoteChange={setNote}
+          />
+
+          {/* Submit Button */}
+          <div className="flex flex-col gap-3 p-5 bg-white border rounded-2xl border-black/10 sm:p-6 sm:flex-row sm:items-center sm:justify-between">
+            <button
+              type="submit"
+              disabled={!canSubmit || submitting}
+              className="w-full sm:w-auto rounded-lg bg-[#ec2227] text-white px-8 py-3.5 text-base font-semibold disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#d01f24] transition-colors"
+            >
+              {submitting ? "Submitting..." : "Request to Book"}
+            </button>
+            {!isLoggedIn && (
+              <p className="text-sm text-gray-700">
+                Please{" "}
+                <button
+                  type="button"
+                  className="font-semibold text-[#ec2227] underline underline-offset-2"
+                  onClick={() =>
+                    openModal("signin", undefined, { showHomeButton: true })
+                  }
+                >
+                  sign in
+                </button>{" "}
+                or{" "}
+                <button
+                  type="button"
+                  className="font-semibold text-[#ec2227] underline underline-offset-2"
+                  onClick={() =>
+                    openModal("register", undefined, { showHomeButton: true })
+                  }
+                >
+                  create an account
+                </button>{" "}
+                to continue.
+              </p>
+            )}
+            {!canSubmit && (
+              <p className="text-sm text-gray-600">
+                Please complete all required fields
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Right column: Summary (desktop only) */}
+        <div className="hidden lg:block lg:col-span-2">
+          <div className="">
+            <BookingSummaryCard
+              charter={charter}
+              captain={charter?.captain}
+              date={date}
+              days={days}
+              adults={adults}
+              childrenCount={children}
+              tripName={chosenTrip?.name}
+              startTime={startTime}
+              totalPrice={estTotal}
+            />
+          </div>
+        </div>
+      </section>
+    </form>
   );
 }

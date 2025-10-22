@@ -58,7 +58,7 @@ export default async function Home() {
             <TripsNearby charters={charters} />
           </Suspense>
         </div>
-        <PopularDestination />
+        <PopularDestination charters={charters} />
 
         {/* Brand explainer + CTA */}
         <section className="w-full bg-gray-100">

@@ -1,6 +1,11 @@
 import { auth } from "@/lib/auth";
+import { addDaysUTC, hasConflicts } from "@/lib/booking/overlap";
 import { getCharterById } from "@/lib/charter-service";
+import { renderBookingCreatedEmail, sendMail } from "@/lib/email";
 import { prisma } from "@/lib/prisma";
+import { sendWithRetry } from "@/lib/webhook";
+import bcrypt from "bcryptjs";
+import { randomBytes } from "crypto";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -11,6 +16,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json().catch(() => ({}));
+    const userId = session.user.id!;
     const {
       charterId, // cuid or numeric string
       tripIndex,
@@ -55,6 +61,41 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Invalid date" }, { status: 400 });
     }
 
+    // Ensure local user exists (safety net for legacy OAuth tokens)
+    let dbUserId = userId;
+    try {
+      const canUserQuery =
+        typeof (prisma as any)?.user?.findUnique === "function";
+      if (canUserQuery) {
+        let dbUser = await (prisma as any).user.findUnique({
+          where: { id: userId },
+        });
+        if (!dbUser) {
+          const email = (session.user as any)?.email?.toLowerCase?.();
+          if (email) {
+            dbUser = await (prisma as any).user.findUnique({
+              where: { email },
+            });
+            if (
+              !dbUser &&
+              typeof (prisma as any)?.user?.create === "function"
+            ) {
+              const placeholder = randomBytes(16).toString("hex");
+              const passwordHash = await bcrypt.hash(placeholder, 10);
+              dbUser = await (prisma as any).user.create({
+                data: {
+                  email,
+                  passwordHash,
+                  displayName: (session.user as any)?.name ?? undefined,
+                },
+              });
+            }
+          }
+        }
+        if (dbUser?.id) dbUserId = dbUser.id;
+      }
+    } catch {}
+
     // Fetch charter snapshot and trip
     const charter = await getCharterById(charterId);
     if (!charter) {
@@ -92,44 +133,24 @@ export async function POST(req: Request) {
     // When a trip defines startTimes, conflicts are per startTime; otherwise any overlap blocks.
     const blockingStatuses = ["PENDING", "APPROVED", "PAID"] as const;
 
-    function addDays(date: Date, daysToAdd: number) {
-      const dt = new Date(
-        Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate())
-      );
-      dt.setUTCDate(dt.getUTCDate() + daysToAdd);
-      return dt;
-    }
     const newStart = new Date(
       Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate())
     );
-    const newEnd = addDays(newStart, ds - 1);
+    const newEnd = addDaysUTC(newStart, ds - 1);
 
     // Fetch candidates in a coarse window: any booking starting on/before newEnd and not too far in the past
     const candidates = await prisma.booking.findMany({
       where: {
         captainCharterId,
         status: { in: blockingStatuses as any },
-        date: { lte: newEnd, gte: addDays(newStart, -31) },
+        date: { lte: newEnd, gte: addDaysUTC(newStart, -31) },
       },
       select: { id: true, date: true, days: true, startTime: true },
     });
 
-    const conflicts = candidates.some((b) => {
-      const bStart = new Date(
-        Date.UTC(
-          b.date.getUTCFullYear(),
-          b.date.getUTCMonth(),
-          b.date.getUTCDate()
-        )
-      );
-      const bEnd = addDays(bStart, Math.max(1, b.days) - 1);
-      const rangesOverlap = bStart <= newEnd && newStart <= bEnd;
-      if (!rangesOverlap) return false;
-      // If trip uses startTimes, require same time to be a conflict; otherwise any overlap blocks
-      if (startTimes.length > 0) {
-        return (b.startTime || null) === (startTime || null);
-      }
-      return true;
+    const conflicts = hasConflicts(candidates, newStart, ds, {
+      usesStartTimes: startTimes.length > 0,
+      selectedStartTime: startTimes.length > 0 ? (startTime as string) : null,
     });
 
     if (conflicts) {
@@ -144,7 +165,7 @@ export async function POST(req: Request) {
 
     const booking = await prisma.booking.create({
       data: {
-        userId: session.user.id!,
+        userId: dbUserId,
         captainCharterId,
         charterName: charter.name,
         location: charter.location,
@@ -159,6 +180,91 @@ export async function POST(req: Request) {
         expiresAt,
       },
     });
+
+    // Outbound webhook to captain app (non-blocking)
+    try {
+      const hookUrl = process.env.CAPTAIN_WEBHOOK_URL;
+      const hookSecret = process.env.CAPTAIN_WEBHOOK_SECRET;
+      if (hookUrl && hookSecret) {
+        const payload = {
+          type: "booking.created",
+          booking: {
+            id: booking.id,
+            captainCharterId: booking.captainCharterId,
+            charterName: booking.charterName,
+            tripName: booking.tripName,
+            startTime: booking.startTime,
+            date: booking.date.toISOString(),
+            days: booking.days,
+            adults: booking.adults,
+            children: booking.children,
+            totalPrice: booking.totalPrice,
+            expiresAt: booking.expiresAt.toISOString(),
+            status: booking.status,
+          },
+        };
+        // Best-effort retry
+        sendWithRetry(hookUrl, payload, {
+          headers: { "x-captain-secret": hookSecret },
+          attempts: 3,
+          baseDelayMs: 300,
+        });
+      }
+    } catch {}
+
+    // Email the angler (non-blocking best-effort)
+    (async () => {
+      try {
+        const user = await prisma.user.findUnique({ where: { id: dbUserId } });
+        if (!user?.email) return;
+        const base =
+          process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL || "";
+        const confirmationUrl = `${base}/checkout/confirmation?id=${encodeURIComponent(
+          booking.id
+        )}`;
+        const html = renderBookingCreatedEmail({
+          toName: user.displayName ?? undefined,
+          charterName: booking.charterName,
+          date: booking.date.toISOString().slice(0, 10),
+          days: booking.days,
+          total: booking.totalPrice,
+          startTime: booking.startTime,
+          confirmationUrl,
+        });
+        await sendMail({
+          to: user.email,
+          subject: "Fishon booking request received",
+          html,
+        });
+        // Optional captain notification fallback (until Captain webhook/email is live)
+        const captainEmail = process.env.CAPTAIN_NOTIFICATIONS_EMAIL;
+        if (captainEmail) {
+          const htmlCaptain = `
+            <div>
+              <p>New booking created.</p>
+              <ul>
+                <li>ID: ${booking.id}</li>
+                <li>Charter: ${booking.charterName}</li>
+                <li>Trip: ${booking.tripName}</li>
+                <li>Date: ${booking.date.toISOString().slice(0, 10)}</li>
+                ${
+                  booking.startTime
+                    ? `<li>Start time: ${booking.startTime}</li>`
+                    : ""
+                }
+                <li>Days: ${booking.days}</li>
+                <li>Total: RM ${booking.totalPrice}</li>
+              </ul>
+              <p>View: <a href="${confirmationUrl}">${confirmationUrl}</a></p>
+            </div>`;
+          await sendMail({
+            to: captainEmail,
+            subject: "New booking created",
+            html: htmlCaptain,
+          });
+        }
+      } catch {}
+    })();
 
     return NextResponse.json({ booking }, { status: 201 });
   } catch (e: any) {

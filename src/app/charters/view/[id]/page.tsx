@@ -1,3 +1,4 @@
+import BookingWidget from "@/components/charter/BookingWidget";
 import ReviewsList from "@/components/charter/ReviewsList";
 import Stars from "@/components/charter/Stars";
 import { Charter, Trip } from "@/dummy/charter";
@@ -7,7 +8,6 @@ import {
   AboutSection,
   AmenitiesCard,
   BoatCard,
-  BookingWidget,
   CaptainSection,
   GuestFeedback,
   LocationMap,
@@ -121,7 +121,7 @@ export default async function CharterViewPage({
   checkoutParams.set("adults", String(persons > 0 ? persons : 1));
   // children not tracked in this page yet; default 0
   checkoutParams.set("children", "0");
-  const checkoutHref = `/checkout?${checkoutParams.toString()}`;
+  // const checkoutHref = `/checkout?${checkoutParams.toString()}`; // old CTA removed; navigation handled by BookingWidget
 
   const title = charter?.name || `Charter #${id}`;
   const location = charter?.location || "Malaysia";
@@ -257,16 +257,8 @@ export default async function CharterViewPage({
                 defaultPersons={persons}
                 personsMax={personsMax}
                 childFriendly={!!charter?.policies?.childFriendly}
+                charterId={charterIdParam}
               />
-              {/* Basic CTA that carries current context to checkout */}
-              <div className="mt-3">
-                <Link
-                  href={checkoutHref}
-                  className="inline-block rounded-lg bg-[#ec2227] px-4 py-2 text-sm font-semibold text-white hover:translate-y-px transition"
-                >
-                  Book now
-                </Link>
-              </div>
             </div>
           </div>
         </section>

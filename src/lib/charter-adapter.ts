@@ -11,8 +11,9 @@ import type {
   Policies,
   Tier,
   Trip,
-} from "@/dummy/charter";
+} from "@fishon/ui";
 import type { BackendCharter, BackendTrip } from "./captain-api";
+import { getCityDistrict } from "./city-district-mapping";
 
 /**
  * Map backend charter type to fishing type
@@ -36,7 +37,7 @@ function mapTier(pricingPlan: string): Tier {
 }
 
 /**
- * Convert backend trip to frontend trip format
+ * Convert a backend trip to frontend format
  */
 function convertTrip(backendTrip: BackendTrip): Trip {
   return {
@@ -147,7 +148,10 @@ export function convertBackendCharterToFrontend(
       .map((m) => m.url) || [];
 
   // Build location string
-  const location = `${backendCharter.district}, ${backendCharter.state}`;
+  // Note: backendCharter.district actually contains city name (aliased from city field in DB)
+  // We map it to actual administrative district for image matching
+  const actualDistrict = getCityDistrict(backendCharter.district);
+  const location = `${actualDistrict}, ${backendCharter.state}`;
   const address = backendCharter.startingPoint;
 
   // Get coordinates

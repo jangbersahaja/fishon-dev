@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/lib/auth-options";
 import type { NextAuthOptions } from "next-auth";
 import { getServerSession, type DefaultSession } from "next-auth";
 

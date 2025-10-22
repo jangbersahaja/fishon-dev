@@ -1,5 +1,3 @@
-import path from "path";
-
 // Optionally tighten Blob image host via env (exact hostname, no protocol)
 const blobHost = process.env.NEXT_PUBLIC_BLOB_HOST?.replace(
   /^https?:\/\//,
@@ -25,8 +23,10 @@ const nextConfig = {
           ]),
     ],
   },
+  // Avoid incorrect workspace root inference when multiple lockfiles exist
+  // This ensures .next artifacts are generated under this project folder
   turbopack: {
-    root: path.join(__dirname),
+    root: __dirname,
   },
 };
 

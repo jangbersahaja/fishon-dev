@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 import BlogPostForm from "@/components/admin/BlogPostForm";
 import { createBlogPost } from "../actions";
 

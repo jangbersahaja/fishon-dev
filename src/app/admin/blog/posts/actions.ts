@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 

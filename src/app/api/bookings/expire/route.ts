@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 import { NextResponse } from "next/server";
 
 // Simple expiry endpoint to be called by a scheduler (e.g., cron) with a secret header

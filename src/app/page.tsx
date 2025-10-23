@@ -1,4 +1,3 @@
-import FishonLogo from "@/aset/img/fishonDP.png";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -11,7 +10,7 @@ export default function Home() {
         <div className="rounded-3xl bg-white shadow-2xl border border-black/5 p-8 md:p-12">
           <header className="flex items-center gap-4">
             <Image
-              src={FishonLogo}
+              src="/Fishon-logo.png"
               width={72}
               height={72}
               sizes="(max-width: 768px) 48px, 72px"

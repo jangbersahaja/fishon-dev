@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 import { NextResponse } from "next/server";
 
 export async function POST(request: Request) {
@@ -46,7 +46,7 @@ export async function POST(request: Request) {
       select: {
         id: true,
         email: true,
-        displayName: true,
+        name: true,
         role: true,
       },
     });

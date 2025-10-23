@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(request: NextRequest) {
@@ -46,15 +46,15 @@ export async function POST(request: NextRequest) {
       user = await prisma.user.create({
         data: {
           email,
-          displayName: name,
-          passwordHash: "", // Empty for comment-only users
+          name: name,
+          // passwordHash is optional for OAuth/comment-only users
         },
       });
-    } else if (!user.displayName) {
+    } else if (!user.name) {
       // Update display name if not set
       user = await prisma.user.update({
         where: { email },
-        data: { displayName: name },
+        data: { name: name },
       });
     }
 

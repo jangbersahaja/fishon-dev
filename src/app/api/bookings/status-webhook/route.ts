@@ -1,5 +1,5 @@
-import { renderStatusEmail, sendMail } from "@/lib/email";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
+import { renderStatusEmail, sendMail } from "@/lib/helpers/email";
 import { NextResponse } from "next/server";
 
 // Captain app will call this to update booking status to APPROVED or REJECTED
@@ -56,15 +56,15 @@ export async function POST(req: Request) {
       if (user?.email) {
         const base =
           process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL || "";
-        const confirmationUrl = `${base}/checkout/confirmation?id=${encodeURIComponent(
+        const confirmationUrl = `${base}/book/confirm?id=${encodeURIComponent(
           updated.id
         )}`;
         const isApproved = status === "APPROVED";
         const paymentUrl = isApproved
-          ? `${base}/pay/${encodeURIComponent(updated.id)}`
+          ? `${base}/book/payment/${encodeURIComponent(updated.id)}`
           : undefined;
         const html = renderStatusEmail({
-          toName: user.displayName ?? undefined,
+          toName: user.name ?? undefined,
           charterName: updated.charterName,
           status: status as any,
           paymentUrl,

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 
-import { type BookingReview } from "@/dummy/receipts";
+import { type BookingReview } from "@/data/mock/receipts";
 import { resolveBadges } from "@/utils/reviewBadges";
 
 import Stars from "./Stars";

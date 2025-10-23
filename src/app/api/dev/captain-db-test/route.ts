@@ -2,8 +2,8 @@ import {
   fetchChartersFromDb,
   isCaptainDbConfigured,
   viewExists,
-} from "@/lib/captain-db";
-import { prismaCaptain } from "@/lib/prisma-captain";
+} from "@/lib/api/captain-db";
+import { prismaCaptain } from "@/lib/database/prisma-captain";
 import { NextResponse } from "next/server";
 
 export async function GET() {

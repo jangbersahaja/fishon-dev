@@ -1,6 +1,6 @@
 import BlogPostCard from "@/components/blog/BlogPostCard";
 import SearchBar from "@/components/blog/SearchBar";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 import Link from "next/link";
 
 async function searchPosts(query: string, category?: string, tag?: string) {
@@ -29,9 +29,9 @@ async function searchPosts(query: string, category?: string, tag?: string) {
         select: {
           id: true,
           email: true,
-          displayName: true,
+          name: true,
           bio: true,
-          avatarUrl: true,
+          image: true,
         },
       },
       categories: true,

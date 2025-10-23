@@ -13,21 +13,22 @@ enum UserRole {
 }
 
 model User {
-  id           String        @id @default(cuid())
-  email        String        @unique
-  passwordHash String
-  displayName  String?
-  phone        String?       // Phone number with country code
-  bio          String?
-  avatarUrl    String?
-  role         UserRole      @default(ANGLER)
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime      @updatedAt
-  blogPosts    BlogPost[]
-  comments     BlogComment[]
-  bookings     Booking[]
-  accounts     Account[]     // OAuth accounts
-  sessions     Session[]     // NextAuth sessions
+  id            String        @id @default(cuid())
+  email         String        @unique
+  passwordHash  String?       // Optional for OAuth users
+  name          String?       // Display name (NextAuth standard)
+  phone         String?       // Phone number with country code
+  bio           String?
+  image         String?       // Avatar URL (NextAuth standard)
+  emailVerified DateTime?     // NextAuth standard field
+  role          UserRole      @default(ANGLER)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  blogPosts     BlogPost[]
+  comments      BlogComment[]
+  bookings      Booking[]
+  accounts      Account[]     // OAuth accounts
+  sessions      Session[]     // NextAuth sessions
 }
 
 // NextAuth OAuth Account model
@@ -200,6 +201,7 @@ model Booking {
   status            BookingStatus @default(PENDING)
   expiresAt         DateTime // hold expires at (e.g., now + 12h)
   captainDecisionAt DateTime?
+  paidAt            DateTime? // when payment was completed
 
   note              String? // angler's note to captain
   rejectionReason   String? // captain's rejection reason

@@ -1,5 +1,5 @@
 import BlogPostCard from "@/components/blog/BlogPostCard";
-import { getBlogCategory, getBlogPostsByCategory } from "@/lib/blog-service";
+import { getBlogCategory, getBlogPostsByCategory } from "@/lib/services/blog-service";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";

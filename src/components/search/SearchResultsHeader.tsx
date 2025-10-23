@@ -1,5 +1,4 @@
-import HeroWallPaper from "@/aset/img/wallpaper02.png";
-import SearchBox from "@/components/SearchBox";
+import SearchBox from "@/components/charters/SearchBox";
 import Image from "next/image";
 
 export default function SearchResultsHeader({
@@ -14,7 +13,7 @@ export default function SearchResultsHeader({
   return (
     <section className="relative w-full">
       <Image
-        src={HeroWallPaper}
+        src="/images/hero/hero-wallpaper.png"
         alt="Fishing wallpaper"
         className="w-full h-[25vh] md:h-[30vh] object-cover"
         priority

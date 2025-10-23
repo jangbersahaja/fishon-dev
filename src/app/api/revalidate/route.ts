@@ -7,7 +7,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const body = await req.json().catch(() => ({} as any));
-  const path = body?.path || "/book";
+  const path = body?.path || "/home";
   revalidatePath(path);
   return NextResponse.json({ revalidated: true, path });
 }

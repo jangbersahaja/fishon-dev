@@ -1,5 +1,5 @@
-import CharterCard from "@/components/CharterCard";
-import type { Charter } from "@/dummy/charter";
+import CharterCard from "@/components/charters/CharterCard";
+import type { Charter } from "@/data/mock/charter";
 import Link from "next/link";
 
 export default function ResultsGrid({ items }: { items: Charter[] }) {
@@ -9,7 +9,7 @@ export default function ResultsGrid({ items }: { items: Charter[] }) {
         <h2 className="text-lg font-semibold">No results</h2>
         <p className="mt-1 text-sm text-gray-600">
           We couldn’t find any matches. Try another filter or{" "}
-          <Link href="/book" className="text-[#ec2227] hover:underline">
+          <Link href="/home" className="text-[#ec2227] hover:underline">
             browse all
           </Link>
           .

@@ -10,7 +10,7 @@ vi.mock("@/lib/prisma", () => {
   };
 });
 
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 import { POST as expire } from "../expire/route";
 
 function req(secret?: string) {

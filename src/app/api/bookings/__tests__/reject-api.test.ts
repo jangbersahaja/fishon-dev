@@ -18,8 +18,8 @@ vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
 vi.mock("@/lib/email", () => ({ sendMail: vi.fn() }));
 vi.mock("@/lib/webhook", () => ({ sendWithRetry: vi.fn() }));
 
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth/auth";
+import { prisma } from "@/lib/database/prisma";
 import { POST as reject } from "../reject/route";
 
 function req(body: any, headers?: Record<string, string>) {

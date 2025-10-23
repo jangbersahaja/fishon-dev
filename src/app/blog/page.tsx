@@ -1,7 +1,7 @@
 import BlogPostCard from "@/components/blog/BlogPostCard";
 import FeaturedPostCard from "@/components/blog/FeaturedPostCard";
 import SearchBar from "@/components/blog/SearchBar";
-import { getBlogPosts, getFeaturedPosts } from "@/lib/blog-service";
+import { getBlogPosts, getFeaturedPosts } from "@/lib/services/blog-service";
 import type { Metadata } from "next";
 import Link from "next/link";
 

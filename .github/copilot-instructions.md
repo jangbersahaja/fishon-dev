@@ -30,11 +30,11 @@ Fishon.my is the **customer-facing marketplace** where anglers discover, browse,
 
 ## Architecture & Patterns
 
-Built with Next.js 15 App Router. Follow `https://nextjs.org/docs/app/getting-started/project-structure` for structure guidance.
+Built with Next.js 15 App Router using **route groups** for logical organization. Follow our established structure when implementing new features.
 
 ### Core Stack
 
-- **Framework**: Next.js 15 (App Router)
+- **Framework**: Next.js 15 (App Router with Route Groups)
 - **Database**: PostgreSQL (via fishon-captain database)
 - **ORM**: Prisma (read-only connection to shared DB)
 - **Styling**: Tailwind CSS + shadcn/ui components
@@ -42,6 +42,143 @@ Built with Next.js 15 App Router. Follow `https://nextjs.org/docs/app/getting-st
 - **Shared Packages**:
   - `@fishon/ui` - Shared UI components and types (git package)
   - `@fishon/schemas` - Shared validation schemas (git package)
+
+### Folder Architecture
+
+**CRITICAL**: Always follow this structure when creating new files. See [feature-app-structure-refactor.md](../docs/feature-app-structure-refactor.md) for complete details.
+
+#### App Router Structure (Route Groups)
+
+```
+src/app/
+├── (auth)/              # 🔐 Authentication pages (no layout)
+│   ├── login/
+│   ├── register/
+│   └── forgot-password/
+├── (dashboard)/         # 👤 User dashboard (shared sidebar layout)
+│   ├── layout.tsx       # Dashboard shell
+│   └── account/
+│       ├── overview/
+│       ├── profile/
+│       ├── bookings/
+│       └── ...
+├── (marketplace)/       # 🎣 Public marketplace (marketplace layout)
+│   ├── layout.tsx       # Marketplace shell with navbar
+│   ├── charters/
+│   ├── search/
+│   ├── book/
+│   └── ...
+├── (marketing)/         # 📄 Static pages (minimal layout)
+│   ├── layout.tsx
+│   ├── about/
+│   ├── contact/
+│   └── ...
+├── api/                 # 🔌 API routes
+└── blog/                # ✅ Blog platform
+```
+
+**Route Group Rules:**
+1. Parentheses `()` in folder names indicate route groups
+2. Route groups don't affect URL structure
+3. Each group can have its own `layout.tsx`
+4. Use groups to organize related pages and apply shared layouts
+
+#### Component Organization
+
+```
+src/components/
+├── account/           # Dashboard-specific components
+├── auth/              # Auth forms, modals
+├── charter/           # Charter detail components
+├── charters/          # Charter list/grid components
+├── layout/            # Navbar, Footer, Chrome
+├── marketing/         # Landing page components
+├── search/            # Search & filters
+├── shared/            # Reusable utilities
+└── ui/                # shadcn/ui primitives
+```
+
+**Component Rules:**
+1. Organize by feature, not by type
+2. Collocate related components
+3. Use barrel exports (`index.ts`) for clean imports
+4. Shared utilities go in `shared/`
+
+#### Lib Organization
+
+```
+src/lib/
+├── api/               # API clients (captain-api, captain-db)
+├── auth/              # Auth utilities, NextAuth config
+├── booking/           # Booking business logic
+├── database/          # Prisma clients
+├── helpers/           # Helper functions
+├── services/          # Data services (charter-service, etc.)
+└── webhooks/          # Webhook handlers
+```
+
+**Lib Rules:**
+1. Group by service domain
+2. Keep business logic separate from API clients
+3. Database clients in `database/`
+4. Reusable helpers in `helpers/`
+
+#### Data & Assets
+
+```
+src/
+├── data/
+│   ├── mock/          # Mock data for development
+│   ├── destinations/  # Static destination data
+│   └── categories/    # Static category data
+├── assets/
+│   └── images/
+│       ├── brand/     # Logos, branding
+│       ├── placeholders/
+│       └── icons/
+```
+
+### Architecture Conventions
+
+**When Creating New Features:**
+
+1. **New Auth Flow?** → Add page to `app/(auth)/`
+2. **New Dashboard Section?** → Add to `app/(dashboard)/account/`
+3. **New Public Page?** → Add to `app/(marketplace)/` or `app/(marketing)/`
+4. **New Component?** → Create in feature-based folder under `components/`
+5. **New Service?** → Add to appropriate `lib/` subfolder
+6. **New API Route?** → Add to `app/api/` with logical grouping
+
+**File Placement Examples:**
+
+```typescript
+// ✅ CORRECT - Feature-based organization
+components/charter/CharterGallery.tsx
+components/booking/BookingForm.tsx
+lib/services/charter-service.ts
+lib/helpers/image-helpers.ts
+
+// ❌ WRONG - Root-level or type-based
+components/CharterGallery.tsx
+components/forms/BookingForm.tsx
+lib/charter-service.ts
+lib/image.ts
+```
+
+**Import Path Examples:**
+
+```typescript
+// Component imports
+import { CharterGallery } from '@/components/charter/CharterGallery'
+import { Navbar } from '@/components/layout/Navbar'
+
+// Service imports
+import { getCharters } from '@/lib/services/charter-service'
+import { auth } from '@/lib/auth/auth'
+
+// Data imports
+import { mockCharters } from '@/data/mock/charter'
+```
 
 ### Data Architecture
 
@@ -78,27 +215,42 @@ import type { Charter, Captain, Trip, Policies } from "@fishon/ui";
 
 ### Key Conventions
 
-#### Directory Structure
-```
-src/
-├── app/                    # Next.js App Router pages
-├── components/            # Shared React components
-├── lib/                   # Utilities and services
-│   ├── charter-service.ts    # Unified data fetching
-│   ├── charter-adapter.ts    # Backend → Frontend conversion
-│   ├── captain-api.ts        # API client
-│   └── captain-db.ts         # Direct DB access
-├── types/                 # TypeScript types (being phased out)
-└── utils/                 # Helper functions
-```
+**CRITICAL**: Follow the route groups architecture defined above. See [Complete Architecture Guide](../docs/feature-app-structure-refactor.md).
 
-#### Component Patterns
+#### Directory Structure Rules
+
+**App Router (Route Groups):**
+- Use `(auth)` for authentication pages
+- Use `(dashboard)` for user account pages
+- Use `(marketplace)` for public charter browsing
+- Use `(marketing)` for static content pages
+- Route groups `()` don't affect URLs
+- Each group can have its own `layout.tsx`
+
+**Components:**
+- Organize by feature, not by type
+- Example: `components/charter/` not `components/cards/`
+- Use barrel exports for clean imports
 - Import UI components from `@fishon/ui`: `BookingWidget`, `CaptainCard`, `AmenitiesCard`, etc.
 - Use shadcn/ui for base components: `Button`, `Card`, `Dialog`, etc.
-- Location data normalized via `destinationAliases.ts`
-- Google Maps integration with `MapScriptLoader` component
 
-#### Form Patterns
+**Lib (Services & Utilities):**
+- Group by service domain: `lib/auth/`, `lib/booking/`, `lib/services/`
+- Database clients in `lib/database/`
+- API clients in `lib/api/`
+- Helpers in `lib/helpers/`
+
+**Data & Assets:**
+- Mock data in `src/data/mock/`
+- Static data in `src/data/`
+- Images in `src/assets/images/`
+- Location data normalized via `destinationAliases.ts`
+
+**Google Maps:**
+- Integration with `MapScriptLoader` component
+- API key in `NEXT_PUBLIC_GOOGLE_MAPS_API_KEY`
+
+#### Component Patterns
 - React Hook Form + Zod validation
 - Server actions with `"use server"` directive
 - Include `revalidatePath()` after mutations

@@ -1,5 +1,5 @@
 import BlogPostForm from "@/components/admin/BlogPostForm";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 import { notFound } from "next/navigation";
 import { updateBlogPost } from "../../actions";
 

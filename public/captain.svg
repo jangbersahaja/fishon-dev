@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
+  <!-- Background circle -->
+  <circle cx="100" cy="100" r="100" fill="#FEE2E2"/>
+  
+  <!-- Person icon -->
+  <g transform="translate(100, 100)">
+    <!-- Head -->
+    <circle cx="0" cy="-20" r="28" fill="#DC2626"/>
+    
+    <!-- Captain hat -->
+    <ellipse cx="0" cy="-48" rx="32" ry="8" fill="#DC2626"/>
+    <rect x="-20" y="-54" width="40" height="10" rx="2" fill="#DC2626"/>
+    
+    <!-- Body -->
+    <path d="M -35 25 Q -35 0, -28 -5 L 28 -5 Q 35 0, 35 25 L 35 50 L -35 50 Z" fill="#DC2626"/>
+  </g>
+  
+  <!-- Anchor detail -->
+  <g transform="translate(150, 140)">
+    <line x1="0" y1="-15" x2="0" y2="15" stroke="#EF4444" stroke-width="3" stroke-linecap="round"/>
+    <line x1="-10" y1="15" x2="10" y2="15" stroke="#EF4444" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="-10" cy="15" r="3" fill="#EF4444"/>
+    <circle cx="10" cy="15" r="3" fill="#EF4444"/>
+    <line x1="-8" y1="-15" x2="8" y2="-15" stroke="#EF4444" stroke-width="3" stroke-linecap="round"/>
+  </g>
+</svg>

@@ -1,7 +1,7 @@
 "use client";
 import PasswordInput from "@/components/ui/PasswordInput";
 import { feedbackTokens } from "@/config/designTokens";
-import { validatePassword } from "@/lib/password";
+import { validatePassword } from "@/lib/auth/password";
 import { signIn } from "next-auth/react";
 import { useEffect, useMemo, useState } from "react";
 import { useAuthModal } from "./AuthModalContext";
@@ -134,7 +134,7 @@ export default function AuthModal() {
         {/* Close/Home button */}
         {showHomeButton ? (
           <a
-            href="/book"
+            href="/home"
             className="absolute right-4 top-4 text-slate-400 hover:text-slate-600 transition"
             aria-label="Go to home"
           >
@@ -271,7 +271,10 @@ function SignInForm({
 
   const handleOAuthClick = (provider: OAuthProviderInfo) => {
     if (!provider.configured) return;
-    void signIn(provider.id, { callbackUrl: next || "/" });
+    // Use current page if no explicit next URL provided
+    const callbackUrl =
+      next || window.location.pathname + window.location.search;
+    void signIn(provider.id, { callbackUrl });
   };
 
   // Step 1: Check if email exists
@@ -353,11 +356,15 @@ function SignInForm({
     setError(null);
     setLoading(true);
 
+    // Use current page if no explicit next URL provided
+    const callbackUrl =
+      next || window.location.pathname + window.location.search;
+
     const res = await signIn("credentials", {
       redirect: false,
       email,
       password,
-      callbackUrl: next || "/",
+      callbackUrl,
     });
 
     setLoading(false);
@@ -367,7 +374,7 @@ function SignInForm({
       return;
     }
 
-    window.location.href = res?.url || next || "/";
+    window.location.href = res?.url || callbackUrl;
   }
 
   // Step 2b: Sign in with TAC
@@ -391,11 +398,15 @@ function SignInForm({
 
       // TAC verified, now sign in using the TAC code as password
       // The credentials provider will validate it via validateTac
+      // Use current page if no explicit next URL provided
+      const callbackUrl =
+        next || window.location.pathname + window.location.search;
+
       const signInRes = await signIn("credentials", {
         redirect: false,
         email,
         password: tacCode,
-        callbackUrl: next || "/",
+        callbackUrl,
       });
 
       if (signInRes?.error) {
@@ -404,7 +415,7 @@ function SignInForm({
         return;
       }
 
-      window.location.href = signInRes?.url || next || "/";
+      window.location.href = signInRes?.url || callbackUrl;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to verify code");
       setLoading(false);
@@ -665,7 +676,10 @@ function SignUpForm({
 
   const handleOAuthClick = (provider: OAuthProviderInfo) => {
     if (!provider.configured) return;
-    void signIn(provider.id, { callbackUrl: next || "/" });
+    // Use current page if no explicit next URL provided
+    const callbackUrl =
+      next || window.location.pathname + window.location.search;
+    void signIn(provider.id, { callbackUrl });
   };
 
   async function handleSubmit(e: React.FormEvent) {
@@ -704,11 +718,15 @@ function SignUpForm({
       }
 
       // Auto sign in after successful registration
+      // Use current page if no explicit next URL provided
+      const callbackUrl =
+        next || window.location.pathname + window.location.search;
+
       const signInRes = await signIn("credentials", {
         redirect: false,
         email,
         password,
-        callbackUrl: next,
+        callbackUrl,
       });
 
       if (signInRes?.error) {
@@ -718,7 +736,7 @@ function SignUpForm({
         return;
       }
 
-      window.location.href = signInRes?.url || next || "/";
+      window.location.href = signInRes?.url || callbackUrl;
     } catch (err) {
       setError(err instanceof Error ? err.message : "Registration failed");
     } finally {

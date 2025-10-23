@@ -14,9 +14,9 @@ vi.mock("@/lib/prisma", () => {
 vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
 vi.mock("@/lib/charter-service", () => ({ getCharterById: vi.fn() }));
 
-import { auth } from "@/lib/auth";
-import { getCharterById } from "@/lib/charter-service";
-import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth/auth";
+import { getCharterById } from "@/lib/services/charter-service";
+import { prisma } from "@/lib/database/prisma";
 import { POST as createBooking } from "../create/route";
 
 function req(body: any) {

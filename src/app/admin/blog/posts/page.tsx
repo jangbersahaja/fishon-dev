@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 
 async function getAllPosts() {
   return prisma.blogPost.findMany({

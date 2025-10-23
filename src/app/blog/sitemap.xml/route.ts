@@ -1,4 +1,4 @@
-import { getBlogPosts } from "@/lib/blog-service";
+import { getBlogPosts } from "@/lib/services/blog-service";
 
 export async function GET() {
   const baseUrl = "https://www.fishon.my";

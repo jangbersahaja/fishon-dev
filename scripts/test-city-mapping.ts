@@ -7,8 +7,8 @@
 import {
   CITY_TO_DISTRICT_MAP,
   getCityDistrict,
-} from "../src/lib/city-district-mapping";
-import { getDestinationImage } from "../src/lib/image-helpers";
+} from "../src/lib/helpers/city-district-mapping";
+import { getDestinationImage } from "../src/lib/helpers/image-helpers";
 
 console.log("\n=== City-to-District Mapping Test ===\n");
 

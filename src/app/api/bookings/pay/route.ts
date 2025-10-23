@@ -1,7 +1,7 @@
-import { auth } from "@/lib/auth";
-import { sendMail } from "@/lib/email";
-import { prisma } from "@/lib/prisma";
-import { sendWithRetry } from "@/lib/webhook";
+import { auth } from "@/lib/auth/auth";
+import { prisma } from "@/lib/database/prisma";
+import { sendMail } from "@/lib/helpers/email";
+import { sendWithRetry } from "@/lib/webhooks/webhook";
 import { NextResponse } from "next/server";
 
 // Minimal pay endpoint to mark an APPROVED booking as PAID for the owner
@@ -47,12 +47,12 @@ export async function POST(req: Request) {
       if (user?.email) {
         const base =
           process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL || "";
-        const confirmationUrl = `${base}/checkout/confirmation?id=${encodeURIComponent(
+        const confirmationUrl = `${base}/book/confirm?id=${encodeURIComponent(
           updated.id
         )}`;
         const html = `
         <div>
-          <p>Hi ${user.displayName ?? "there"},</p>
+          <p>Hi ${user.name ?? "there"},</p>
           <p>Your payment for <strong>${
             updated.charterName
           }</strong> has been received. Your booking is confirmed.</p>

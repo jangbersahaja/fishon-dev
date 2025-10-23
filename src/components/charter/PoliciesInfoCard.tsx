@@ -1,5 +1,5 @@
 // PoliciesInfoCard.tsx
-import type { Charter } from "@/dummy/charter";
+import type { Charter } from "@/data/mock/charter";
 
 export default function PoliciesInfoCard({ charter }: { charter: Charter }) {
   if (!charter?.policies && !charter?.pickup) return null;

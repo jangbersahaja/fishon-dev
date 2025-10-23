@@ -1,4 +1,4 @@
-import { type BookingReview } from "@/dummy/receipts";
+import { type BookingReview } from "@/data/mock/receipts";
 import { summariseBadges } from "@/utils/reviewBadges";
 import Stars from "./Stars";
 

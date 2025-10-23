@@ -1,6 +1,6 @@
 // utils/ratings.ts
 // Build an avg rating map from receipts once, reused across pages.
-import { receipts } from "@/dummy/receipts";
+import { receipts } from "@/data/mock/receipts";
 
 export type RatingMap = Record<number, { avg: number; count: number }>;
 

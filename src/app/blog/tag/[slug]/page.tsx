@@ -1,5 +1,5 @@
 import BlogPostCard from "@/components/blog/BlogPostCard";
-import { getBlogPostsByTag, getBlogTag } from "@/lib/blog-service";
+import { getBlogPostsByTag, getBlogTag } from "@/lib/services/blog-service";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,13 +15,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!tag) {
     return {
-      title: "Tag Not Found | FishOn.my",
+      title: "Tag Not Found | Fishon.my",
     };
   }
 
   return {
-    title: `${tag.name} Articles | FishOn.my`,
-    description: `Browse all articles tagged with ${tag.name} on FishOn.my`,
+    title: `${tag.name} Articles | Fishon.my`,
+    description: `Browse all articles tagged with ${tag.name} on Fishon.my`,
     alternates: {
       canonical: `https://www.fishon.my/blog/tag/${slug}`,
     },

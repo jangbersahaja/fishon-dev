@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Clock, Calendar } from "lucide-react";
-import type { BlogPostWithRelations } from "@/lib/blog-service";
+import type { BlogPostWithDetails } from "@/lib/services/blog-service";
 
 type BlogPostCardProps = {
-  post: BlogPostWithRelations;
+  post: BlogPostWithDetails;
 };
 
 export default function BlogPostCard({ post }: BlogPostCardProps) {

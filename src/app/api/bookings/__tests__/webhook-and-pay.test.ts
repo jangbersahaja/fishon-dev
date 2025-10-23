@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/lib/prisma", () => {
+vi.mock("@/lib/database/prisma", () => {
   return {
     prisma: {
       booking: {
@@ -9,10 +9,10 @@ vi.mock("@/lib/prisma", () => {
     },
   };
 });
-vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
+vi.mock("@/lib/auth/auth", () => ({ auth: vi.fn() }));
 
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth/auth";
+import { prisma } from "@/lib/database/prisma";
 import { POST as pay } from "../pay/route";
 import { POST as webhook } from "../status-webhook/route";
 

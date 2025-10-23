@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/lib/prisma", () => {
+vi.mock("@/lib/database/prisma", () => {
   return {
     prisma: {
       booking: {
@@ -11,12 +11,12 @@ vi.mock("@/lib/prisma", () => {
   };
 });
 
-vi.mock("@/lib/auth", () => ({ auth: vi.fn() }));
-vi.mock("@/lib/charter-service", () => ({ getCharterById: vi.fn() }));
+vi.mock("@/lib/auth/auth", () => ({ auth: vi.fn() }));
+vi.mock("@/lib/services/charter-service", () => ({ getCharterById: vi.fn() }));
 
-import { auth } from "@/lib/auth";
-import { getCharterById } from "@/lib/charter-service";
-import { prisma } from "@/lib/prisma";
+import { auth } from "@/lib/auth/auth";
+import { prisma } from "@/lib/database/prisma";
+import { getCharterById } from "@/lib/services/charter-service";
 import { POST as createBooking } from "../create/route";
 
 function req(body: any) {

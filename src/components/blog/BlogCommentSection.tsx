@@ -8,7 +8,7 @@ interface Comment {
   createdAt: Date;
   author: {
     email: string;
-    displayName?: string | null;
+    name?: string | null;
   };
   approved: boolean;
 }
@@ -93,7 +93,7 @@ export default function BlogCommentSection({
             <div key={comment.id} className="rounded-lg bg-gray-50 p-4">
               <div className="mb-2 flex items-center gap-2">
                 <span className="font-semibold text-gray-900">
-                  {comment.author.displayName || comment.author.email}
+                  {comment.author.name || comment.author.email}
                 </span>
                 <span className="text-sm text-gray-500">•</span>
                 <span className="text-sm text-gray-500">

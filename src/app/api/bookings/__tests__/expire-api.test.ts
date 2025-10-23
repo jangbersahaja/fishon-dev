@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/lib/prisma", () => {
+vi.mock("@/lib/database/prisma", () => {
   return {
     prisma: {
       booking: {
@@ -10,7 +10,7 @@ vi.mock("@/lib/prisma", () => {
   };
 });
 
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 import { POST as expire } from "../expire/route";
 
 function req(secret?: string) {

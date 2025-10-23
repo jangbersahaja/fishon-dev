@@ -3,7 +3,10 @@ import BlogPostCard from "@/components/blog/BlogPostCard";
 import NewsletterWidget from "@/components/blog/NewsletterWidget";
 import ReadingProgress from "@/components/blog/ReadingProgress";
 import TableOfContents from "@/components/blog/TableOfContents";
-import { getBlogPostBySlug, getRelatedPosts } from "@/lib/blog-service";
+import {
+  getBlogPostBySlug,
+  getRelatedPosts,
+} from "@/lib/services/blog-service";
 import { Calendar, Clock, User } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -20,19 +23,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!post) {
     return {
-      title: "Post Not Found | FishOn.my",
+      title: "Post Not Found | Fishon.my",
     };
   }
 
   const title = post.metaTitle || post.title;
   const description =
-    post.metaDescription || post.excerpt || "Read this article on FishOn.my";
+    post.metaDescription || post.excerpt || "Read this article on Fishon.my";
   const images = post.coverImage
     ? [{ url: post.coverImage, width: 1200, height: 630 }]
     : [{ url: "/og-image.jpg", width: 1200, height: 630 }];
 
   return {
-    title: `${title} | FishOn.my`,
+    title: `${title} | Fishon.my`,
     description,
     keywords: post.metaKeywords,
     alternates: {
@@ -42,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url: `https://www.fishon.my/blog/${slug}`,
-      siteName: "FishOn.my",
+      siteName: "Fishon.my",
       images,
       type: "article",
       publishedTime: post.publishedAt?.toISOString(),
@@ -93,12 +96,12 @@ export default async function BlogPostPage({ params }: Props) {
     dateModified: post.updatedAt.toISOString(),
     author: {
       "@type": "Person",
-      name: post.author.displayName || post.author.email.split("@")[0],
+      name: post.author.name || post.author.email.split("@")[0],
       url: `https://www.fishon.my/author/${post.author.id}`,
     },
     publisher: {
       "@type": "Organization",
-      name: "FishOn.my",
+      name: "Fishon.my",
       url: "https://www.fishon.my",
       logo: {
         "@type": "ImageObject",
@@ -209,19 +212,18 @@ export default async function BlogPostPage({ params }: Props) {
               {/* Meta info */}
               <div className="mt-6 flex flex-wrap items-center gap-4 text-sm text-gray-600">
                 <div className="flex items-center gap-2">
-                  {post.author.avatarUrl ? (
+                  {post.author.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={post.author.avatarUrl}
-                      alt={post.author.displayName || post.author.email}
+                      src={post.author.image}
+                      alt={post.author.name || post.author.email}
                       className="h-6 w-6 rounded-full object-cover"
                     />
                   ) : (
                     <User size={16} />
                   )}
                   <span>
-                    By{" "}
-                    {post.author.displayName || post.author.email.split("@")[0]}
+                    By {post.author.name || post.author.email.split("@")[0]}
                   </span>
                 </div>
                 {post.publishedAt && (
@@ -324,11 +326,11 @@ export default async function BlogPostPage({ params }: Props) {
               <div className="mt-12 border-t border-gray-200 pt-8">
                 <h3 className="mb-4 text-lg font-semibold">About the Author</h3>
                 <div className="flex gap-4">
-                  {post.author.avatarUrl ? (
+                  {post.author.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={post.author.avatarUrl}
-                      alt={post.author.displayName || post.author.email}
+                      src={post.author.image}
+                      alt={post.author.name || post.author.email}
                       className="h-16 w-16 rounded-full object-cover"
                     />
                   ) : (
@@ -338,8 +340,7 @@ export default async function BlogPostPage({ params }: Props) {
                   )}
                   <div className="flex-1">
                     <h4 className="font-semibold text-gray-900">
-                      {post.author.displayName ||
-                        post.author.email.split("@")[0]}
+                      {post.author.name || post.author.email.split("@")[0]}
                     </h4>
                     <p className="mt-1 text-sm text-gray-600">
                       {post.author.bio}

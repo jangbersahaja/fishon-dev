@@ -1,7 +1,7 @@
-import { auth } from "@/lib/auth";
-import { sendMail } from "@/lib/email";
-import { prisma } from "@/lib/prisma";
-import { sendWithRetry } from "@/lib/webhook";
+import { auth } from "@/lib/auth/auth";
+import { prisma } from "@/lib/database/prisma";
+import { sendMail } from "@/lib/helpers/email";
+import { sendWithRetry } from "@/lib/webhooks/webhook";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -65,9 +65,9 @@ export async function POST(req: Request) {
     if (user?.email) {
       const base =
         process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL || "";
-      const url = `${base}/booking/${encodeURIComponent(updated.id)}`;
+      const url = `${base}/book/confirm?id=${encodeURIComponent(updated.id)}`;
       const html = `<div><p>Hi ${
-        user.displayName ?? "there"
+        user.name ?? "there"
       },</p><p>Your booking <strong>${
         updated.id
       }</strong> has been cancelled.</p><p>View: <a href="${url}">${url}</a></p></div>`;
@@ -85,7 +85,7 @@ export async function POST(req: Request) {
     if (captainEmail) {
       const base =
         process.env.NEXT_PUBLIC_BASE_URL || process.env.NEXTAUTH_URL || "";
-      const url = `${base}/booking/${encodeURIComponent(updated.id)}`;
+      const url = `${base}/book/confirm?id=${encodeURIComponent(updated.id)}`;
       const html = `<div><p>Booking cancelled by angler</p><ul><li>ID: ${updated.id}</li><li>Charter: ${updated.charterName}</li><li>Status: ${updated.status}</li></ul><p>View: <a href="${url}">${url}</a></p></div>`;
       await sendMail({ to: captainEmail, subject: "Booking cancelled", html });
     }

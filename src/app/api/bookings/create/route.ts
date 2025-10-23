@@ -1,11 +1,9 @@
-import { auth } from "@/lib/auth";
+import { auth } from "@/lib/auth/auth";
 import { addDaysUTC, hasConflicts } from "@/lib/booking/overlap";
-import { getCharterById } from "@/lib/charter-service";
-import { renderBookingCreatedEmail, sendMail } from "@/lib/email";
-import { prisma } from "@/lib/prisma";
-import { sendWithRetry } from "@/lib/webhook";
-import bcrypt from "bcryptjs";
-import { randomBytes } from "crypto";
+import { prisma } from "@/lib/database/prisma";
+import { renderBookingCreatedEmail, sendMail } from "@/lib/helpers/email";
+import { getCharterById } from "@/lib/services/charter-service";
+import { sendWithRetry } from "@/lib/webhooks/webhook";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -82,13 +80,11 @@ export async function POST(req: Request) {
               !dbUser &&
               typeof (prisma as any)?.user?.create === "function"
             ) {
-              const placeholder = randomBytes(16).toString("hex");
-              const passwordHash = await bcrypt.hash(placeholder, 10);
+              // Create user without password (OAuth user)
               dbUser = await (prisma as any).user.create({
                 data: {
                   email,
-                  passwordHash,
-                  displayName: (session.user as any)?.name ?? undefined,
+                  name: (session.user as any)?.name ?? undefined,
                 },
               });
             }
@@ -226,7 +222,7 @@ export async function POST(req: Request) {
           booking.id
         )}`;
         const html = renderBookingCreatedEmail({
-          toName: user.displayName ?? undefined,
+          toName: user.name ?? undefined,
           charterName: booking.charterName,
           date: booking.date.toISOString().slice(0, 10),
           days: booking.days,

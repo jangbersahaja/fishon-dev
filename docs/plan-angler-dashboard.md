@@ -1,20 +1,32 @@
 ---
 type: plan
-status: proposed
-updated: 2025-10-23
+status: in-progress
+updated: 2025-10-24
 feature: Angler Dashboard
 author: GitHub Copilot
+tags:
+  - dashboard
+  - user-experience
+  - bookings
+  - profile
+impact: high
 ---
 
-# Angler Dashboard - Strategic Plan
+# Angler Dashboard - Strategic Plan (Revised)
 
 ## Executive Summary
 
 This document outlines a comprehensive plan to build a professional, trust-building angler dashboard for fishon-market. The dashboard will serve as the central hub for anglers to manage their profiles, bookings, and interactions with captains.
 
-**Current State:** Basic `/account` page showing name, email, role + `/mybooking` page with simple booking list
+**Current State (Post-Restructure):**
 
-**Proposed:** Full-featured dashboard with profile management, booking lifecycle, reviews, favorites, and support
+- ✅ Route groups architecture in place (`(auth)`, `(dashboard)`, `(marketplace)`, `(marketing)`)
+- ✅ Booking flow pages: `/book/[charterId]` (form), `/book/confirm` (confirmation), `/book/payment/[bookingId]` (payment)
+- ✅ Component organization (feature-based folders)
+- ⚠️ Empty `(dashboard)` route group - ready for implementation
+- ⚠️ Basic user authentication with NextAuth (Google OAuth + credentials)
+
+**Proposed:** Full-featured dashboard leveraging existing booking pages, with profile management, booking history, reviews, favorites, and support
 
 ## Goals & Success Metrics
 
@@ -35,23 +47,38 @@ This document outlines a comprehensive plan to build a professional, trust-build
 
 ## Proposed Dashboard Structure
 
-### URL Structure
+### URL Structure (Aligned with Route Groups)
 
 ```
-/account                    → Dashboard home (redirect to /account/overview)
-/account/overview           → Dashboard overview (summary cards)
-/account/profile            → Profile management with tabs
-/account/profile/personal   → Personal information
-/account/profile/security   → Password & MFA
-/account/profile/preferences → Notification settings
-/account/bookings           → All bookings with filters
-/account/bookings/[id]      → Booking detail page
-/account/trips              → Confirmed trips (PAID status)
-/account/trips/upcoming     → Future trips
-/account/trips/past         → Completed trips (can review)
-/account/favorites          → Saved charters
-/account/support            → Help center & contact
+# Dashboard Route Group: app/(dashboard)/account/
+/account                       → Dashboard layout + redirect to /account/overview
+/account/overview              → Dashboard home (summary cards, quick stats)
+/account/profile               → Profile management
+/account/bookings              → All bookings list with filters
+/account/bookings/[id]         → Booking detail page
+/account/favorites             → Saved charters
+/account/support               → Help center & contact
+
+# Existing Marketplace Routes (already implemented):
+/book/[charterId]              → Booking form (trip selection, date, guests)
+/book/confirm                  → Booking confirmation page
+/book/payment/[bookingId]      → Payment page (Senang Pay integration - planned)
+
+# Future Expansion (Phase 2+):
+/account/profile/security      → Password & 2FA settings
+/account/profile/preferences   → Notification preferences
+/account/trips                 → Confirmed trips (PAID status filter)
+/account/trips/upcoming        → Future trips only
+/account/trips/past            → Completed trips with review prompts
 ```
+
+**Key Architecture Notes:**
+
+- Dashboard pages live in `app/(dashboard)/account/`
+- Shared dashboard layout: `app/(dashboard)/layout.tsx`
+- Booking flow stays in `app/(marketplace)/book/`
+- Components organized in `src/components/account/`
+- Services in `src/lib/services/booking-service.ts` (create new)
 
 ### Navigation Structure
 
@@ -180,38 +207,52 @@ model LoginActivity {
 
 ### 3. Bookings (`/account/bookings`)
 
+**Leverage Existing Infrastructure:**
+
+- ✅ Booking form already exists at `/book/[charterId]`
+- ✅ Confirmation page at `/book/confirm`
+- ✅ Payment page at `/book/payment/[bookingId]` (Senang Pay - planned)
+- 🆕 Need: Bookings list page showing user's booking history
+
 **Features:**
 
 - Tab filters:
   - All bookings
   - Pending (awaiting captain approval)
   - Approved (awaiting payment)
-  - Rejected
-  - Expired
+  - Paid (confirmed trips)
+  - Rejected/Expired
 - Search by charter name, location, or date
 - Sort by: Date (newest/oldest), Status, Total price
 
 **Booking Card Layout:**
 
-```
+```tsx
 ┌─────────────────────────────────────────────────────────┐
 │ [Charter Name]                         [Status Badge]   │
 │ [Location] • [Trip Type]                                │
 │ 📅 [Date] • ⏱️ [Duration] • 👥 [Guests]                 │
 │ 💰 RM [Total Price]                                     │
 │                                                          │
-│ [View Details] [Take Action Button based on status]     │
+│ [View Details] [Status-Based Action Button]             │
 └─────────────────────────────────────────────────────────┘
 ```
 
-**Status-Based Actions:**
+**Status-Based Action Buttons:**
 
-- PENDING: "Waiting for captain..." + countdown timer to expiry
-- APPROVED: "Pay Now" button (prominent, green)
-- REJECTED: "Find similar charters" + show rejection reason
-- EXPIRED: "Book again" button
-- PAID: "View trip details" + "Contact captain"
-- CANCELLED: "Book again" + show cancellation reason
+| Status   | Button Text              | Action             | Link                        |
+| -------- | ------------------------ | ------------------ | --------------------------- |
+| PENDING  | "Waiting..." + countdown | View details       | `/account/bookings/[id]`    |
+| APPROVED | "Pay Now" (green)        | Proceed to payment | `/book/payment/[bookingId]` |
+| PAID     | "View Trip"              | See trip details   | `/account/bookings/[id]`    |
+| REJECTED | "Find Similar"           | Browse charters    | `/charters?location=...`    |
+| EXPIRED  | "Book Again"             | Restart booking    | `/book/[charterId]`         |
+
+**Integration with Existing Pages:**
+
+- "Pay Now" → Redirect to `/book/payment/[bookingId]`
+- "Book Again" → Pre-fill form at `/book/[charterId]` with previous selections
+- "View Trip" → Link to detailed view (new page)
 
 **Trust Building:**
 
@@ -221,52 +262,102 @@ model LoginActivity {
 
 ### 4. Booking Detail Page (`/account/bookings/[id]`)
 
+**Purpose:** Detailed view of a single booking with all information and actions
+
 **Sections:**
 
 #### 4.1 Booking Summary
 
-- Charter details with photos
-- Trip details (type, duration, what's included)
-- Date, time, guests
-- Pricing breakdown
+- Charter details with photos (reuse `CharterGallery` from `@/components/charter/`)
+- Trip details (type, duration, what's included) - from booking data
+- Date, time, number of guests
+- Pricing breakdown (trip price + platform fee + total)
 - Status timeline (visual progress bar)
 
-#### 4.2 Payment Information (for APPROVED/PAID)
+#### 4.2 Payment Information (for APPROVED/PAID status)
 
-- Payment method (future: integrate payment gateway)
-- Receipt download button (PDF)
-- Invoice number
-- Payment date
+**For APPROVED (Awaiting Payment):**
 
-**Receipt Generation:**
+- "Complete Payment" CTA button → redirects to `/book/payment/[bookingId]`
+- Shows payment deadline (if applicable)
+- Payment methods preview
 
-- PDF template with FishOn branding
+**For PAID (Confirmed):**
+
+- Payment confirmation badge
+- Receipt download button (PDF) - **NEW: needs implementation**
+- Payment reference number
+- Payment date & time
+- Payment method used
+
+**Receipt Generation (New Feature):**
+
+- PDF template with Fishon branding
 - Booking reference number
-- Itemized breakdown
+- Itemized breakdown (trip fee, platform fee, tax if applicable)
 - Company details (for business expense claims)
-- QR code with booking verification link
+- Captain information (after payment only)
+- QR code with booking verification link (future)
 
-#### 4.3 Captain Information (for PAID bookings only)
+#### 4.3 Captain Information (PAID bookings only)
 
-- Captain name
-- Photo
-- Contact button (reveal phone/email after payment)
+**Privacy Protection:**
+
+- Captain contact info only visible after payment
+- Captain name, photo, and rating visible at all stages
+- Unhide phone/email after PAID status
+
+**Display:**
+
+- Captain profile card (reuse `CaptainCard` from `@/components/charter/`)
+- Direct contact button (opens WhatsApp/phone)
 - Charter boat details
-- Meeting point with map
+- Meeting point with embedded Google Map
 
-#### 4.4 Cancellation Policy
+#### 4.4 Trip Details
 
-- Display charter's cancellation terms
-- Refund policy
-- Cancel booking button (if eligible)
+**What's Included:**
+
+- Amenities list (from charter data)
+- Species targeted
+- Fishing techniques
+- Provided equipment
+- Food/drinks included
+- Safety equipment
+
+#### 4.5 Cancellation & Refund
+
+**Cancellation Policy Display:**
+
+- Charter's cancellation terms (from charter data)
+- Refund policy breakdown
 - Cancellation deadline countdown
+- "Cancel Booking" button (if eligible based on status and policy)
 
-#### 4.5 Actions Panel
+**Cancellation Flow:**
 
-- Status-dependent action buttons
-- Download receipt
+- Modal confirmation with policy reminder
+- Reason selection (optional)
+- POST `/api/account/bookings/[id]/cancel`
+- Email notification to angler + captain
+
+#### 4.6 Action Panel (Context-Aware)
+
+**Status-based actions:**
+
+| Status   | Available Actions                                                              |
+| -------- | ------------------------------------------------------------------------------ |
+| PENDING  | View charter details, Cancel request                                           |
+| APPROVED | **Pay Now** (primary), Modify booking (future), Cancel                         |
+| PAID     | Download receipt, Contact captain, View meeting point, Cancel (with penalties) |
+| REJECTED | View rejection reason, Find similar charters, Contact support                  |
+| EXPIRED  | Book again, Browse similar charters                                            |
+
+**Additional Actions (All Statuses):**
+
 - Contact support
 - Report issue
+- Share booking (future)
 
 ### 5. Trips (`/account/trips`)
 
@@ -527,14 +618,84 @@ model Favorite {
 
 ## Technical Implementation Plan
 
+### File Structure (Following Route Groups Architecture)
+
+```
+src/app/(dashboard)/
+├── layout.tsx                           → Dashboard shell (sidebar, header)
+└── account/
+    ├── page.tsx                         → Redirect to /account/overview
+    ├── overview/
+    │   └── page.tsx                     → Dashboard home (stats, quick actions)
+    ├── profile/
+    │   ├── page.tsx                     → Profile edit form
+    │   ├── security/
+    │   │   └── page.tsx                 → Password change (Phase 2)
+    │   └── preferences/
+    │       └── page.tsx                 → Notifications (Phase 3)
+    ├── bookings/
+    │   ├── page.tsx                     → Bookings list with filters
+    │   └── [id]/
+    │       ├── page.tsx                 → Booking detail view
+    │       └── receipt/
+    │           └── route.ts             → PDF receipt API endpoint
+    ├── favorites/
+    │   └── page.tsx                     → Saved charters grid
+    └── support/
+        └── page.tsx                     → Help center & contact form
+
+src/components/account/                  → Dashboard-specific components
+├── DashboardNav.tsx                     → Sidebar navigation
+├── DashboardHeader.tsx                  → Mobile header with menu
+├── DashboardShell.tsx                   → Layout wrapper
+├── ProfileForm.tsx                      → Profile edit form
+├── BookingCard.tsx                      → Booking list item
+├── BookingStatusBadge.tsx               → Status pill component
+├── BookingTimeline.tsx                  → Progress visualization
+├── BookingSummary.tsx                   → Booking detail summary
+├── PaymentInfo.tsx                      → Payment details display
+├── ReceiptGenerator.tsx                 → PDF receipt generation
+├── FavoriteButton.tsx                   → Heart icon toggle
+├── EmptyState.tsx                       → "No bookings yet" states
+└── QuickStats.tsx                       → Dashboard overview cards
+
+src/lib/services/
+├── booking-service.ts                   → Booking data fetching (NEW)
+│   ├── getUserBookings()
+│   ├── getBookingById()
+│   ├── cancelBooking()
+│   └── generateReceipt()
+└── favorite-service.ts                  → Favorites CRUD (NEW)
+    ├── getFavorites()
+    ├── addFavorite()
+    └── removeFavorite()
+
+src/lib/helpers/
+└── booking-helpers.ts                   → Booking utilities (NEW)
+    ├── getBookingStatusColor()
+    ├── getBookingActionButton()
+    ├── calculateRefundAmount()
+    └── canCancelBooking()
+```
+
+**Reusable Components from Existing Structure:**
+
+- `@/components/charter/CharterGallery` - For booking detail images
+- `@/components/charter/CaptainCard` - For captain information
+- `@/components/charter/AmenitiesCard` - For trip inclusions
+- `@/components/shared/CalendarPicker` - For date selection (if needed)
+- `@/components/layout/Navbar` - Already handles dashboard link
+
 ### Database Migrations Required
 
-```prisma
-// User profile extensions
-model User {
-  // ... existing fields
+**User Profile Extensions:**
 
-  profilePhoto      String?
+```prisma
+model User {
+  // ... existing fields (id, name, email, image, etc.)
+
+  // NEW: Profile fields
+  phone             String?
   streetAddress     String?
   city              String?
   state             String?
@@ -544,12 +705,16 @@ model User {
   emergencyPhone    String?
   emergencyRelation String?
 
+  // Relations
   favorites         Favorite[]
   reviews           Review[]
   loginActivity     LoginActivity[]
 }
+```
 
-// New models
+**New Models:**
+
+```prisma
 model Favorite {
   id         String   @id @default(cuid())
   userId     String
@@ -608,20 +773,39 @@ model Booking {
 
 ### API Routes Required
 
+**Following Route Groups Architecture:**
+
+```typescript
+// Dashboard API routes in app/api/account/
+POST   /api/account/profile              → Update profile info
+POST   /api/account/profile/photo        → Upload profile photo (Phase 2)
+POST   /api/account/password/change      → Change password (Phase 2)
+
+GET    /api/account/bookings             → List user's bookings (with filters)
+GET    /api/account/bookings/[id]        → Get single booking detail
+POST   /api/account/bookings/[id]/cancel → Cancel a booking
+GET    /api/account/bookings/[id]/receipt → Generate PDF receipt
+
+POST   /api/account/favorites            → Add charter to favorites
+DELETE /api/account/favorites/[id]       → Remove from favorites
+GET    /api/account/favorites            → List user's favorites
+
+POST   /api/account/reviews              → Submit review (Phase 2)
+GET    /api/account/reviews              → List user's reviews (Phase 2)
+
+GET    /api/account/activity             → Get login activity (Phase 2)
+
+// Existing marketplace routes (already implemented):
+POST   /api/bookings                     → Create new booking (from /book/[charterId])
+// Payment routes will be added with Senang Pay integration
 ```
-POST   /api/account/profile/update          → Update profile
-POST   /api/account/profile/photo            → Upload profile photo
-POST   /api/account/password/change          → Change password
-GET    /api/account/bookings                 → List bookings
-GET    /api/account/bookings/[id]            → Get booking details
-GET    /api/account/bookings/[id]/receipt    → Download receipt PDF
-POST   /api/account/favorites/add            → Add to favorites
-DELETE /api/account/favorites/[id]           → Remove favorite
-GET    /api/account/favorites                → List favorites
-POST   /api/account/reviews/create           → Submit review
-GET    /api/account/reviews                  → List user reviews
-GET    /api/account/activity                 → Get login activity
-```
+
+**API Response Standards:**
+
+- Use consistent error handling (`applySecurityHeaders`)
+- Rate limiting on POST/DELETE endpoints
+- Authentication required (check `getServerSession`)
+- Return type-safe responses matching Prisma schemas
 
 ### Component Architecture
 
@@ -663,7 +847,7 @@ src/components/account/
 
 **Colors:**
 
-- Primary: #EC2227 (FishOn red)
+- Primary: #EC2227 (Fishon red)
 - Success: #10B981 (Green)
 - Warning: #F59E0B (Amber)
 - Info: #3B82F6 (Blue)
@@ -759,23 +943,237 @@ src/components/account/
 
 ## Migration Strategy
 
-### Existing Pages to Update
+### Existing State After Restructure
 
-- `/account` → Redirect to `/account/overview`
-- `/mybooking` → Migrate to `/account/bookings`
+✅ **Already Completed:**
+
+- Route groups architecture (`(auth)`, `(dashboard)`, `(marketplace)`, `(marketing)`)
+- Booking flow pages: `/book/[charterId]`, `/book/confirm`, `/book/payment/[bookingId]`
+- Component organization (feature-based folders)
+- Authentication with NextAuth (Google OAuth + credentials)
+- Database schema with User and Booking models
+
+⚠️ **Needs Migration:**
+
+- Empty `(dashboard)` route group → needs account pages
+- No existing `/account` or `/mybooking` pages to migrate
+- Fresh start with clean architecture
+
+### Implementation Phases
+
+#### Phase 1: Dashboard Foundation (Week 1-2)
+
+**Goal:** Basic dashboard shell with bookings list
+
+1. Create dashboard layout (`app/(dashboard)/layout.tsx`)
+
+   - Sidebar navigation (desktop)
+   - Mobile header with hamburger menu
+   - Breadcrumbs
+   - User profile dropdown
+
+2. Dashboard overview page (`app/(dashboard)/account/overview/page.tsx`)
+
+   - Welcome banner
+   - Quick stats cards (bookings count, upcoming trips)
+   - "Book a charter" CTA
+   - Empty state handling
+
+3. Bookings list (`app/(dashboard)/account/bookings/page.tsx`)
+
+   - Fetch user's bookings from database
+   - Tab filters (All, Pending, Approved, Paid, Rejected)
+   - Booking cards with status badges
+   - Status-based action buttons
+   - Integration with existing `/book/payment/[bookingId]` page
+
+4. Booking detail (`app/(dashboard)/account/bookings/[id]/page.tsx`)
+   - Complete booking information
+   - Reuse existing charter components
+   - Payment status display
+   - "Pay Now" button → redirect to `/book/payment/[bookingId]`
+
+**Components to Build:**
+
+- `DashboardNav.tsx`
+- `DashboardHeader.tsx`
+- `BookingCard.tsx`
+- `BookingStatusBadge.tsx`
+- `QuickStats.tsx`
+- `EmptyState.tsx`
+
+**Services to Build:**
+
+- `src/lib/services/booking-service.ts` (getUserBookings, getBookingById)
+- `src/lib/helpers/booking-helpers.ts` (status helpers, action button logic)
+
+**API Routes:**
+
+- `GET /api/account/bookings`
+- `GET /api/account/bookings/[id]`
+
+#### Phase 2: Profile & Favorites (Week 3-4)
+
+**Goal:** User profile management and charter favorites
+
+1. Profile page (`app/(dashboard)/account/profile/page.tsx`)
+
+   - Personal information form
+   - Profile photo upload
+   - Address fields
+   - Emergency contact
+   - Profile completion indicator
+
+2. Favorites page (`app/(dashboard)/account/favorites/page.tsx`)
+   - Grid of saved charters
+   - Heart icon toggle
+   - Quick book button
+   - Remove from favorites
+
+**Components to Build:**
+
+- `ProfileForm.tsx`
+- `FavoriteButton.tsx` (reusable across app)
+- `CharterGrid.tsx` (if not exists)
+
+**API Routes:**
+
+- `POST /api/account/profile`
+- `POST /api/account/favorites`
+- `DELETE /api/account/favorites/[id]`
+- `GET /api/account/favorites`
+
+**Database Migration:**
+
+- Add profile fields to User model
+- Create Favorite model
+- Generate Prisma client
+
+#### Phase 3: Reviews & Enhanced Features (Week 5-6)
+
+**Goal:** Review system and receipt generation
+
+1. Review submission (on `/account/bookings/[id]` page for PAID bookings)
+
+   - Star ratings (captain, boat, value, overall)
+   - Text review + photos
+   - Anonymous option
+   - Moderation flags
+
+2. PDF Receipt generation
+
+   - Receipt API route (`GET /api/account/bookings/[id]/receipt`)
+   - PDF template with branding
+   - Download button on booking detail page
+
+3. Support page (`app/(dashboard)/account/support/page.tsx`)
+   - FAQ accordion
+   - Contact form
+   - Help resources
+
+**Components to Build:**
+
+- `ReviewForm.tsx`
+- `ReceiptGenerator.tsx` (using `@react-pdf/renderer` or similar)
+- `SupportForm.tsx`
+
+**API Routes:**
+
+- `POST /api/account/reviews`
+- `GET /api/account/reviews`
+- `GET /api/account/bookings/[id]/receipt`
+- `POST /api/account/support/contact`
+
+**Database Migration:**
+
+- Create Review model
+- Add review relation to Booking model
+
+#### Phase 4: Advanced Features (Future)
+
+**Goal:** Security, notifications, and trip management
+
+1. Security page (`app/(dashboard)/account/profile/security/page.tsx`)
+
+   - Password change
+   - Login activity log
+   - 2FA placeholder
+
+2. Trips pages (separate from bookings)
+
+   - `/account/trips/upcoming`
+   - `/account/trips/past`
+   - Weather integration
+   - Calendar export
+
+3. Notification preferences
+   - `/account/profile/preferences`
+   - Email/SMS toggles
+   - Marketing opt-in/out
+
+**Components to Build:**
+
+- `PasswordChangeForm.tsx`
+- `LoginActivityLog.tsx`
+- `TripCard.tsx`
+- `PreferencesForm.tsx`
+
+**API Routes:**
+
+- `POST /api/account/password/change`
+- `GET /api/account/activity`
+
+**Database Migration:**
+
+- Create LoginActivity model
+
+### Rollout Strategy
+
+**Beta Testing:**
+
+1. Enable dashboard for test users first
+2. Gather feedback on UX/UI
+3. Iterate on design and functionality
+4. Fix bugs before public launch
+
+**Public Launch:**
+
+1. Announcement email to all users
+2. In-app tutorial/walkthrough
+3. Blog post explaining new features
+4. Monitor analytics and support tickets
+
+**Metrics to Track:**
+
+- Dashboard adoption rate
+- Booking completion rate
+- Profile completion rate
+- Review submission rate
+- Support ticket volume (should decrease)
 
 ### Data Migration
 
-- No breaking changes to existing User/Booking models
-- Add new fields with nullable constraints
-- Backfill defaults where appropriate
+**No Breaking Changes:**
 
-### User Communication
+- All new fields are nullable
+- Existing User and Booking models remain compatible
+- No data migration required
+- Backward compatible with existing auth flow
 
-- Email announcement of new dashboard
-- In-app tutorial on first visit
-- Changelog blog post
-- Video walkthrough
+### Rollback Plan
+
+**If Issues Arise:**
+
+1. Feature flag to disable dashboard
+2. Redirect `/account/*` to old placeholder page
+3. Investigate and fix issues
+4. Re-enable dashboard
+
+**Monitoring:**
+
+- Sentry error tracking
+- Vercel Analytics for page performance
+- User feedback form on dashboard
 
 ## Success Criteria
 
@@ -862,3 +1260,65 @@ The phased approach allows us to launch an MVP quickly while planning for long-t
 3. Should favorites be public or private?
 4. What's the review moderation workflow?
 5. Do we need booking insurance/protection plans?
+
+---
+
+## Revised Implementation Summary
+
+### Key Changes from Original Plan
+
+1. **Leverages Existing Booking Flow**: No need to rebuild `/book/[charterId]`, `/book/confirm`, or `/book/payment/[bookingId]` - they already exist
+2. **Follows Route Groups Architecture**: Dashboard lives in `app/(dashboard)/account/`, consistent with restructured app
+3. **Component Reuse**: Maximizes use of existing charter components (`CharterGallery`, `CaptainCard`, `AmenitiesCard`)
+4. **Clean Separation**: Marketplace (public) vs Dashboard (authenticated) with clear boundaries
+5. **Phased Approach**: 4 phases over 6+ weeks, starting with core booking management
+
+### Critical Path for MVP (Phase 1)
+
+**Priority: HIGH - Must Have for Launch**
+
+1. Dashboard layout with navigation
+2. Bookings list page with filters
+3. Booking detail page with "Pay Now" integration
+4. Quick stats on overview page
+5. Basic empty states
+
+**Priority: MEDIUM - Should Have Soon**
+
+6. Profile management (name, email, phone)
+7. Favorites system
+8. PDF receipt generation
+
+**Priority: LOW - Can Wait**
+
+9. Reviews & ratings
+10. Security features (password change, 2FA)
+11. Trip management pages
+12. Notification preferences
+
+### Success Criteria (30 days post-launch)
+
+- [ ] 60%+ of users visit dashboard within 7 days of booking
+- [ ] 80%+ of APPROVED bookings proceed to payment via dashboard
+- [ ] 30%+ of users complete profile information
+- [ ] 10%+ of PAID bookings receive reviews
+- [ ] <5% support tickets about booking status (down from baseline)
+
+### Next Steps
+
+1. ✅ Review and approve revised plan
+2. Create dashboard layout mockups (Figma/design)
+3. Set up database migrations (User profile fields, Favorite model)
+4. Implement Phase 1 (Week 1-2):
+   - Dashboard shell
+   - Bookings list
+   - Booking detail
+5. User testing with beta group
+6. Iterate based on feedback
+7. Roll out Phases 2-4 incrementally
+
+---
+
+**Last Updated:** 2025-10-24  
+**Status:** ✅ Revised and aligned with restructured app architecture  
+**Ready for:** Design mockups and Phase 1 implementation

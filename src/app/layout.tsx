@@ -1,8 +1,8 @@
-import Chrome from "@/components/Chrome";
-import SessionProvider from "@/components/SessionProvider";
 import AuthModal from "@/components/auth/AuthModal";
 import { AuthModalProvider } from "@/components/auth/AuthModalContext";
-import { auth } from "@/lib/auth";
+import Chrome from "@/components/layout/Chrome";
+import SessionProvider from "@/components/shared/SessionProvider";
+import { auth } from "@/lib/auth/auth";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";

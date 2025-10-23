@@ -65,7 +65,7 @@ const dummyBlogPosts = [
     content: `<h2>Introduction</h2><p>Selangor offers some of the most diverse fishing opportunities in Malaysia. From the bustling Port Klang to the serene waters of Kuala Selangor, there's something for every angler.</p><h2>1. Port Klang - The Gateway to Deep Sea Fishing</h2><p>Port Klang is Malaysia's busiest port and serves as an excellent starting point for deep-sea fishing adventures. The waters here are rich with Spanish mackerel, barracuda, and even the occasional sailfish.</p><h2>2. Kuala Selangor</h2><p>Known for its mangrove estuaries and rich marine life, Kuala Selangor is perfect for inshore fishing. You'll find plenty of siakap (barramundi), ikan merah (red snapper), and various species of grouper.</p>`,
     coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5",
     coverImageAlt: "Fishing boat in Selangor waters",
-    metaTitle: "Top 10 Fishing Spots in Selangor 2025 | FishOn.my",
+    metaTitle: "Top 10 Fishing Spots in Selangor 2025 | Fishon.my",
     metaDescription:
       "Explore the best fishing locations in Selangor. Expert guide to coastal fishing, charter recommendations, and tips for Malaysian anglers.",
     metaKeywords:
@@ -99,7 +99,7 @@ const dummyBlogPosts = [
     content: `<h2>Why Use a Charter?</h2><p>Fishing charters provide everything you need for a successful trip - equipment, local knowledge, safety gear, and an experienced captain who knows the best spots.</p><h2>Types of Charters</h2><h3>1. Inshore Charters</h3><p>Perfect for beginners and families. These trips stay close to shore, targeting species like barramundi, queenfish, and trevally.</p>`,
     coverImage: "https://images.unsplash.com/photo-1559827260-dc66d52bef19",
     coverImageAlt: "Professional fishing charter boat",
-    metaTitle: "How to Choose a Fishing Charter in Malaysia | FishOn.my",
+    metaTitle: "How to Choose a Fishing Charter in Malaysia | Fishon.my",
     metaDescription:
       "Expert guide to selecting the perfect fishing charter. Learn about types, what to look for, and questions to ask before booking.",
     metaKeywords:
@@ -121,8 +121,8 @@ async function seedBlog() {
       create: {
         email: "admin@fishon.my",
         passwordHash: "dummy-hash", // In real app, this would be properly hashed
-        displayName: "FishOn Admin",
-        bio: "Editor of the FishOn.my blog. Sharing fishing tips, techniques, and destination guides for Malaysian anglers.",
+        displayName: "Fishon Admin",
+        bio: "Editor of the Fishon.my blog. Sharing fishing tips, techniques, and destination guides for Malaysian anglers.",
         avatarUrl:
           "https://images.unsplash.com/photo-1502685104226-ee32379fefbe",
       },

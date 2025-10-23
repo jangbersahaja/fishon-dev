@@ -1,10 +1,10 @@
-import type { BlogPostWithRelations } from "@/lib/blog-service";
+import type { BlogPostWithDetails } from "@/lib/services/blog-service";
 import { Calendar } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
 type FeaturedPostCardProps = {
-  post: BlogPostWithRelations;
+  post: BlogPostWithDetails;
 };
 
 export default function FeaturedPostCard({ post }: FeaturedPostCardProps) {

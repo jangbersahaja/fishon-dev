@@ -1,6 +1,6 @@
 //utils/mapItems.ts
 // Convert charters to the lightweight data the map needs.
-import type { Charter } from "@/dummy/charter";
+import type { Charter } from "@/data/mock/charter";
 import { getRatingMap } from "./ratings";
 
 export type MapItem = {

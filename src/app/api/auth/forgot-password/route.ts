@@ -1,5 +1,5 @@
-import { sendMail } from "@/lib/email";
-import { prisma } from "@/lib/prisma";
+import { sendMail } from "@/lib/helpers/email";
+import { prisma } from "@/lib/database/prisma";
 import { NextResponse } from "next/server";
 
 // Generate 6-digit TAC
@@ -21,7 +21,7 @@ export async function POST(request: Request) {
     // Verify user exists
     const user = await prisma.user.findUnique({
       where: { email },
-      select: { id: true, displayName: true },
+      select: { id: true, name: true },
     });
 
     if (!user) {
@@ -50,7 +50,7 @@ export async function POST(request: Request) {
     const html = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
         <h2 style="color: #ec2227;">Reset Your Password</h2>
-        <p>Hi ${user.displayName || "there"},</p>
+        <p>Hi ${user.name || "there"},</p>
         <p>You requested to reset your password. Use this verification code:</p>
         <div style="background: #f5f5f5; padding: 20px; text-align: center; font-size: 32px; font-weight: bold; letter-spacing: 8px; margin: 20px 0;">
           ${code}

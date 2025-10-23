@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Blog Admin Dashboard | FishOn.my",
+  title: "Blog Admin Dashboard | Fishon.my",
   description: "Manage blog posts, comments, and newsletter subscriptions",
   robots: "noindex, nofollow",
 };
@@ -19,7 +19,7 @@ export default function AdminBlogLayout({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-8">
               <Link href="/" className="text-xl font-bold text-[#EC2227]">
-                FishOn.my Admin
+                Fishon.my Admin
               </Link>
               <nav className="flex gap-6">
                 <Link

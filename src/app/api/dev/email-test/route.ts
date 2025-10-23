@@ -1,4 +1,4 @@
-import { sendMail } from "@/lib/email";
+import { sendMail } from "@/lib/helpers/email";
 import { NextResponse } from "next/server";
 
 // Simple dev-only route to validate SMTP. Guard with EMAIL_TEST_SECRET.

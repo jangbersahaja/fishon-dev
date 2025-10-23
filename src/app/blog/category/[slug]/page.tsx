@@ -1,5 +1,8 @@
 import BlogPostCard from "@/components/blog/BlogPostCard";
-import { getBlogCategory, getBlogPostsByCategory } from "@/lib/blog-service";
+import {
+  getBlogCategory,
+  getBlogPostsByCategory,
+} from "@/lib/services/blog-service";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -15,25 +18,25 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!category) {
     return {
-      title: "Category Not Found | FishOn.my",
+      title: "Category Not Found | Fishon.my",
     };
   }
 
   return {
-    title: `${category.name} Articles | FishOn.my`,
+    title: `${category.name} Articles | Fishon.my`,
     description:
       category.description ||
-      `Browse all articles about ${category.name} on FishOn.my`,
+      `Browse all articles about ${category.name} on Fishon.my`,
     alternates: {
       canonical: `https://www.fishon.my/blog/category/${slug}`,
     },
     openGraph: {
-      title: `${category.name} Articles | FishOn.my`,
+      title: `${category.name} Articles | Fishon.my`,
       description:
         category.description ||
-        `Browse all articles about ${category.name} on FishOn.my`,
+        `Browse all articles about ${category.name} on Fishon.my`,
       url: `https://www.fishon.my/blog/category/${slug}`,
-      siteName: "FishOn.my",
+      siteName: "Fishon.my",
       type: "website",
     },
   };

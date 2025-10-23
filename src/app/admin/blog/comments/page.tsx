@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 import { approveComment, deleteComment } from "./actions";
 
 async function getAllComments() {

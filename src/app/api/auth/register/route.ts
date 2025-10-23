@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "@/lib/database/prisma";
 import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 
@@ -38,14 +38,14 @@ export async function POST(request: Request) {
       data: {
         email,
         passwordHash,
-        displayName: name,
+        name: name,
         phone,
         // role defaults to ANGLER via Prisma schema
       },
       select: {
         id: true,
         email: true,
-        displayName: true,
+        name: true,
         phone: true,
         role: true,
       },

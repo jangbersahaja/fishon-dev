@@ -1,6 +1,6 @@
 "use client";
-import CalendarPicker from "@/components/CalendarPicker";
-import type { Trip } from "@/dummy/charter";
+import CalendarPicker from "@/components/shared/CalendarPicker";
+import type { Trip } from "@/data/mock/charter";
 import { useState } from "react";
 
 function todayIso() {
@@ -230,13 +230,14 @@ export default function BookingWidget({
               disabled={overMax}
               onClick={() => {
                 const params = new URLSearchParams();
-                params.set("charterId", charterId);
                 params.set("trip_index", String(i));
                 params.set("date", date);
                 params.set("days", String(days));
                 params.set("adults", String(adults));
                 params.set("children", String(children));
-                window.location.assign(`/checkout?${params.toString()}`);
+                window.location.assign(
+                  `/book/${charterId}?${params.toString()}`
+                );
               }}
             >
               Reserve Trip

@@ -1,5 +1,9 @@
 import { PrismaClient } from "@prisma/client";
-import { dummyBlogCategories, dummyBlogTags, dummyBlogPosts } from "../src/dummy/blog";
+import {
+  dummyBlogCategories,
+  dummyBlogPosts,
+  dummyBlogTags,
+} from "../src/data/mock/blog";
 
 const prisma = new PrismaClient();
 
@@ -12,7 +16,8 @@ async function seedBlog() {
     update: {},
     create: {
       email: "admin@fishon.my",
-      passwordHash: "$2a$10$K7L.H8LqG8S5h9GQXZ5gWuZr1Zi8ZLr7HNrxH3GV7vFZKpw8P4q0W", // placeholder hash
+      passwordHash:
+        "$2a$10$K7L.H8LqG8S5h9GQXZ5gWuZr1Zi8ZLr7HNrxH3GV7vFZKpw8P4q0W", // placeholder hash
     },
   });
   console.log(`✓ Created admin user: ${adminUser.email}`);

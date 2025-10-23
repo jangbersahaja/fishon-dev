@@ -1,4 +1,4 @@
-import type { Charter } from "@/dummy/charter";
+import type { Charter } from "@/data/mock/charter";
 
 export default function BoatCard({ charter }: { charter: Charter }) {
   const boat = charter.boat;

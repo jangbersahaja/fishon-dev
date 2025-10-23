@@ -35,16 +35,57 @@ It’s built with **Next.js 15**, **React 19**, **Prisma ORM**, and **PostgreSQL
 
 ## 🧩 Project Architecture
 
+### High-Level Structure
+
 ```text
-Fishon.my (Next.js frontend)
-├── app/                 # Next.js App Router pages & layouts
-├── components/          # Reusable UI components
-├── lib/                 # Prisma client, helpers, API utilities
-├── prisma/              # Prisma schema & migrations
-├── public/              # Static assets, icons, PWA manifest
-├── docs/                # Technical documentation
-└── DOCS/DB_ARCHITECTURE.md  # Canonical database guide
+fishon-market/
+├── src/
+│   ├── app/                    # Next.js 15 App Router (Route Groups)
+│   │   ├── (auth)/            # Authentication pages (no layout)
+│   │   ├── (dashboard)/       # User dashboard (with sidebar)
+│   │   ├── (marketplace)/     # Public charter browsing
+│   │   ├── (marketing)/       # Static/info pages
+│   │   ├── api/               # API routes
+│   │   └── blog/              # Blog platform
+│   ├── components/            # React components (feature-based)
+│   │   ├── account/           # Dashboard components
+│   │   ├── auth/              # Auth forms & modals
+│   │   ├── charter/           # Charter detail components
+│   │   ├── charters/          # Charter list components
+│   │   ├── layout/            # Navbar, Footer, Chrome
+│   │   ├── marketing/         # Landing page components
+│   │   ├── search/            # Search & filters
+│   │   ├── shared/            # Reusable utilities
+│   │   └── ui/                # shadcn/ui primitives
+│   ├── lib/                   # Business logic (service-based)
+│   │   ├── api/               # API clients
+│   │   ├── auth/              # Authentication utilities
+│   │   ├── booking/           # Booking logic
+│   │   ├── database/          # Prisma clients
+│   │   ├── helpers/           # Helper functions
+│   │   ├── services/          # Data services
+│   │   └── webhooks/          # Webhook handlers
+│   ├── data/                  # Static data & mock fixtures
+│   ├── types/                 # TypeScript type definitions
+│   ├── utils/                 # Pure utility functions
+│   └── config/                # App configuration
+├── prisma/                    # Database schema & migrations
+├── public/                    # Static assets
+└── docs/                      # Technical documentation
 ```
+
+### Route Groups Architecture
+
+We use Next.js 15 route groups `(name)` for logical organization without affecting URLs:
+
+- **`(auth)/`** - Authentication flows (minimal layout)
+- **`(dashboard)/`** - User account management (shared sidebar layout)
+- **`(marketplace)/`** - Public charter browsing (full marketplace layout)
+- **`(marketing)/`** - Static pages like About, Contact (simple layout)
+
+**Key Benefit:** Route groups enable shared layouts and clear separation without changing URL structure. For example, `app/(dashboard)/account/bookings/page.tsx` renders at `/account/bookings`.
+
+See [feature-app-structure-refactor.md](docs/feature-app-structure-refactor.md) for complete architecture details.
 
 ### Related Services
 

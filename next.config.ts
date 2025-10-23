@@ -20,6 +20,7 @@ const nextConfig = {
               hostname: "**.public.blob.vercel-storage.com",
             },
             { protocol: "https", hostname: "**.blob.vercel-storage.com" },
+            { protocol: "https", hostname: "lh3.googleusercontent.com" },
           ]),
     ],
   },
@@ -27,6 +28,52 @@ const nextConfig = {
   // This ensures .next artifacts are generated under this project folder
   turbopack: {
     root: __dirname,
+  },
+  // Redirects for old URLs after route restructuring
+  async redirects() {
+    return [
+      {
+        source: "/book",
+        destination: "/home",
+        permanent: true,
+      },
+      {
+        source: "/mybooking",
+        destination: "/account/bookings",
+        permanent: true,
+      },
+      {
+        source: "/charters/view",
+        destination: "/charters",
+        permanent: true,
+      },
+      {
+        source: "/charters/view/:id",
+        destination: "/charters/:id",
+        permanent: true,
+      },
+      // Booking system redirects
+      {
+        source: "/checkout",
+        destination: "/home",
+        permanent: true,
+      },
+      {
+        source: "/checkout/confirmation",
+        destination: "/book/confirm",
+        permanent: true,
+      },
+      {
+        source: "/pay/:id",
+        destination: "/book/payment/:id",
+        permanent: true,
+      },
+      {
+        source: "/booking/:id",
+        destination: "/book/confirm",
+        permanent: true,
+      },
+    ];
   },
 };
 

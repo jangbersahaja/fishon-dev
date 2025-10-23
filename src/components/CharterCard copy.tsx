@@ -63,17 +63,17 @@ export default function CharterCard({
   return (
     <Link
       href={`/charters/view/${c.id}?${params.toString()}`}
-      className="group h-full flex flex-col rounded-2xl border border-black/10 bg-white overflow-hidden shadow-sm hover:shadow-md transition-shadow"
+      className="flex flex-col h-full overflow-hidden transition-shadow bg-white border shadow-sm group rounded-2xl border-black/10 hover:shadow-md"
     >
       {/* Cover image */}
       <div className="relative w-full h-56 md:h-64">
         {/* Glass overlay: title + rating + type pill */}
         <div className="absolute left-0 right-0 bottom-0 z-[1] flex items-start justify-between gap-2 bg-white/70 px-5 py-2.5 shadow-sm backdrop-blur supports-[backdrop-filter]:bg-white/60">
           <div className="min-w-0">
-            <h3 className="text-sm lg:text-lg font-bold leading-tight truncate">
+            <h3 className="text-sm font-bold leading-tight truncate lg:text-lg">
               <span className="hover:underline">{c.name}</span>
             </h3>
-            <div className="mt-1 flex items-center gap-2">
+            <div className="flex items-center gap-2 mt-1">
               {avg ? (
                 <>
                   <StarRating value={avg} size={14} />
@@ -112,7 +112,7 @@ export default function CharterCard({
           {/* Captain row */}
           <div className="flex items-center gap-2 text-xs text-gray-700">
             {captainAvatar ? (
-              <span className="relative h-6 w-6 overflow-hidden rounded-full border border-black/10">
+              <span className="relative w-6 h-6 overflow-hidden border rounded-full border-black/10">
                 <SafeImage
                   src={captainAvatar}
                   alt={`${captainName} avatar`}
@@ -164,7 +164,7 @@ export default function CharterCard({
               c.species.slice(0, 3).map((s) => (
                 <span
                   key={s}
-                  className="rounded-full border border-black/10 bg-gray-50 px-2 py-1"
+                  className="px-2 py-1 border rounded-full border-black/10 bg-gray-50"
                 >
                   {s}
                 </span>
@@ -173,7 +173,7 @@ export default function CharterCard({
               c.techniques.slice(0, 2).map((t) => (
                 <span
                   key={t}
-                  className="rounded-full border border-black/10 bg-gray-50 px-2 py-1"
+                  className="px-2 py-1 border rounded-full border-black/10 bg-gray-50"
                 >
                   {t}
                 </span>
@@ -181,10 +181,10 @@ export default function CharterCard({
           </div>
         </div>
 
-        <div className="mt-4 border-t border-black/10 pt-3 flex items-center justify-between">
+        <div className="flex items-center justify-between pt-3 mt-4 border-t border-black/10">
           {typeof minPrice === "number" ? (
             <div className="leading-tight">
-              <span className="text-gray-500 text-sm">Trips From</span>{" "}
+              <span className="text-sm text-gray-500">Trips From</span>{" "}
               <span className="text-xl font-bold text-[#ec2227]">
                 RM{minPrice}
               </span>

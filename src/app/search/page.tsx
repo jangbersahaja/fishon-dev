@@ -164,15 +164,17 @@ export default async function SearchResults({
 
   return (
     <>
-      <main className="min-h-dvh bg-white">
-        {/* Responsive SearchBox: non-sticky on mobile, sticky on desktop */}
-        <div className="sticky top-0 z-30 w-full mx-auto flex flex-col items-center">
-          <div className="h-12 w-full bg-[#ec2227]" />
-          <div className="absolute top-0 w-full mx-auto px-3 max-w-7xl py-3">
+      <main className="bg-white min-h-dvh">
+        {/* Responsive SearchBox: non-sticky on mobile, sticky on desktop under fixed navbar */}
+        <div
+          className="sticky top-16 z-40 w-full border-b border-black/10 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70"
+          style={{ willChange: "top" }}
+        >
+          <div className="px-3 py-3 mx-auto max-w-7xl">
             <SearchBox />
           </div>
         </div>
-        <section className="mt-20 mx-auto max-w-7xl px-5 sm:px-5 py-3">
+        <section className="px-5 py-3 mx-auto mt-20 max-w-7xl sm:px-5">
           <nav className="text-sm text-gray-500">
             <Link href="/book" className="hover:underline">
               Home
@@ -180,8 +182,8 @@ export default async function SearchResults({
             <span>/</span> <span className="text-gray-700">Search</span>
           </nav>
           {/* Header / Filters Summary */}
-          <div className="mt-4 flex flex-col gap-1">
-            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          <div className="flex flex-col gap-1 mt-4">
+            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
               Search results
             </h1>
             <p className="text-sm text-gray-600">
@@ -254,9 +256,9 @@ export default async function SearchResults({
           />
 
           {/* Results */}
-          <div className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-2">
+          <div className="grid grid-cols-1 gap-6 mt-6 md:grid-cols-2">
             {filtered.length === 0 && (
-              <div className="col-span-full rounded-xl border border-black/10 bg-white p-6 text-center text-sm text-gray-700">
+              <div className="p-6 text-sm text-center text-gray-700 bg-white border col-span-full rounded-xl border-black/10">
                 No charters match your search.
                 <div className="mt-2 text-xs text-gray-500">
                   Try a broader destination or reduce the number of guests.
@@ -266,7 +268,7 @@ export default async function SearchResults({
 
             {filtered.map((c) => (
               <CharterCard
-                key={c.id}
+                key={(c as any).backendId ?? `d:${String(c.id)}`}
                 charter={c}
                 context={{ date, adults, children, guestsParam }}
               />

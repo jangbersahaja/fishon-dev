@@ -1,20 +1,26 @@
-import AboutSection from "@/components/charter/AboutSection";
-import AmenitiesCard from "@/components/charter/AmenitiesCard";
-import BoatCard from "@/components/charter/BoatCard";
 import BookingWidget from "@/components/charter/BookingWidget";
-import CaptainSection from "@/components/charter/CaptainSection";
-import CharterGallery from "@/components/charter/CharterGallery";
-import GuestFeedbackPanel from "@/components/charter/GuestFeedbackPanel";
-import LocationMap from "@/components/charter/LocationMap";
-import PoliciesInfoCard from "@/components/charter/PoliciesInfoCard";
 import ReviewsList from "@/components/charter/ReviewsList";
-import SpeciesTechniquesCard from "@/components/charter/SpeciesTechniquesCard";
 import Stars from "@/components/charter/Stars";
 import { Charter, Trip } from "@/dummy/charter";
 import { receipts, type BookingReview } from "@/dummy/receipts";
 import { getCharterById } from "@/lib/charter-service";
+import {
+  AboutSection,
+  AmenitiesCard,
+  BoatCard,
+  CaptainSection,
+  GuestFeedback,
+  LocationMap,
+  PhotoGallery,
+  PoliciesCard,
+  summariseBadges,
+  TargetSpeciesCard,
+  TechniqueCard,
+} from "@fishon/ui/charter";
 import type { Metadata } from "next";
 import Link from "next/link";
+
+export const revalidate = 300; // ISR: refresh detail every 5 minutes
 
 type RouteParams = Promise<{ id: string }>;
 type RouteSearchParams = Promise<{
@@ -102,6 +108,20 @@ export default async function CharterViewPage({
     Math.max(trips.length - 1, 0)
   );
   const selectedTrip = trips[tripIndex];
+  // Build a basic checkout link using current context (fallbacks applied)
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const defaultDateIso = today.toISOString().slice(0, 10);
+  const checkoutParams = new URLSearchParams();
+  const charterIdParam = id; // cuid or numeric string already in route
+  checkoutParams.set("charterId", charterIdParam);
+  checkoutParams.set("trip_index", String(tripIndex));
+  checkoutParams.set("date", defaultDateIso);
+  checkoutParams.set("days", "1");
+  checkoutParams.set("adults", String(persons > 0 ? persons : 1));
+  // children not tracked in this page yet; default 0
+  checkoutParams.set("children", "0");
+  // const checkoutHref = `/checkout?${checkoutParams.toString()}`; // old CTA removed; navigation handled by BookingWidget
 
   const title = charter?.name || `Charter #${id}`;
   const location = charter?.location || "Malaysia";
@@ -113,6 +133,18 @@ export default async function CharterViewPage({
   const images: string[] = getImagesArray(charter);
 
   const boat = charter?.boat;
+  const uiBoat = boat
+    ? {
+        name: boat.name,
+        type: boat.type,
+        lengthFeet:
+          typeof boat.length === "string"
+            ? parseFloat(boat.length)
+            : (boat as any).lengthFeet,
+        capacity: boat.capacity,
+        features: boat.features,
+      }
+    : undefined;
   const tripMaxAnglers =
     selectedTrip?.maxAnglers && selectedTrip.maxAnglers > 0
       ? selectedTrip.maxAnglers
@@ -131,8 +163,8 @@ export default async function CharterViewPage({
 
   if (!charter) {
     return (
-      <main className="min-h-dvh bg-white">
-        <section className="mx-auto max-w-3xl px-4 sm:px-6 py-12">
+      <main className="bg-white min-h-dvh">
+        <section className="max-w-3xl px-4 py-12 mx-auto sm:px-6">
           <h1 className="text-2xl font-bold">Charter not found</h1>
           <p className="mt-2 text-gray-600">
             We couldn&apos;t find the charter with ID <code>{id}</code>. Please
@@ -149,8 +181,8 @@ export default async function CharterViewPage({
   }
 
   return (
-    <main className="min-h-dvh bg-white">
-      <section className="mx-auto max-w-7xl px-4 sm:px-6">
+    <main className="bg-white min-h-dvh">
+      <section className="px-4 mx-auto max-w-7xl sm:px-6">
         {/* Breadcrumbs */}
         <nav className="pt-6 text-sm text-gray-500">
           <Link href="/book" className="hover:underline">
@@ -173,13 +205,13 @@ export default async function CharterViewPage({
         </nav>
 
         {/* Header */}
-        <header className="mt-4 flex flex-col gap-1">
+        <header className="flex flex-col gap-1 mt-4">
           <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
             {title}
           </h1>
           {address && <p className="text-sm text-gray-500">{address}</p>}
           {ratingCount > 0 && (
-            <div className="mt-1 flex items-center gap-2 text-sm text-gray-700">
+            <div className="flex items-center gap-2 mt-1 text-sm text-gray-700">
               <Stars value={ratingAvg} />
               <span className="font-medium">{ratingAvg.toFixed(1)}</span>
               <span className="text-gray-500">
@@ -191,11 +223,11 @@ export default async function CharterViewPage({
 
         {/* Gallery */}
         <div className="mt-6">
-          <CharterGallery images={images} title={title} />
+          <PhotoGallery images={images} title={title} />
         </div>
 
         {/* Main grid */}
-        <section className="mt-6 grid grid-cols-1 gap-6 md:grid-cols-5">
+        <section className="grid grid-cols-1 gap-6 mt-6 md:grid-cols-5">
           {/* Left column */}
           <div className="md:col-span-3">
             <AboutSection description={desc} />
@@ -204,13 +236,14 @@ export default async function CharterViewPage({
             <CaptainSection charter={charter} />
 
             {/* Boat */}
-            <BoatCard charter={charter} />
+            <BoatCard boat={uiBoat as any} />
 
             {/* Species + Techniques */}
-            <SpeciesTechniquesCard charter={charter} />
+            <TargetSpeciesCard species={charter?.species ?? []} />
+            <TechniqueCard techniques={charter?.techniques ?? []} />
 
             {/* Amenities */}
-            <AmenitiesCard charter={charter} />
+            <AmenitiesCard includes={charter?.includes ?? []} />
 
             {/* Map */}
             <LocationMap title={title} mapEmbedSrc={mapEmbedSrc} />
@@ -224,18 +257,30 @@ export default async function CharterViewPage({
                 defaultPersons={persons}
                 personsMax={personsMax}
                 childFriendly={!!charter?.policies?.childFriendly}
+                charterId={charterIdParam}
               />
             </div>
           </div>
         </section>
 
-        <PoliciesInfoCard charter={charter} />
+        <PoliciesCard
+          policies={charter.policies as any}
+          pickup={
+            {
+              available: !!charter.pickup?.available,
+              fee: charter.pickup?.fee ?? null,
+              areas: charter.pickup?.areas ?? [],
+              notes: charter.pickup?.notes,
+            } as any
+          }
+        />
 
         {/* Feedback summary */}
-        <GuestFeedbackPanel
-          reviews={reviews}
+        <GuestFeedback
+          reviews={reviews as any}
           ratingAvg={ratingAvg}
           ratingCount={ratingCount}
+          summariseBadges={summariseBadges as any}
         />
 
         {/* Reviews (Airbnb-style two-column) */}

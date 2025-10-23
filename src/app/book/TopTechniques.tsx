@@ -1,11 +1,8 @@
 import CategoryCard from "@/components/CategoryCard";
-import { Charter } from "@/dummy/charter";
+import { getFishingTechniqueImage } from "@/lib/image-helpers";
+import { getPopularTechniques } from "@/lib/popularity-helpers";
+import type { Charter } from "@fishon/ui";
 import Link from "next/link";
-
-type CharterLite = {
-  images?: string[];
-  techniques?: string[];
-};
 
 const TECHNIQUE_DEFS = [
   "Jigging",
@@ -18,35 +15,16 @@ const TECHNIQUE_DEFS = [
   "Squid/Eging",
 ] as const;
 
-function filterByTechnique(list: CharterLite[], technique: string) {
-  const t = technique.toLowerCase();
-  return list.filter(
-    (c: any) =>
-      Array.isArray(c.techniques) &&
-      c.techniques.some((x: string) => (x || "").toLowerCase() === t)
-  );
-}
-
-function getCoverForTechnique(charters: Charter[], technique: string) {
-  const t = technique.toLowerCase();
-  const item = charters.find(
-    (c) =>
-      Array.isArray(c.techniques) &&
-      c.techniques.some((x: string) => (x || "").toLowerCase() === t) &&
-      Array.isArray(c.images) &&
-      c.images.length > 0
-  );
-  return item?.images?.[0] as string | undefined;
-}
-
 export default function TopTechniques({ charters }: { charters: Charter[] }) {
-  const withCounts = TECHNIQUE_DEFS.map((tech) => {
-    const count = filterByTechnique(charters, tech).length;
-    return { tech, count };
-  })
-    .filter((x) => x.count > 0)
-    .sort((a, b) => b.count - a.count)
-    .slice(0, 4);
+  const topTechniques = getPopularTechniques(
+    charters,
+    TECHNIQUE_DEFS as unknown as string[],
+    5
+  );
+
+  if (topTechniques.length === 0) {
+    return null;
+  }
 
   return (
     <section className="mx-auto w-full max-w-7xl px-2 md:px-0">
@@ -61,23 +39,24 @@ export default function TopTechniques({ charters }: { charters: Charter[] }) {
           </Link>
         </div>
 
-        {withCounts.length > 0 && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
-            {withCounts.map(({ tech, count }) => (
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-5">
+          {topTechniques.map(({ name, count }) => {
+            const image = getFishingTechniqueImage(name);
+            return (
               <CategoryCard
-                key={tech}
+                key={name}
                 href={`/search/category/technique/${encodeURIComponent(
-                  tech.toLowerCase()
+                  name.toLowerCase()
                 )}`}
-                label={tech}
+                label={name}
                 count={count}
-                subtitle={`Charters using ${tech.toLowerCase()}`}
-                image={getCoverForTechnique(charters, tech)}
-                alt={`${tech} technique`}
+                subtitle={`Charters using ${name.toLowerCase()}`}
+                image={image}
+                alt={`${name} technique`}
               />
-            ))}
-          </div>
-        )}
+            );
+          })}
+        </div>
 
         <div className="mt-4 flex justify-start md:hidden">
           <Link

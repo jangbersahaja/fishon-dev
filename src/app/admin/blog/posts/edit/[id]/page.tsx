@@ -25,9 +25,9 @@ async function getFormData() {
 export default async function EditBlogPostPage({
   params,
 }: {
-  params: Promise<{ id: string }>;
+  params: { id: string };
 }) {
-  const { id } = await params;
+  const { id } = params;
   const post = await getPost(id);
 
   if (!post) {

@@ -58,14 +58,30 @@ export default function TripsNearby({ charters }: { charters: Charter[] }) {
     );
   }, []);
 
+  const getCharterKey = (c: { id: number } & Partial<Record<string, any>>) => {
+    const backendId = (c as any).backendId as string | undefined;
+    return backendId ? `b:${backendId}` : `d:${String(c.id)}`;
+  };
+
   const nearby: Nearby[] = useMemo(() => {
     if (!coords) return [];
     const withCoords = charters.filter((c) => !!c.coordinates);
-    return withCoords
-      .map((c) => ({ ...c, _distance: distanceKm(coords, c.coordinates!) }))
-      .filter((c) => c._distance <= 25)
-      .sort((a, b) => a._distance - b._distance)
-      .slice(0, 20);
+    const computed = withCoords.map((c) => ({
+      ...c,
+      _distance: distanceKm(coords, c.coordinates!),
+    }));
+    // Sort by distance then dedupe by stable key (backendId preferred over local id)
+    const sorted = computed.sort((a, b) => a._distance - b._distance);
+    const seen = new Set<string>();
+    const unique: Nearby[] = [];
+    for (const c of sorted) {
+      const k = getCharterKey(c as any);
+      if (!seen.has(k)) {
+        seen.add(k);
+        unique.push(c);
+      }
+    }
+    return unique.filter((c) => c._distance <= 25).slice(0, 20);
   }, [coords, charters]);
 
   const trackRef = useRef<HTMLDivElement | null>(null);
@@ -149,13 +165,13 @@ export default function TripsNearby({ charters }: { charters: Charter[] }) {
 
   return (
     <section className="w-full">
-      <div className="mx-auto w-full max-w-7xl px-5">
+      <div className="w-full px-5 mx-auto max-w-7xl">
         {/* Status */}
         {!coords && !error && (
           <div className="text-sm text-white">Detecting your location…</div>
         )}
         {error && (
-          <div className="text-sm text-white flex gap-2 items-center">
+          <div className="flex items-center gap-2 text-sm text-white">
             <MdError className="text-3xl" />
             <p>
               Unable to fetch your location: {error}.<br /> You can still browse
@@ -172,14 +188,14 @@ export default function TripsNearby({ charters }: { charters: Charter[] }) {
         {/* Cards (carousel) */}
         {nearby.length > 0 && (
           <>
-            <h2 className="text-2xl font-bold text-white text-center lg:text-start">
+            <h2 className="text-2xl font-bold text-center text-white lg:text-start">
               Discover Trip Near You
             </h2>
             <div className="relative mt-5">
               {/* track */}
               <div
                 ref={trackRef}
-                className="flex snap-x snap-mandatory overflow-x-auto gap-5 pb-3 scroll-smooth"
+                className="flex gap-5 pb-3 overflow-x-auto snap-x snap-mandatory scroll-smooth"
               >
                 {nearby.map((c) => {
                   const img =
@@ -192,19 +208,7 @@ export default function TripsNearby({ charters }: { charters: Charter[] }) {
                       : undefined;
                   const avg = getAverageRating(c.id);
                   const reviews = getCharterReviews(c.id);
-                  // Ratings
-                  <div className="mt-2">
-                    {avg ? (
-                      <>
-                        <StarRating value={avg} size={16} />
-                        <p className="text-xs text-gray-500">
-                          {reviews.length} reviews
-                        </p>
-                      </>
-                    ) : (
-                      <p className="text-xs text-gray-400">No reviews yet</p>
-                    )}
-                  </div>;
+                  // (stray JSX removed; ratings are rendered below)
                   // Build link with existing booking context if present
                   const params = new URLSearchParams();
                   if (typeof adults === "number" && !Number.isNaN(adults))
@@ -215,17 +219,19 @@ export default function TripsNearby({ charters }: { charters: Charter[] }) {
                   if (total) params.set("booking_persons", String(total));
                   if (date) params.set("date", date);
                   const qs = params.toString();
+                  // Prefer backendId for linking when available; falls back to numeric id (dummy)
+                  const idForLink = (c as any).backendId ?? String(c.id);
                   const href = qs
-                    ? `/charters/view/${c.id}?${qs}`
-                    : `/charters/view/${c.id}`;
+                    ? `/charters/view/${idForLink}?${qs}`
+                    : `/charters/view/${idForLink}`;
 
                   return (
                     <article
-                      key={c.id}
-                      className="w-80 shrink-0 snap-start overflow-hidden rounded-xl bg-white shadow-sm"
+                      key={getCharterKey(c as any)}
+                      className="overflow-hidden bg-white shadow-sm w-80 shrink-0 snap-start rounded-xl"
                     >
                       <Link href={href}>
-                        <div className="relative h-64 w-full">
+                        <div className="relative w-full h-64">
                           <SafeImage
                             src={img}
                             alt={`${c.name} cover`}
@@ -233,7 +239,7 @@ export default function TripsNearby({ charters }: { charters: Charter[] }) {
                             className="object-cover"
                           />
                         </div>
-                        <div className="p-3 flex flex-col gap-1">
+                        <div className="flex flex-col gap-1 p-3">
                           <div className="flex gap-1">
                             {avg ? (
                               <>
@@ -248,7 +254,7 @@ export default function TripsNearby({ charters }: { charters: Charter[] }) {
                               </p>
                             )}
                           </div>
-                          <h3 className="line-clamp-1 text-base font-semibold">
+                          <h3 className="text-base font-semibold line-clamp-1">
                             {c.name}
                           </h3>
                           <p className="line-clamp-1 text-[11px] text-gray-600">
@@ -289,7 +295,7 @@ export default function TripsNearby({ charters }: { charters: Charter[] }) {
                     scrollToSnap("prev");
                   }}
                   onTouchEnd={(e) => e.preventDefault()}
-                  className="flex absolute left-2 top-1/2 -translate-y-1/2 h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-white/90 shadow z-10 pointer-events-auto"
+                  className="absolute z-10 flex items-center justify-center -translate-y-1/2 border rounded-full shadow pointer-events-auto left-2 top-1/2 h-9 w-9 border-black/10 bg-white/90"
                 >
                   ‹
                 </button>
@@ -299,14 +305,14 @@ export default function TripsNearby({ charters }: { charters: Charter[] }) {
                   type="button"
                   aria-label="Next"
                   onClick={() => scrollToSnap("next")}
-                  className="flex absolute right-2 top-1/2 -translate-y-1/2 h-9 w-9 items-center justify-center rounded-full border border-black/10 bg-white/90 shadow z-10 pointer-events-auto"
+                  className="absolute z-10 flex items-center justify-center -translate-y-1/2 border rounded-full shadow pointer-events-auto right-2 top-1/2 h-9 w-9 border-black/10 bg-white/90"
                 >
                   ›
                 </button>
               )}
 
               {/* mobile position indicators (optional) */}
-              <div className="mt-2 flex justify-center gap-1 lg:hidden">
+              <div className="flex justify-center gap-1 mt-2 lg:hidden">
                 {/* Dots are approximate (chunks of ~2 cards per viewport) */}
                 {Array.from({
                   length: Math.max(1, Math.ceil(nearby.length / 2)),

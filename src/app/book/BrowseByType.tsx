@@ -1,40 +1,12 @@
 import CategoryCard from "@/components/CategoryCard";
-import { Charter } from "@/dummy/charter";
+import { getFishingTypeImage } from "@/lib/image-helpers";
+import { getFishingTypesWithCounts } from "@/lib/popularity-helpers";
+import type { Charter } from "@fishon/ui";
 import Link from "next/link";
 
-type CharterLite = {
-  images?: string[];
-  fishingType?: string;
-};
-
-const TYPE_DEFS = [
-  { key: "lake", label: "Lake" },
-  { key: "stream", label: "Stream" },
-  { key: "inshore", label: "Inshore" },
-  { key: "offshore", label: "Offshore" },
-] as const;
-
-function filterByType(
-  list: CharterLite[],
-  type: "lake" | "stream" | "inshore" | "offshore"
-) {
-  return list.filter((c) => (c.fishingType || "").toLowerCase() === type);
-}
-
-function getCoverForType(
-  charters: Charter[],
-  type: "lake" | "stream" | "inshore" | "offshore"
-) {
-  const item = charters.find(
-    (c) =>
-      (c.fishingType || "").toLowerCase() === type &&
-      Array.isArray(c.images) &&
-      c.images.length > 0
-  );
-  return item?.images?.[0] as string | undefined;
-}
-
 export default function BrowseByType({ charters }: { charters: Charter[] }) {
+  const types = getFishingTypesWithCounts(charters);
+
   return (
     <section className="mx-auto w-full max-w-7xl px-2 md:px-0">
       <div className="w-full px-5">
@@ -49,22 +21,16 @@ export default function BrowseByType({ charters }: { charters: Charter[] }) {
         </div>
 
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4">
-          {TYPE_DEFS.map((t) => {
-            const count = filterByType(
-              charters,
-              t.key as "lake" | "stream" | "inshore" | "offshore"
-            ).length;
+          {types.map((t) => {
+            const image = getFishingTypeImage(t.key);
             return (
               <CategoryCard
                 key={t.key}
                 href={`/search/category/type/${t.key}`}
                 label={t.label}
-                count={count}
+                count={t.count}
                 subtitle={`Explore ${t.label.toLowerCase()} trips`}
-                image={getCoverForType(
-                  charters,
-                  t.key as "lake" | "stream" | "inshore" | "offshore"
-                )}
+                image={image}
                 alt={`${t.label} fishing`}
               />
             );

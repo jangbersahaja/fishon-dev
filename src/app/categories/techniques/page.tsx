@@ -1,20 +1,8 @@
-// src/app/charters/categories/techniques/page.tsx
+// src/app/categories/techniques/page.tsx
 import CategoryCard from "@/components/CategoryCard";
-import { Charter } from "@/dummy/charter";
 import { getCharters } from "@/lib/charter-service";
+import { getFishingTechniqueImage } from "@/lib/image-helpers";
 import Link from "next/link";
-
-function getCoverForTechnique(charters: Charter[], technique: string) {
-  const t = technique.toLowerCase();
-  const item = charters.find(
-    (c) =>
-      Array.isArray(c.images) &&
-      c.images.length > 0 &&
-      Array.isArray(c.techniques) &&
-      c.techniques.some((x: string) => (x || "").toLowerCase() === t)
-  );
-  return item?.images?.[0] as string | undefined;
-}
 
 function normalizeLabel(s: string) {
   return s
@@ -43,7 +31,7 @@ export default async function TechniquesCategoriesPage() {
       key,
       label: normalizeLabel(key),
       count,
-      image: getCoverForTechnique(charters, key),
+      image: getFishingTechniqueImage(key),
     }))
     .sort((a, b) => b.count - a.count);
 

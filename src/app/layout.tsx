@@ -1,3 +1,8 @@
+import Chrome from "@/components/Chrome";
+import SessionProvider from "@/components/SessionProvider";
+import AuthModal from "@/components/auth/AuthModal";
+import { AuthModalProvider } from "@/components/auth/AuthModalContext";
+import { auth } from "@/lib/auth";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -21,17 +26,24 @@ export const metadata: Metadata = {
   },
   twitter: { card: "summary_large_image" },
   icons: { icon: "/favicon.ico", apple: "/apple-touch-icon.png" },
-  
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await auth();
   return (
     <html lang="en" className="h-full">
-      <body className={`${inter.className} h-full`}>{children}</body>
+      <body className={`${inter.className} h-full`}>
+        <SessionProvider session={session}>
+          <AuthModalProvider>
+            <Chrome>{children}</Chrome>
+            <AuthModal />
+          </AuthModalProvider>
+        </SessionProvider>
+      </body>
     </html>
   );
 }

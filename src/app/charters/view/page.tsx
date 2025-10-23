@@ -1,13 +1,29 @@
 // src/app/charters/view/page.tsx
+import { getCharters } from "@/lib/charter-service";
 import Link from "next/link";
-export default function ViewIndex() {
+
+export default async function ViewIndex() {
+  const charters = await getCharters();
+  const first = charters[0];
+
   return (
     <main className="p-6">
       <h1 className="text-xl font-bold">Charters</h1>
-      <p className="mt-2">Try a sample charter:</p>
-      <Link href="/charters/view/1001" className="text-red-600 underline">
-        View charter #1001
-      </Link>
+      {!first ? (
+        <p className="mt-2 text-gray-600">No charters available yet.</p>
+      ) : (
+        <div className="mt-2">
+          <p className="text-gray-700">Try a sample charter:</p>
+          <Link
+            href={`/charters/view/${
+              (first as any).backendId || String(first.id)
+            }`}
+            className="text-red-600 underline"
+          >
+            View {first.name}
+          </Link>
+        </div>
+      )}
     </main>
   );
 }

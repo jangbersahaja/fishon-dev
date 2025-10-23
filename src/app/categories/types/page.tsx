@@ -1,52 +1,13 @@
-// src/app/charters/categories/types/page.tsx
+// src/app/categories/types/page.tsx
 import CategoryCard from "@/components/CategoryCard";
-import { Charter } from "@/dummy/charter";
 import { getCharters } from "@/lib/charter-service";
+import { getFishingTypeImage } from "@/lib/image-helpers";
+import { getFishingTypesWithCounts } from "@/lib/popularity-helpers";
 import Link from "next/link";
-
-function getCoverForType(charters: Charter[], type: string) {
-  const t = (type || "").toLowerCase();
-  const item = charters.find(
-    (c) =>
-      ((c.fishingType || "") as string).toLowerCase() === t &&
-      Array.isArray(c.images) &&
-      c.images.length > 0
-  );
-  return item?.images?.[0] as string | undefined;
-}
-
-function normalizeLabel(s: string) {
-  return String(s || "")
-    .toLowerCase()
-    .replace(/\s+/g, " ")
-    .trim()
-    .split(" ")
-    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
-    .join(" ");
-}
 
 export default async function TypesCategoriesPage() {
   const charters = await getCharters();
-
-  // Gather counts per fishingType (case-insensitive)
-  const counts = new Map<string, number>();
-
-  charters.forEach((c) => {
-    const key = ((c.fishingType || "") as string).toLowerCase().trim();
-    if (!key) return;
-    counts.set(key, (counts.get(key) || 0) + 1);
-  });
-
-  // In case you only want these 4 canonical types:
-  const order = ["lake", "stream", "inshore", "offshore"];
-  const items = order
-    .map((key) => ({
-      key,
-      label: normalizeLabel(key),
-      count: counts.get(key) || 0,
-      image: getCoverForType(charters, key),
-    }))
-    .filter((x) => x.count > 0);
+  const types = getFishingTypesWithCounts(charters);
 
   return (
     <div className="mx-auto w-full max-w-7xl px-4 py-8 md:px-5">
@@ -66,21 +27,24 @@ export default async function TypesCategoriesPage() {
         </p>
       </header>
 
-      {items.length === 0 ? (
+      {types.length === 0 ? (
         <p className="text-gray-600">No fishing types found yet.</p>
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {items.map((t) => (
-            <CategoryCard
-              key={t.key}
-              href={`/search/category/type/${t.key}`}
-              label={t.label}
-              count={t.count}
-              image={t.image}
-              alt={`${t.label} fishing`}
-              subtitle={`Explore ${t.label.toLowerCase()} trips`}
-            />
-          ))}
+          {types.map((t) => {
+            const image = getFishingTypeImage(t.key);
+            return (
+              <CategoryCard
+                key={t.key}
+                href={`/search/category/type/${t.key}`}
+                label={t.label}
+                count={t.count}
+                image={image}
+                alt={`${t.label} fishing`}
+                subtitle={`Explore ${t.label.toLowerCase()} trips`}
+              />
+            );
+          })}
         </div>
       )}
 

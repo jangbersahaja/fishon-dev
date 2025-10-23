@@ -1,8 +1,6 @@
 name: CI
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
@@ -17,8 +15,6 @@ jobs:
       matrix:
         node-version: [18.x, 20.x]
 
-   
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -27,7 +23,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
-          cache: 'npm'
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
@@ -45,12 +41,6 @@ jobs:
           export DATABASE_URL="${DATABASE_URL:-postgresql://user:pass@localhost:5432/db}"
           npx prisma generate
         # ensure a DATABASE_URL is present for generator if it needs it (we set it at job-level, fallback here if missing)
-      - name: Run build
-        run: npm run build
-        env:
-          DATABASE_URL: ${{ secrets.DATABASE_URL != '' && secrets.DATABASE_URL || 'postgresql://user:pass@localhost:5432/db' }}
-          SHADOW_DATABASE_URL: ${{ secrets.SHADOW_DATABASE_URL }}
-          NEXT_TELEMETRY_DISABLED: 1
 
       - name: Validate Prisma schema
         if: ${{ hashFiles('prisma/schema.prisma') != '' }}

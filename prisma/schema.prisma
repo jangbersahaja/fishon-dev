@@ -17,6 +17,7 @@ model User {
   email        String        @unique
   passwordHash String
   displayName  String?
+  phone        String?       // Phone number with country code
   bio          String?
   avatarUrl    String?
   role         UserRole      @default(ANGLER)
@@ -25,6 +26,49 @@ model User {
   blogPosts    BlogPost[]
   comments     BlogComment[]
   bookings     Booking[]
+  accounts     Account[]     // OAuth accounts
+  sessions     Session[]     // NextAuth sessions
+}
+
+// NextAuth OAuth Account model
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+// NextAuth Session model
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+// NextAuth Verification Token model
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
 }
 
 model VerificationCode {
@@ -157,6 +201,8 @@ model Booking {
   expiresAt         DateTime // hold expires at (e.g., now + 12h)
   captainDecisionAt DateTime?
 
+  note              String? // angler's note to captain
+  rejectionReason   String? // captain's rejection reason
   cancellationReason String? // angler-provided reason for cancellation
 
   createdAt DateTime @default(now())

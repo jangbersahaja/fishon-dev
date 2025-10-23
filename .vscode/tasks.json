@@ -1,0 +1,15 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Prisma migrate: add note and rejectionReason to Booking",
+			"type": "shell",
+			"command": "npx prisma migrate dev --name add-booking-note-rejection-reason",
+			"isBackground": false,
+			"problemMatcher": [
+				"$tsc"
+			],
+			"group": "build"
+		}
+	]
+}

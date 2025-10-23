@@ -6,7 +6,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Fishing Blog & Guides | FishOn.my",
+  title: "Fishing Blog & Guides | Fishon.my",
   description:
     "Discover expert fishing tips, charter guides, destination reviews, and techniques for Malaysian waters. Learn from local anglers and captains.",
   alternates: {
@@ -18,14 +18,14 @@ export const metadata: Metadata = {
 const blogSchema = {
   "@context": "https://schema.org",
   "@type": "Blog",
-  name: "FishOn.my Fishing Blog",
+  name: "Fishon.my Fishing Blog",
   description:
     "Expert fishing tips, charter guides, and destination reviews for Malaysian anglers",
   url: "https://www.fishon.my/blog",
   inLanguage: "en-MY",
   publisher: {
     "@type": "Organization",
-    name: "FishOn.my",
+    name: "Fishon.my",
     url: "https://www.fishon.my",
     logo: {
       "@type": "ImageObject",

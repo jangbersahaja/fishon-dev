@@ -3,7 +3,10 @@ import BlogPostCard from "@/components/blog/BlogPostCard";
 import NewsletterWidget from "@/components/blog/NewsletterWidget";
 import ReadingProgress from "@/components/blog/ReadingProgress";
 import TableOfContents from "@/components/blog/TableOfContents";
-import { getBlogPostBySlug, getRelatedPosts } from "@/lib/services/blog-service";
+import {
+  getBlogPostBySlug,
+  getRelatedPosts,
+} from "@/lib/services/blog-service";
 import { Calendar, Clock, User } from "lucide-react";
 import type { Metadata } from "next";
 import Image from "next/image";
@@ -20,19 +23,19 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!post) {
     return {
-      title: "Post Not Found | FishOn.my",
+      title: "Post Not Found | Fishon.my",
     };
   }
 
   const title = post.metaTitle || post.title;
   const description =
-    post.metaDescription || post.excerpt || "Read this article on FishOn.my";
+    post.metaDescription || post.excerpt || "Read this article on Fishon.my";
   const images = post.coverImage
     ? [{ url: post.coverImage, width: 1200, height: 630 }]
     : [{ url: "/og-image.jpg", width: 1200, height: 630 }];
 
   return {
-    title: `${title} | FishOn.my`,
+    title: `${title} | Fishon.my`,
     description,
     keywords: post.metaKeywords,
     alternates: {
@@ -42,7 +45,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title,
       description,
       url: `https://www.fishon.my/blog/${slug}`,
-      siteName: "FishOn.my",
+      siteName: "Fishon.my",
       images,
       type: "article",
       publishedTime: post.publishedAt?.toISOString(),
@@ -98,7 +101,7 @@ export default async function BlogPostPage({ params }: Props) {
     },
     publisher: {
       "@type": "Organization",
-      name: "FishOn.my",
+      name: "Fishon.my",
       url: "https://www.fishon.my",
       logo: {
         "@type": "ImageObject",
@@ -220,8 +223,7 @@ export default async function BlogPostPage({ params }: Props) {
                     <User size={16} />
                   )}
                   <span>
-                    By{" "}
-                    {post.author.name || post.author.email.split("@")[0]}
+                    By {post.author.name || post.author.email.split("@")[0]}
                   </span>
                 </div>
                 {post.publishedAt && (
@@ -338,8 +340,7 @@ export default async function BlogPostPage({ params }: Props) {
                   )}
                   <div className="flex-1">
                     <h4 className="font-semibold text-gray-900">
-                      {post.author.name ||
-                        post.author.email.split("@")[0]}
+                      {post.author.name || post.author.email.split("@")[0]}
                     </h4>
                     <p className="mt-1 text-sm text-gray-600">
                       {post.author.bio}

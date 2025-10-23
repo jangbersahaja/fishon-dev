@@ -7,7 +7,7 @@ export async function GET() {
   const rss = `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>FishOn.my Blog</title>
+    <title>Fishon.my Blog</title>
     <link>${baseUrl}/blog</link>
     <description>Expert fishing tips, charter guides, and destination reviews for Malaysian anglers</description>
     <language>en-MY</language>
@@ -21,8 +21,14 @@ export async function GET() {
       <link>${baseUrl}/blog/${post.slug}</link>
       <guid isPermaLink="true">${baseUrl}/blog/${post.slug}</guid>
       <description><![CDATA[${post.excerpt || post.title}]]></description>
-      <pubDate>${post.publishedAt ? new Date(post.publishedAt).toUTCString() : new Date(post.createdAt).toUTCString()}</pubDate>
-      ${post.categories.map((cat) => `<category>${cat.name}</category>`).join("\n      ")}
+      <pubDate>${
+        post.publishedAt
+          ? new Date(post.publishedAt).toUTCString()
+          : new Date(post.createdAt).toUTCString()
+      }</pubDate>
+      ${post.categories
+        .map((cat) => `<category>${cat.name}</category>`)
+        .join("\n      ")}
     </item>`
       )
       .join("")}

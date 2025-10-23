@@ -86,7 +86,7 @@ const Footer = () => {
     <main className="flex flex-col w-full bg-gray-100">
       <section className="mx-auto w-full max-w-7xl grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 px-5 py-10 gap-7">
         <div className="flex flex-col gap-3 text-sm">
-          <span className="font-bold">About FishOn.my</span>
+          <span className="font-bold">About Fishon.my</span>
           <ul className="flex flex-col gap-2">
             {abouts.map((a) => (
               <li key={a.name}>

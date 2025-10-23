@@ -11,6 +11,7 @@ The Fishon.my blog section is a fully SEO-optimized content management system bu
 The blog uses four main Prisma models:
 
 #### BlogPost
+
 - **Core fields**: `id`, `slug`, `title`, `excerpt`, `content`
 - **Media**: `coverImage`, `coverImageAlt`
 - **Publishing**: `published`, `publishedAt`
@@ -19,28 +20,32 @@ The blog uses four main Prisma models:
 - **Relations**: `author` (User), `categories` (many-to-many), `tags` (many-to-many)
 
 #### BlogCategory
+
 - Hierarchical organization of posts
 - Each category has: `slug`, `name`, `description`
 
 #### BlogTag
+
 - Flexible tagging system
 - Each tag has: `slug`, `name`
 
 ### Routes
 
-| Route | Purpose | Features |
-|-------|---------|----------|
-| `/blog` | Main blog listing | Featured posts, pagination, category navigation |
-| `/blog/[slug]` | Individual post | Rich content, sharing, related posts, breadcrumbs |
-| `/blog/category/[slug]` | Category archive | Filtered posts by category |
-| `/blog/tag/[slug]` | Tag archive | Filtered posts by tag |
-| `/blog/sitemap.xml` | XML Sitemap | Dynamic sitemap generation |
-| `/blog/rss.xml` | RSS Feed | Content syndication |
+| Route                   | Purpose           | Features                                          |
+| ----------------------- | ----------------- | ------------------------------------------------- |
+| `/blog`                 | Main blog listing | Featured posts, pagination, category navigation   |
+| `/blog/[slug]`          | Individual post   | Rich content, sharing, related posts, breadcrumbs |
+| `/blog/category/[slug]` | Category archive  | Filtered posts by category                        |
+| `/blog/tag/[slug]`      | Tag archive       | Filtered posts by tag                             |
+| `/blog/sitemap.xml`     | XML Sitemap       | Dynamic sitemap generation                        |
+| `/blog/rss.xml`         | RSS Feed          | Content syndication                               |
 
 ## SEO Features
 
 ### Meta Tags
+
 All pages include:
+
 - Unique `<title>` tags
 - Meta descriptions
 - Meta keywords (for individual posts)
@@ -49,12 +54,14 @@ All pages include:
 - Twitter Card tags
 
 ### Structured Data (JSON-LD)
+
 - **Blog listing**: Blog schema
 - **Individual posts**: BlogPosting/Article schema
 - **All pages**: BreadcrumbList schema
 - **Author information**: Person schema
 
 ### Technical SEO
+
 - Semantic HTML5 structure
 - Proper heading hierarchy (h1 → h6)
 - Alt text for all images
@@ -66,6 +73,7 @@ All pages include:
 - robots.txt directives
 
 ### Social Media Optimization
+
 - Open Graph images (1200x630)
 - Twitter Card support
 - Share buttons (Facebook, Twitter, WhatsApp)
@@ -91,34 +99,37 @@ await prisma.blogPost.create({
     coverImageAlt: "Descriptive alt text",
     published: true,
     publishedAt: new Date(),
-    metaTitle: "My First Post | FishOn.my",
+    metaTitle: "My First Post | Fishon.my",
     metaDescription: "SEO-friendly description for search engines",
     metaKeywords: "fishing, malaysia, tips",
     readingTime: 5,
     authorId: "user-id-here",
     categories: {
-      connect: [{ slug: "tips" }, { slug: "destinations" }]
+      connect: [{ slug: "tips" }, { slug: "destinations" }],
     },
     tags: {
-      connect: [{ slug: "beginners" }, { slug: "selangor" }]
-    }
-  }
+      connect: [{ slug: "beginners" }, { slug: "selangor" }],
+    },
+  },
 });
 ```
 
 ### Content Guidelines
 
 #### Titles
+
 - Keep under 60 characters for proper display in search results
 - Include target keywords naturally
 - Make them compelling and clickable
 
 #### Excerpts
+
 - 150-160 characters for optimal display
 - Summarize the main point
 - Include a call-to-action when appropriate
 
 #### Content
+
 - Use proper HTML structure with headings
 - Break content into scannable sections
 - Include lists (ul, ol) for better readability
@@ -127,12 +138,14 @@ await prisma.blogPost.create({
 - Target 1000+ words for better SEO
 
 #### Images
+
 - Use high-quality images (1200px+ width)
 - Compress before uploading
 - Always include descriptive alt text
 - Prefer 16:9 aspect ratio for cover images
 
 #### SEO Fields
+
 - **metaTitle**: 50-60 characters, include primary keyword
 - **metaDescription**: 150-160 characters, compelling and keyword-rich
 - **metaKeywords**: 5-10 relevant keywords, comma-separated
@@ -140,6 +153,7 @@ await prisma.blogPost.create({
 ### Categories & Tags
 
 #### Predefined Categories
+
 1. **Fishing Tips** (`tips`) - General advice and tips
 2. **Destinations** (`destinations`) - Location guides
 3. **Techniques** (`techniques`) - Fishing methods
@@ -148,7 +162,9 @@ await prisma.blogPost.create({
 6. **Fish Species** (`species`) - Species information
 
 #### Using Tags
+
 Tags should be specific and descriptive:
+
 - Location-based: `selangor`, `langkawi`, `sabah`
 - Technique-based: `jigging`, `trolling`, `popping`
 - Audience: `beginners`, `advanced`
@@ -162,33 +178,35 @@ The `blog-service.ts` file provides all data fetching functions:
 
 ```typescript
 // Get paginated posts
-getBlogPosts({ page: 1, perPage: 12 })
+getBlogPosts({ page: 1, perPage: 12 });
 
 // Get a single post
-getBlogPostBySlug("post-slug")
+getBlogPostBySlug("post-slug");
 
 // Get featured posts
-getFeaturedPosts(3)
+getFeaturedPosts(3);
 
 // Get related posts
-getRelatedPosts(postId, 3)
+getRelatedPosts(postId, 3);
 
 // Category functions
-getBlogCategory("category-slug")
-getBlogPostsByCategory("category-slug", { page: 1, perPage: 12 })
+getBlogCategory("category-slug");
+getBlogPostsByCategory("category-slug", { page: 1, perPage: 12 });
 
 // Tag functions
-getBlogTag("tag-slug")
-getBlogPostsByTag("tag-slug", { page: 1, perPage: 12 })
+getBlogTag("tag-slug");
+getBlogPostsByTag("tag-slug", { page: 1, perPage: 12 });
 
 // Search
-searchBlogPosts("query", { page: 1, perPage: 12 })
+searchBlogPosts("query", { page: 1, perPage: 12 });
 ```
 
 ## Components
 
 ### BlogPostCard
+
 Standard post card for listing pages:
+
 - Responsive image
 - Category badges
 - Title and excerpt
@@ -196,7 +214,9 @@ Standard post card for listing pages:
 - Hover effects
 
 ### FeaturedPostCard
+
 Hero-style card for featured content:
+
 - Large image with overlay
 - Prominent title
 - Category badge
@@ -205,18 +225,21 @@ Hero-style card for featured content:
 ## Performance Optimization
 
 ### Image Optimization
+
 - All images use Next.js `next/image`
 - Automatic responsive images
 - Lazy loading by default
 - WebP format when supported
 
 ### Caching
+
 - Sitemap: 1 hour cache
 - RSS feed: 1 hour cache
 - Static generation for published posts
 - Revalidation on content updates
 
 ### Database Optimization
+
 - Indexed fields: `slug`, `published`, `publishedAt`, `authorId`
 - Optimized queries with proper `include`
 - Pagination to limit data fetching
@@ -244,12 +267,14 @@ When creating new blog posts, ensure:
 To track blog performance, consider adding:
 
 1. **Google Analytics 4**
+
    - Page views
    - Engagement time
    - Scroll depth
    - Outbound clicks
 
 2. **Google Search Console**
+
    - Search queries
    - Click-through rates
    - Index coverage
@@ -266,12 +291,14 @@ To track blog performance, consider adding:
 Potential improvements to consider:
 
 1. **Admin Dashboard**
+
    - WYSIWYG editor
    - Draft management
    - Preview functionality
    - Media library
 
 2. **Advanced Features**
+
    - Comments system
    - Author profiles
    - Series/collections
@@ -279,6 +306,7 @@ Potential improvements to consider:
    - Estimated reading progress
 
 3. **Marketing**
+
    - Email newsletter integration
    - Social media auto-posting
    - Related products (charter bookings)
@@ -295,18 +323,21 @@ Potential improvements to consider:
 ### Regular Tasks
 
 **Weekly**
+
 - Review new posts for SEO
 - Check for broken links
 - Monitor search console for errors
 - Update sitemap if needed
 
 **Monthly**
+
 - Analyze top-performing content
 - Update outdated content
 - Add internal links to new posts
 - Review and update categories/tags
 
 **Quarterly**
+
 - SEO audit
 - Performance optimization
 - Content gap analysis
@@ -317,17 +348,20 @@ Potential improvements to consider:
 ### Common Issues
 
 **Posts not showing up**
+
 - Check `published: true` status
 - Verify `publishedAt` is set
 - Ensure correct author relationship
 
 **SEO not working**
+
 - Verify meta tags in browser
 - Check robots.txt isn't blocking
 - Validate JSON-LD with Google's tool
 - Submit sitemap to search console
 
 **Images not loading**
+
 - Verify image URLs are accessible
 - Check Next.js image configuration
 - Ensure proper image dimensions
@@ -343,6 +377,7 @@ Potential improvements to consider:
 ## Support
 
 For questions or issues with the blog section:
+
 1. Check this documentation
 2. Review the code comments
 3. Consult the Fishon development team

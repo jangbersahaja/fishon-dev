@@ -64,11 +64,11 @@ export default async function Home() {
           <div className="flex flex-col items-center w-full gap-10 p-5 mx-auto max-w-7xl md:flex-row">
             <div className="flex-1">
               <h3 className="text-lg font-bold">
-                FishOn.my — Malaysia&apos;s first online fishing booking
+                Fishon.my — Malaysia&apos;s first online fishing booking
                 platform
               </h3>
               <p className="mt-1 text-sm text-gray-700">
-                FishOn.my is Malaysia&apos;s first online fishing booking
+                Fishon.my is Malaysia&apos;s first online fishing booking
                 platform and marketplace helping anglers find and book fishing
                 charters. Explore trips across lakes, rivers, inshore and
                 offshore destinations around Malaysia — plan, book, fish.
@@ -88,7 +88,7 @@ export default async function Home() {
               </div>
 
               <div className="flex flex-col justify-center">
-                <h3 className="font-bold">List your business on FishOn</h3>
+                <h3 className="font-bold">List your business on Fishon</h3>
                 <p className="text-sm text-gray-700">
                   Find customers and earn more
                 </p>

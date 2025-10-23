@@ -84,11 +84,11 @@ export const dummyBlogPosts = [
       </ul>
       
       <h2>Conclusion</h2>
-      <p>Whether you're a local or visiting Malaysia, Selangor's fishing spots offer incredible opportunities. Book your charter through FishOn.my to ensure a safe and memorable experience.</p>
+      <p>Whether you're a local or visiting Malaysia, Selangor's fishing spots offer incredible opportunities. Book your charter through Fishon.my to ensure a safe and memorable experience.</p>
     `,
     coverImage: "https://images.unsplash.com/photo-1544551763-46a013bb70d5",
     coverImageAlt: "Fishing boat in Selangor waters",
-    metaTitle: "Top 10 Fishing Spots in Selangor 2025 | FishOn.my",
+    metaTitle: "Top 10 Fishing Spots in Selangor 2025 | Fishon.my",
     metaDescription:
       "Explore the best fishing locations in Selangor. Expert guide to coastal fishing, charter recommendations, and tips for Malaysian anglers.",
     metaKeywords:
@@ -167,7 +167,7 @@ export const dummyBlogPosts = [
       <h2>Key Factors to Consider</h2>
       
       <h3>Captain's Experience</h3>
-      <p>Look for captains with proper licenses, good reviews, and local knowledge. On FishOn.my, all captains are verified.</p>
+      <p>Look for captains with proper licenses, good reviews, and local knowledge. On Fishon.my, all captains are verified.</p>
       
       <h3>Boat Condition</h3>
       <p>Ensure the boat is well-maintained with proper safety equipment, shade, and amenities.</p>
@@ -194,12 +194,12 @@ export const dummyBlogPosts = [
         <li>What's the maximum number of anglers?</li>
       </ol>
       
-      <h2>Book with FishOn.my</h2>
-      <p>Using FishOn.my ensures you're booking with verified, professional charters. Read reviews, compare prices, and book with confidence.</p>
+      <h2>Book with Fishon.my</h2>
+      <p>Using Fishon.my ensures you're booking with verified, professional charters. Read reviews, compare prices, and book with confidence.</p>
     `,
     coverImage: "https://images.unsplash.com/photo-1559827260-dc66d52bef19",
     coverImageAlt: "Professional fishing charter boat",
-    metaTitle: "How to Choose a Fishing Charter in Malaysia | FishOn.my",
+    metaTitle: "How to Choose a Fishing Charter in Malaysia | Fishon.my",
     metaDescription:
       "Expert guide to selecting the perfect fishing charter. Learn about types, what to look for, and questions to ask before booking.",
     metaKeywords:
@@ -271,8 +271,7 @@ export const dummyBlogPosts = [
     `,
     coverImage: "https://images.unsplash.com/photo-1527004013197-933c4bb611b3",
     coverImageAlt: "Fishing in challenging weather conditions",
-    metaTitle:
-      "Monsoon Season Fishing Guide Malaysia | Weather & Best Times",
+    metaTitle: "Monsoon Season Fishing Guide Malaysia | Weather & Best Times",
     metaDescription:
       "Complete guide to fishing during Malaysia's monsoon seasons. Learn best times, regions, and safety tips for year-round fishing.",
     metaKeywords:

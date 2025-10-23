@@ -1,26 +1,24 @@
-import Footer from "@/components/layout/Footer";
-import Navbar from "@/components/layout/Navbar";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Terms of Use | FishOn.my",
+  title: "Terms of Use | Fishon.my",
   description:
-    "Terms that govern your use of FishOn.my, including bookings, payments, cancellations, content, and captain requirements.",
+    "Terms that govern your use of Fishon.my, including bookings, payments, cancellations, content, and captain requirements.",
   alternates: { canonical: "https://www.fishon.my/terms" },
   openGraph: {
-    title: "Terms of Use | FishOn.my",
+    title: "Terms of Use | Fishon.my",
     description:
-      "Terms that govern your use of FishOn.my and our services in Malaysia.",
+      "Terms that govern your use of Fishon.my and our services in Malaysia.",
     url: "https://www.fishon.my/terms",
     type: "article",
-    siteName: "FishOn.my",
+    siteName: "Fishon.my",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Terms of Use | FishOn.my",
+    title: "Terms of Use | Fishon.my",
     description:
-      "Terms that govern your use of FishOn.my and our services in Malaysia.",
+      "Terms that govern your use of Fishon.my and our services in Malaysia.",
   },
 };
 
@@ -28,13 +26,11 @@ const lastUpdated = "18 September 2025";
 
 export default function TermsPage() {
   return (
-    <main className="min-h-screen flex flex-col bg-white">
-      <Navbar />
-
+    <main className="flex flex-col min-h-screen bg-white">
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[conic-gradient(from_120deg_at_10%_10%,rgba(236,34,39,0.06),transparent_30%)]" />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="relative px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <nav className="text-sm text-neutral-500">
             <Link href="/" className="hover:underline">
               Home
@@ -45,8 +41,8 @@ export default function TermsPage() {
           <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
             Terms of <span className="text-[#EC2227]">Use</span>
           </h1>
-          <p className="mt-3 max-w-3xl text-neutral-700">
-            Please read these Terms carefully. By using FishOn.my, you agree to
+          <p className="max-w-3xl mt-3 text-neutral-700">
+            Please read these Terms carefully. By using Fishon.my, you agree to
             them.
           </p>
           <p className="mt-1 text-sm text-neutral-500">
@@ -56,11 +52,11 @@ export default function TermsPage() {
       </section>
 
       {/* Content */}
-      <section className="mx-auto w-full max-w-7xl px-4 pb-20 pt-6 sm:px-6 lg:px-8">
+      <section className="w-full px-4 pt-6 pb-20 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[260px_1fr]">
           {/* TOC */}
           <aside className="lg:block">
-            <div className="sticky top-20 rounded-xl border border-neutral-200 p-4">
+            <div className="sticky p-4 border top-20 rounded-xl border-neutral-200">
               <p className="text-sm font-semibold">Sections</p>
               <ul className="mt-3 space-y-2 text-sm">
                 {[
@@ -91,7 +87,7 @@ export default function TermsPage() {
           </aside>
 
           {/* Article */}
-          <article className="prose max-w-none prose-neutral rounded-2xl border border-neutral-200 p-6">
+          <article className="p-6 prose border max-w-none prose-neutral rounded-2xl border-neutral-200">
             <p className="text-sm text-neutral-500">
               This document provides general platform governance and is not
               legal advice.
@@ -105,7 +101,7 @@ export default function TermsPage() {
             <h2 id="bookings">2. Bookings & Charter Contracts</h2>
             <p>
               You enter a direct contract with the Captain for each trip.
-              FishOn.my is not a party to that contract.
+              Fishon.my is not a party to that contract.
             </p>
 
             <h2 id="payments">3. Payments, Deposits & Fees</h2>
@@ -137,7 +133,7 @@ export default function TermsPage() {
 
             <h2 id="content">7. Content & Reviews</h2>
             <p>
-              By submitting content, you grant FishOn.my a non-exclusive,
+              By submitting content, you grant Fishon.my a non-exclusive,
               royalty-free licence to use it in connection with the Platform,
               subject to our Privacy Policy.
             </p>
@@ -145,13 +141,13 @@ export default function TermsPage() {
             <h2 id="liability">8. Disclaimer & Limitation of Liability</h2>
             <p>
               The Platform is provided “as is”. To the maximum extent permitted
-              by law, FishOn.my is not liable for indirect, incidental, or
+              by law, Fishon.my is not liable for indirect, incidental, or
               consequential damages.
             </p>
 
             <h2 id="indemnity">9. Indemnification</h2>
             <p>
-              You agree to indemnify FishOn.my for claims arising from your
+              You agree to indemnify Fishon.my for claims arising from your
               breach of these Terms or violation of law/third-party rights.
             </p>
 
@@ -175,8 +171,6 @@ export default function TermsPage() {
           </article>
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }

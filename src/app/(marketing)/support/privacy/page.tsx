@@ -1,24 +1,22 @@
-import Footer from "@/components/layout/Footer";
-import Navbar from "@/components/layout/Navbar";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | FishOn.my",
+  title: "Privacy Policy | Fishon.my",
   description:
-    "How FishOn.my collects, uses, and protects your personal data, and your rights under applicable law.",
+    "How Fishon.my collects, uses, and protects your personal data, and your rights under applicable law.",
   alternates: { canonical: "https://www.fishon.my/privacy" },
   openGraph: {
-    title: "Privacy Policy | FishOn.my",
-    description: "How we handle your data and privacy on FishOn.my.",
+    title: "Privacy Policy | Fishon.my",
+    description: "How we handle your data and privacy on Fishon.my.",
     url: "https://www.fishon.my/privacy",
     type: "article",
-    siteName: "FishOn.my",
+    siteName: "Fishon.my",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Privacy Policy | FishOn.my",
-    description: "How we handle your data and privacy on FishOn.my.",
+    title: "Privacy Policy | Fishon.my",
+    description: "How we handle your data and privacy on Fishon.my.",
   },
 };
 
@@ -26,13 +24,11 @@ const lastUpdated = "18 September 2025";
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen flex flex-col bg-white">
-      <Navbar />
-
+    <main className="flex flex-col min-h-screen bg-white">
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,rgba(236,34,39,0.08),transparent_50%)]" />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="relative px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <nav className="text-sm text-neutral-500">
             <Link href="/" className="hover:underline">
               Home
@@ -43,7 +39,7 @@ export default function PrivacyPage() {
           <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
             Privacy <span className="text-[#EC2227]">Policy</span>
           </h1>
-          <p className="mt-3 max-w-3xl text-neutral-700">
+          <p className="max-w-3xl mt-3 text-neutral-700">
             We respect your privacy. This policy explains what we collect, why
             we collect it, and your choices.
           </p>
@@ -54,11 +50,11 @@ export default function PrivacyPage() {
       </section>
 
       {/* Content */}
-      <section className="mx-auto w-full max-w-7xl px-4 pb-20 pt-6 sm:px-6 lg:px-8">
+      <section className="w-full px-4 pt-6 pb-20 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[260px_1fr]">
           {/* TOC */}
           <aside className="lg:block">
-            <div className="sticky top-20 rounded-xl border border-neutral-200 p-4">
+            <div className="sticky p-4 border top-20 rounded-xl border-neutral-200">
               <p className="text-sm font-semibold">Sections</p>
               <ul className="mt-3 space-y-2 text-sm">
                 {[
@@ -89,7 +85,7 @@ export default function PrivacyPage() {
           </aside>
 
           {/* Article */}
-          <article className="prose max-w-none prose-neutral rounded-2xl border border-neutral-200 p-6">
+          <article className="p-6 prose border max-w-none prose-neutral rounded-2xl border-neutral-200">
             <h2 id="data-we-collect">1. Data We Collect</h2>
             <ul>
               <li>
@@ -190,8 +186,6 @@ export default function PrivacyPage() {
           </article>
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }

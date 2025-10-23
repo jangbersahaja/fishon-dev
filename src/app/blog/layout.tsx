@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Fishing Blog & Guides | FishOn.my",
+  title: "Fishing Blog & Guides | Fishon.my",
   description:
     "Discover expert fishing tips, charter guides, destination reviews, and techniques for Malaysian waters. Your complete resource for fishing adventures.",
   metadataBase: new URL("https://www.fishon.my"),
@@ -12,17 +12,17 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Fishing Blog & Guides | FishOn.my",
+    title: "Fishing Blog & Guides | Fishon.my",
     description:
       "Expert fishing tips, charter guides, and destination reviews for Malaysian anglers.",
     url: "https://www.fishon.my/blog",
-    siteName: "FishOn.my",
+    siteName: "Fishon.my",
     images: [{ url: "/og-image.jpg", width: 1200, height: 630 }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Fishing Blog & Guides | FishOn.my",
+    title: "Fishing Blog & Guides | Fishon.my",
     description:
       "Expert fishing tips, charter guides, and destination reviews for Malaysian anglers.",
   },

@@ -7,6 +7,7 @@ A comprehensive, SEO-optimized blog section for Fishon.my built with Next.js 15,
 ## ✨ Features
 
 ### Content Management
+
 - ✅ Blog posts with rich HTML content
 - ✅ Categories for content organization
 - ✅ Tags for flexible content discovery
@@ -16,6 +17,7 @@ A comprehensive, SEO-optimized blog section for Fishon.my built with Next.js 15,
 - ✅ View count tracking
 
 ### SEO Optimization
+
 - ✅ Complete meta tags (title, description, keywords)
 - ✅ Open Graph tags for social sharing
 - ✅ Twitter Card integration
@@ -27,6 +29,7 @@ A comprehensive, SEO-optimized blog section for Fishon.my built with Next.js 15,
 - ✅ Fast page loads with Next.js optimization
 
 ### User Experience
+
 - ✅ Clean, modern design matching Fishon.my brand
 - ✅ Featured posts section
 - ✅ Category and tag navigation
@@ -109,34 +112,37 @@ const post = await prisma.blogPost.create({
     coverImageAlt: "Fishing boat in Selangor",
     published: true,
     publishedAt: new Date(),
-    metaTitle: "Top 10 Fishing Spots in Selangor | FishOn.my",
+    metaTitle: "Top 10 Fishing Spots in Selangor | Fishon.my",
     metaDescription: "Expert guide to the best fishing spots in Selangor...",
     metaKeywords: "selangor fishing, malaysia fishing spots",
     readingTime: 6,
     authorId: "user-id",
     categories: {
-      connect: [{ slug: "destinations" }, { slug: "tips" }]
+      connect: [{ slug: "destinations" }, { slug: "tips" }],
     },
     tags: {
-      connect: [{ slug: "selangor" }, { slug: "beginners" }]
-    }
-  }
+      connect: [{ slug: "selangor" }, { slug: "beginners" }],
+    },
+  },
 });
 ```
 
 ### Content Guidelines
 
 #### Title (50-60 characters)
+
 - Include primary keyword
 - Make it compelling
 - Example: "Top 10 Fishing Spots in Selangor 2025"
 
 #### Excerpt (150-160 characters)
+
 - Summarize the main point
 - Include a benefit
 - Example: "Discover the best fishing locations in Selangor with expert tips..."
 
 #### Content
+
 - Use proper HTML structure
 - Include headings (h2, h3)
 - Add lists for readability
@@ -144,6 +150,7 @@ const post = await prisma.blogPost.create({
 - Link to related content
 
 #### SEO Fields
+
 - **metaTitle**: Optimized for search (50-60 chars)
 - **metaDescription**: Compelling summary (150-160 chars)
 - **metaKeywords**: 5-10 relevant keywords
@@ -151,7 +158,9 @@ const post = await prisma.blogPost.create({
 ## 🎨 Components
 
 ### BlogPostCard
+
 Used in listing pages. Shows:
+
 - Cover image (optimized)
 - Category badges
 - Title (truncated to 2 lines)
@@ -161,11 +170,13 @@ Used in listing pages. Shows:
 ```tsx
 import BlogPostCard from "@/components/blog/BlogPostCard";
 
-<BlogPostCard post={post} />
+<BlogPostCard post={post} />;
 ```
 
 ### FeaturedPostCard
+
 Used for featured content. Shows:
+
 - Large cover image with overlay
 - Category badge
 - Title
@@ -174,7 +185,7 @@ Used for featured content. Shows:
 ```tsx
 import FeaturedPostCard from "@/components/blog/FeaturedPostCard";
 
-<FeaturedPostCard post={post} />
+<FeaturedPostCard post={post} />;
 ```
 
 ## 🔧 Service Functions
@@ -228,25 +239,30 @@ const { posts, total } = await searchBlogPosts("fishing techniques", {
 ## 🔍 SEO Features
 
 ### Meta Tags
+
 Every page includes:
+
 - Unique title tags
 - Meta descriptions
 - Meta keywords (for posts)
 - Canonical URLs
 
 ### Social Sharing
+
 - Open Graph tags (Facebook, LinkedIn)
 - Twitter Cards
 - 1200×630 images
 - Share buttons on posts
 
 ### Structured Data
+
 - Blog schema on listing page
 - BlogPosting schema on posts
 - BreadcrumbList on all pages
 - Organization info
 
 ### Technical SEO
+
 - XML Sitemap at `/blog/sitemap.xml`
 - RSS feed at `/blog/rss.xml`
 - Fast page loads
@@ -257,12 +273,15 @@ Every page includes:
 ## 📊 Monitoring
 
 ### Recommended Tools
+
 1. **Google Search Console**
+
    - Submit sitemap
    - Monitor indexing
    - Track search queries
 
 2. **Google Analytics 4**
+
    - Track page views
    - Monitor engagement
    - Analyze user behavior
@@ -272,6 +291,7 @@ Every page includes:
    - Optimize load times
 
 ### Key Metrics
+
 - Organic traffic
 - Search rankings
 - Click-through rate
@@ -290,6 +310,7 @@ Comprehensive guides available in `/docs`:
 ## 🎯 Categories
 
 Predefined categories:
+
 1. **Fishing Tips** - General advice and techniques
 2. **Destinations** - Location guides and reviews
 3. **Techniques** - Fishing methods (jigging, trolling, etc.)
@@ -300,23 +321,29 @@ Predefined categories:
 ## 🏷️ Common Tags
 
 Location-based:
+
 - `selangor`, `langkawi`, `sabah`, `sarawak`, `kuantan`, `terengganu`
 
 Technique-based:
+
 - `jigging`, `trolling`, `popping`, `casting`
 
 Audience:
+
 - `beginners`, `advanced`
 
 Seasonal:
+
 - `monsoon`, `peak-season`
 
 Other:
+
 - `charter-tips`, `equipment`, `safety`
 
 ## 🚧 Future Enhancements
 
 Consider adding:
+
 - [ ] Admin dashboard for content management
 - [ ] WYSIWYG editor (TinyMCE, Draft.js)
 - [ ] Comments system (Disqus, custom)
@@ -332,6 +359,7 @@ Consider adding:
 ## 💡 Best Practices
 
 ### Content Creation
+
 - Write for users first, search engines second
 - Target 1000+ words per post
 - Use descriptive headings
@@ -340,6 +368,7 @@ Consider adding:
 - Update regularly
 
 ### SEO Optimization
+
 - Unique title and description for each post
 - Include target keywords naturally
 - Optimize images (size, alt text, filename)
@@ -348,6 +377,7 @@ Consider adding:
 - Monitor performance regularly
 
 ### Performance
+
 - Compress images before upload
 - Use Next.js image optimization
 - Keep JavaScript minimal
@@ -357,16 +387,19 @@ Consider adding:
 ## 🐛 Troubleshooting
 
 ### Posts Not Showing
+
 ✅ Check `published: true`
 ✅ Verify `publishedAt` is set
 ✅ Ensure author relationship exists
 
 ### Images Not Loading
+
 ✅ Verify image URLs are accessible
 ✅ Check image dimensions
 ✅ Ensure proper Next.js config
 
 ### SEO Issues
+
 ✅ Validate meta tags in browser
 ✅ Test structured data with Google's tool
 ✅ Check robots.txt isn't blocking
@@ -375,6 +408,7 @@ Consider adding:
 ## 📞 Support
 
 For questions or issues:
+
 1. Check the documentation in `/docs`
 2. Review code comments in files
 3. Consult Next.js documentation

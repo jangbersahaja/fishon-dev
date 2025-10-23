@@ -5,21 +5,21 @@
 
 // // --------------------- SEO Metadata ---------------------
 // export const metadata: Metadata = {
-//   title: "Contact Us | FishOn.my",
+//   title: "Contact Us | Fishon.my",
 //   description:
-//     "Get in touch with FishOn.my — Malaysia’s #1 fishing charter booking platform. Contact support, partnerships, or list your charter.",
+//     "Get in touch with Fishon.my — Malaysia’s #1 fishing charter booking platform. Contact support, partnerships, or list your charter.",
 //   alternates: { canonical: "https://www.fishon.my/contact" },
 //   openGraph: {
-//     title: "Contact FishOn.my",
+//     title: "Contact Fishon.my",
 //     description:
 //       "We’re here to help with bookings, partnerships, and captain onboarding.",
 //     url: "https://www.fishon.my/contact",
 //     type: "website",
-//     siteName: "FishOn.my",
+//     siteName: "Fishon.my",
 //   },
 //   twitter: {
 //     card: "summary_large_image",
-//     title: "Contact FishOn.my",
+//     title: "Contact Fishon.my",
 //     description: "Support, partnerships, and captain onboarding — talk to us.",
 //   },
 // };
@@ -28,7 +28,7 @@
 // const orgSchema = {
 //   "@context": "https://schema.org",
 //   "@type": "Organization",
-//   name: "FishOn.my",
+//   name: "Fishon.my",
 //   url: "https://www.fishon.my",
 //   contactPoint: [
 //     {
@@ -121,7 +121,7 @@
 //         {/* Header */}
 //         <section className="mb-10">
 //           <h1 className="text-3xl font-bold tracking-tight sm:text-4xl">
-//             Contact <span className="text-[#EC2227]">FishOn.my</span>
+//             Contact <span className="text-[#EC2227]">Fishon.my</span>
 //           </h1>
 //           <p className="mt-4 text-neutral-700">
 //             Questions about bookings, listing your charter, or partnerships?

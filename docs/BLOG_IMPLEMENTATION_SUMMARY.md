@@ -101,7 +101,7 @@ docs/
    - Unique for every page
    - 50-60 characters
    - Includes target keywords
-   - Format: "Post Title | FishOn.my"
+   - Format: "Post Title | Fishon.my"
 
 2. **Meta Descriptions**
 

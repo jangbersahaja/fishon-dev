@@ -1,25 +1,23 @@
-import Footer from "@/components/layout/Footer";
-import Navbar from "@/components/layout/Navbar";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 /** SEO */
 export const metadata: Metadata = {
-  title: "Help Center | FishOn.my",
+  title: "Help Center | Fishon.my",
   description:
-    "Answers for bookings, payments, cancellations, account management, and safety on FishOn.my.",
+    "Answers for bookings, payments, cancellations, account management, and safety on Fishon.my.",
   alternates: { canonical: "https://www.fishon.my/help" },
   openGraph: {
-    title: "Help Center | FishOn.my",
+    title: "Help Center | Fishon.my",
     description:
       "FAQs and guides for bookings, payments, captain onboarding, and safety.",
     url: "https://www.fishon.my/help",
     type: "website",
-    siteName: "FishOn.my",
+    siteName: "Fishon.my",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Help Center | FishOn.my",
+    title: "Help Center | Fishon.my",
     description:
       "FAQs and guides for bookings, payments, captain onboarding, and safety.",
   },
@@ -29,13 +27,11 @@ const lastUpdated = "18 September 2025";
 
 export default function HelpCenterPage() {
   return (
-    <main className="min-h-screen flex flex-col bg-white">
-      <Navbar />
-
+    <main className="flex flex-col min-h-screen bg-white">
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,rgba(236,34,39,0.08),transparent_55%)]" />
-        <div className="relative mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <div className="relative px-4 py-16 mx-auto max-w-7xl sm:px-6 lg:px-8">
           <nav className="text-sm text-neutral-500">
             <Link href="/" className="hover:underline">
               Home
@@ -46,7 +42,7 @@ export default function HelpCenterPage() {
           <h1 className="mt-4 text-4xl font-bold tracking-tight sm:text-5xl">
             Help <span className="text-[#EC2227]">Center</span>
           </h1>
-          <p className="mt-3 max-w-3xl text-neutral-700">
+          <p className="max-w-3xl mt-3 text-neutral-700">
             Find quick answers, how-tos and policies. Still stuck? Our team is
             one click away.
           </p>
@@ -55,7 +51,7 @@ export default function HelpCenterPage() {
           </p>
 
           {/* Quick categories */}
-          <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="grid gap-4 mt-8 sm:grid-cols-2 lg:grid-cols-4">
             <CategoryCard
               title="Getting Started"
               icon="🎣"
@@ -85,11 +81,11 @@ export default function HelpCenterPage() {
       </section>
 
       {/* Content with sticky TOC */}
-      <section className="mx-auto w-full max-w-7xl px-4 pb-20 pt-6 sm:px-6 lg:px-8">
+      <section className="w-full px-4 pt-6 pb-20 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="grid gap-10 lg:grid-cols-[260px_1fr]">
           {/* TOC (sticky) */}
           <aside className="lg:block">
-            <div className="sticky top-20 rounded-xl border border-neutral-200 p-4">
+            <div className="sticky p-4 border top-20 rounded-xl border-neutral-200">
               <p className="text-sm font-semibold">On this page</p>
               <ul className="mt-3 space-y-2 text-sm">
                 <TocItem href="#getting-started" label="Getting started" />
@@ -195,9 +191,9 @@ export default function HelpCenterPage() {
             </Section>
 
             {/* Top FAQs accordion */}
-            <div id="faq" className="not-prose mt-12">
+            <div id="faq" className="mt-12 not-prose">
               <h2 className="text-2xl font-semibold">Top FAQs</h2>
-              <div className="mt-4 divide-y rounded-xl border border-neutral-200">
+              <div className="mt-4 border divide-y rounded-xl border-neutral-200">
                 <Faq
                   q="Can I change my date after booking?"
                   a="Date changes depend on captain availability and the listing’s policy. Use your booking page or contact support."
@@ -218,7 +214,7 @@ export default function HelpCenterPage() {
             </div>
 
             {/* CTA */}
-            <div className="mt-14 rounded-xl border border-neutral-200 p-6">
+            <div className="p-6 border mt-14 rounded-xl border-neutral-200">
               <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <h3 className="text-xl font-semibold">
@@ -240,8 +236,6 @@ export default function HelpCenterPage() {
           </article>
         </div>
       </section>
-
-      <Footer />
     </main>
   );
 }
@@ -261,7 +255,7 @@ function CategoryCard({
   return (
     <a
       href={href}
-      className="group rounded-2xl border border-neutral-200 p-5 transition hover:shadow-sm"
+      className="p-5 transition border group rounded-2xl border-neutral-200 hover:shadow-sm"
     >
       <div className="flex items-center gap-3">
         <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#EC2227]/10">
@@ -269,7 +263,7 @@ function CategoryCard({
         </div>
         <h3 className="text-base font-semibold">{title}</h3>
       </div>
-      <ul className="mt-3 text-sm text-neutral-600 space-y-1">
+      <ul className="mt-3 space-y-1 text-sm text-neutral-600">
         {items.map((i) => (
           <li key={i} className="truncate">
             {i}
@@ -315,10 +309,10 @@ function Section({
 
 function Faq({ q, a }: { q: string; a: string }) {
   return (
-    <details className="group p-4">
-      <summary className="flex cursor-pointer list-none items-center justify-between">
+    <details className="p-4 group">
+      <summary className="flex items-center justify-between list-none cursor-pointer">
         <span className="font-medium">{q}</span>
-        <span className="text-neutral-400 transition group-open:rotate-90">
+        <span className="transition text-neutral-400 group-open:rotate-90">
           ›
         </span>
       </summary>

@@ -292,7 +292,7 @@ model LoginActivity {
 
 **Receipt Generation (New Feature):**
 
-- PDF template with FishOn branding
+- PDF template with Fishon branding
 - Booking reference number
 - Itemized breakdown (trip fee, platform fee, tax if applicable)
 - Company details (for business expense claims)
@@ -847,7 +847,7 @@ src/components/account/
 
 **Colors:**
 
-- Primary: #EC2227 (FishOn red)
+- Primary: #EC2227 (Fishon red)
 - Success: #10B981 (Green)
 - Warning: #F59E0B (Amber)
 - Info: #3B82F6 (Blue)

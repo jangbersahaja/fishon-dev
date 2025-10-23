@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/lib/prisma", () => {
+vi.mock("@/lib/database/prisma", () => {
   return {
     prisma: {
       booking: {

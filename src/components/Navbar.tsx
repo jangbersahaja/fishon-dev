@@ -127,13 +127,13 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
           ) : (
             <>
               <button
-                onClick={() => openModal("signin")}
+                onClick={() => openModal("signin", pathname)}
                 className="text-sm font-medium underline-offset-4 decoration-white/40 hover:underline hover:decoration-white"
               >
                 Sign in
               </button>
               <button
-                onClick={() => openModal("register")}
+                onClick={() => openModal("register", pathname)}
                 className="text-sm font-medium underline-offset-4 decoration-white/40 hover:underline hover:decoration-white"
               >
                 Register
@@ -203,7 +203,7 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
               <button
                 onClick={() => {
                   setOpen(false);
-                  openModal("signin");
+                  openModal("signin", pathname);
                 }}
                 className="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 text-left"
               >
@@ -212,7 +212,7 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
               <button
                 onClick={() => {
                   setOpen(false);
-                  openModal("register");
+                  openModal("register", pathname);
                 }}
                 className="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 text-left"
               >

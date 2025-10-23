@@ -25,6 +25,7 @@ export async function POST(req: Request) {
       adults,
       children,
       startTime,
+      note,
     } = body as {
       charterId?: string;
       tripIndex?: number;
@@ -33,6 +34,7 @@ export async function POST(req: Request) {
       adults?: number;
       children?: number;
       startTime?: string;
+      note?: string;
     };
 
     // Basic validation
@@ -178,6 +180,7 @@ export async function POST(req: Request) {
         children: ch,
         totalPrice,
         expiresAt,
+        note: typeof note === "string" && note.trim() ? note.trim() : undefined,
       },
     });
 

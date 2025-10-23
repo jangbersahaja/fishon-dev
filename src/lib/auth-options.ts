@@ -1,12 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { validateTac } from "@/lib/tac";
+import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import bcrypt from "bcryptjs";
-import { randomBytes } from "crypto";
 import type { NextAuthOptions } from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 
 export const authOptions: NextAuthOptions = {
+  adapter: PrismaAdapter(prisma),
   session: { strategy: "jwt" },
   secret: process.env.NEXTAUTH_SECRET,
   pages: { signIn: "/(auth)/login" },
@@ -48,70 +49,81 @@ export const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async redirect({ url, baseUrl }) {
-      if (url.startsWith(baseUrl)) return `${baseUrl}/book`;
-      try {
-        const u = new URL(url);
-        if (u.origin === baseUrl) return `${baseUrl}/book`;
-      } catch {}
-      return `${baseUrl}/book`;
-    },
-    async jwt({ token, user, account }) {
-      if (user) {
-        if (account?.provider === "credentials") {
-          token.id = (user as any).id || token.sub || token.email;
-          (token as any).role =
-            (user as any).role || (token as any).role || "ANGLER";
-          (token as any).dbLinked = true;
-        } else {
-          try {
-            const email = (
-              (user as any).email ||
-              token.email ||
-              ""
-            ).toLowerCase();
-            if (email) {
-              let dbUser = await prisma.user.findUnique({ where: { email } });
-              if (!dbUser) {
-                const placeholder = randomBytes(16).toString("hex");
-                const passwordHash = await bcrypt.hash(placeholder, 10);
-                dbUser = await prisma.user.create({
-                  data: {
-                    email,
-                    passwordHash,
-                    displayName: (user as any).name ?? undefined,
-                  },
-                });
-              } else if (!dbUser.displayName && (user as any).name) {
-                dbUser = await prisma.user.update({
-                  where: { id: dbUser.id },
-                  data: { displayName: (user as any).name },
-                });
-              }
-              token.id = dbUser.id;
-              (token as any).role =
-                dbUser.role || (token as any).role || "ANGLER";
-              (token as any).dbLinked = true;
-            } else {
-              token.id = token.sub || (user as any).id || token.id;
-              (token as any).dbLinked = false;
-            }
-          } catch {}
-        }
-      } else {
-        if (!(token as any).dbLinked && token.email) {
-          try {
-            const email = String(token.email).toLowerCase();
-            const dbUser = await prisma.user.findUnique({ where: { email } });
-            if (dbUser) {
-              token.id = dbUser.id;
-              (token as any).role =
-                dbUser.role || (token as any).role || "ANGLER";
-              (token as any).dbLinked = true;
-            }
-          } catch {}
+    async signIn({ user, account }) {
+      // For OAuth sign-ins, ensure user has a passwordHash
+      if (account?.provider !== "credentials" && user.email) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: user.email.toLowerCase() },
+            select: { id: true, passwordHash: true },
+          });
+
+          // If user exists but has no passwordHash, set a placeholder
+          if (dbUser && !dbUser.passwordHash) {
+            const placeholderHash = await bcrypt.hash(
+              Math.random().toString(36),
+              10
+            );
+            await prisma.user.update({
+              where: { id: dbUser.id },
+              data: { passwordHash: placeholderHash },
+            });
+          }
+        } catch (error) {
+          console.error("Error in signIn callback:", error);
         }
       }
+      return true;
+    },
+    async redirect({ url, baseUrl }) {
+      // If url starts with baseUrl, it's a relative redirect - use it
+      if (url.startsWith(baseUrl)) return url;
+
+      // If url is an absolute URL with same origin, use it
+      try {
+        const u = new URL(url);
+        if (u.origin === baseUrl) return url;
+      } catch {}
+
+      // Default fallback to homepage (not /book)
+      return baseUrl;
+    },
+    async jwt({ token, user, trigger }) {
+      // On initial sign-in or when user object is available
+      if (user) {
+        token.id = user.id;
+        // Fetch role from database for all users
+        if (user.email) {
+          try {
+            const dbUser = await prisma.user.findUnique({
+              where: { email: user.email.toLowerCase() },
+              select: { id: true, role: true },
+            });
+            if (dbUser) {
+              token.id = dbUser.id;
+              (token as any).role = dbUser.role;
+            }
+          } catch (error) {
+            console.error("Error fetching user role:", error);
+          }
+        }
+      }
+
+      // Refresh role on update trigger
+      if (trigger === "update" && token.email) {
+        try {
+          const dbUser = await prisma.user.findUnique({
+            where: { email: String(token.email).toLowerCase() },
+            select: { role: true },
+          });
+          if (dbUser) {
+            (token as any).role = dbUser.role;
+          }
+        } catch (error) {
+          console.error("Error refreshing user role:", error);
+        }
+      }
+
       return token;
     },
     async session({ session, token }) {

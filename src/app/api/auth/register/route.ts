@@ -10,6 +10,7 @@ export async function POST(request: Request) {
       .toLowerCase();
     const password = String(body?.password || "");
     const name = body?.name ? String(body.name).trim() : undefined;
+    const phone = body?.phone ? String(body.phone).trim() : undefined;
 
     if (!email || !password) {
       return NextResponse.json(
@@ -38,9 +39,16 @@ export async function POST(request: Request) {
         email,
         passwordHash,
         displayName: name,
+        phone,
         // role defaults to ANGLER via Prisma schema
       },
-      select: { id: true, email: true, displayName: true, role: true },
+      select: {
+        id: true,
+        email: true,
+        displayName: true,
+        phone: true,
+        role: true,
+      },
     });
 
     return NextResponse.json({ user }, { status: 201 });

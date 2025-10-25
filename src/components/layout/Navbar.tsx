@@ -5,7 +5,7 @@ import { signOut, useSession } from "next-auth/react";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useState } from "react";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { IoClose } from "react-icons/io5";
 
@@ -16,70 +16,23 @@ type NavbarProps = {
 
 export default function Navbar({ transparentOnTop = false }: NavbarProps) {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
-  const [hidden, setHidden] = useState(false);
   const pathname = usePathname() || "/";
   const { data: session } = useSession();
   const isAuthed = !!session?.user;
-  const lastY = useRef(0);
   const { openModal } = useAuthModal();
-
-  useEffect(() => {
-    // Initialize values on mount
-    lastY.current = window.scrollY;
-    setScrolled(window.scrollY > 8);
-
-    const onScroll = () => {
-      const y = window.scrollY;
-      const delta = y - lastY.current;
-
-      if (transparentOnTop) {
-        setScrolled(y > 8);
-      }
-
-      // Hide on scroll down, show on scroll up
-      if (y < 8) {
-        setHidden(false);
-      } else if (delta > 10) {
-        setHidden(true);
-      } else if (delta < -10) {
-        setHidden(false);
-      }
-
-      lastY.current = y;
-    };
-
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, [transparentOnTop]);
-
-  // If mobile menu is open, keep navbar visible
-  useEffect(() => {
-    if (open) setHidden(false);
-  }, [open]);
-
-  // Expose nav offset for sticky elements below to avoid gap when hidden
-  useEffect(() => {
-    const offset = hidden ? "0px" : "64px"; // h-16
-    if (typeof document !== "undefined") {
-      document.documentElement.style.setProperty("--nav-offset", offset);
-    }
-  }, [hidden]);
 
   const isActive = (href: string) =>
     pathname === href || pathname.startsWith(href + "/");
 
   // Always fixed; choose color based on variant/state
-  const base =
-    "fixed top-0 z-40 w-full text-white transition-colors transition-transform duration-300 transform-gpu";
+  const base = "z-40 w-full text-white transition-colors duration-300";
   const solid =
     "bg-[#ec2227] backdrop-blur supports-[backdrop-filter]:bg-[#ec2227]";
-  const visibility = hidden ? "-translate-y-full" : "translate-y-0";
   const headerClass = !transparentOnTop
-    ? `${base} ${solid} ${visibility}`
-    : open || scrolled
-    ? `${base} ${solid} ${visibility}`
-    : `${base} bg-transparent ${visibility}`;
+    ? `${base} ${solid}`
+    : open
+    ? `${base} ${solid}`
+    : `${base} bg-transparent absolute`;
 
   return (
     <header className={headerClass}>
@@ -92,7 +45,7 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
         >
           <span className="relative h-14 w-28">
             <Image
-              src="/fishonLogoWhite.png"
+              src="/images/logos/fishon-logo-white.png"
               alt="Fishon"
               fill
               className="object-contain"
@@ -145,7 +98,9 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
             </>
           )}
           <Link
-            href="/list-your-business"
+            href="https://fishon-captain.vercel.app"
+            target="_blank"
+            rel="noopener noreferrer"
             aria-current={isActive("/list-your-business") ? "page" : undefined}
             className={`rounded-md px-3 py-2 text-sm font-semibold transition ${
               isActive("/list-your-business")
@@ -153,7 +108,7 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
                 : "bg-white text-[#ec2227] hover:translate-y-px"
             }`}
           >
-            List Your Charter
+            Register as Captain
           </Link>
         </nav>
 
@@ -212,7 +167,7 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
                   setOpen(false);
                   openModal("signin", pathname);
                 }}
-                className="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 text-left"
+                className="px-3 py-2 text-sm font-medium text-left rounded-md hover:bg-white/10"
               >
                 Sign in
               </button>
@@ -221,7 +176,7 @@ export default function Navbar({ transparentOnTop = false }: NavbarProps) {
                   setOpen(false);
                   openModal("register", pathname);
                 }}
-                className="rounded-md px-3 py-2 text-sm font-medium hover:bg-white/10 text-left"
+                className="px-3 py-2 text-sm font-medium text-left rounded-md hover:bg-white/10"
               >
                 Register
               </button>

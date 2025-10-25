@@ -1,9 +1,12 @@
 import BookingWidget from "@/components/charter/BookingWidget";
-import ReviewsList from "@/components/charter/ReviewsList";
-import Stars from "@/components/charter/Stars";
+import EnhancedReviewsList from "@/components/charter/EnhancedReviewsList";
+import StarRating from "@/components/ratings/StarRating";
 import { Charter, Trip } from "@/data/mock/charter";
-import { receipts, type BookingReview } from "@/data/mock/receipts";
 import { getCharterById } from "@/lib/services/charter-service";
+import {
+  getCharterRatingStats,
+  getCharterReviews,
+} from "@/lib/services/review-service";
 import {
   AboutSection,
   AmenitiesCard,
@@ -32,17 +35,6 @@ type RouteSearchParams = Promise<{
 function toInt(v: string | undefined, fallback: number) {
   const n = Number(v);
   return Number.isFinite(n) && n > 0 ? Math.floor(n) : fallback;
-}
-
-function getCharterReviews(charterId: number) {
-  const list = (receipts as BookingReview[]).filter(
-    (t) => t.charterId === charterId
-  );
-  const avg = list.length
-    ? list.reduce((s, r) => s + (r.overallRating || 0), 0) / list.length
-    : 0;
-
-  return { list, avg, count: list.length };
 }
 
 function getImagesArray(c?: Charter): string[] {
@@ -91,14 +83,19 @@ export default async function CharterViewPage({
 
   const charter = await getCharterById(id);
 
-  const cid = Number(id);
-  const {
-    list: reviews,
-    avg: ratingAvg,
-    count: ratingCount,
-  } = Number.isFinite(cid)
-    ? getCharterReviews(cid)
-    : { list: [], avg: 0, count: 0 };
+  // Fetch real reviews and stats (id from route is already a string/cuid)
+  const reviews = charter ? await getCharterReviews(id) : [];
+  const stats = charter
+    ? await getCharterRatingStats(id)
+    : {
+        averageRating: 0,
+        totalReviews: 0,
+        ratingBreakdown: {},
+        badgeSummary: [],
+      };
+
+  const ratingAvg = stats.averageRating;
+  const ratingCount = stats.totalReviews;
 
   const persons = toInt(resolvedSearchParams.booking_persons, 2);
 
@@ -210,15 +207,15 @@ export default async function CharterViewPage({
             {title}
           </h1>
           {address && <p className="text-sm text-gray-500">{address}</p>}
-          {ratingCount > 0 && (
-            <div className="flex items-center gap-2 mt-1 text-sm text-gray-700">
-              <Stars value={ratingAvg} />
-              <span className="font-medium">{ratingAvg.toFixed(1)}</span>
-              <span className="text-gray-500">
-                ({ratingCount} review{ratingCount === 1 ? "" : "s"})
-              </span>
-            </div>
-          )}
+
+          <div className="flex items-center gap-2 mt-1 text-sm text-gray-700">
+            <StarRating
+              value={ratingAvg}
+              size={16}
+              showValue
+              reviewCount={ratingCount}
+            />
+          </div>
         </header>
 
         {/* Gallery */}
@@ -235,13 +232,14 @@ export default async function CharterViewPage({
             {/* Captain */}
             <CaptainSection charter={charter} />
 
-            {/* Boat */}
-            <BoatCard boat={uiBoat as any} />
+            <div className="grid grid-cols-1 gap-5">
+              {/* Boat */}
+              <BoatCard boat={uiBoat as any} />
 
-            {/* Species + Techniques */}
-            <TargetSpeciesCard species={charter?.species ?? []} />
-            <TechniqueCard techniques={charter?.techniques ?? []} />
-
+              {/* Species + Techniques */}
+              <TargetSpeciesCard species={charter?.species ?? []} />
+              <TechniqueCard techniques={charter?.techniques ?? []} />
+            </div>
             {/* Amenities */}
             <AmenitiesCard includes={charter?.includes ?? []} />
 
@@ -283,8 +281,8 @@ export default async function CharterViewPage({
           summariseBadges={summariseBadges as any}
         />
 
-        {/* Reviews (Airbnb-style two-column) */}
-        <ReviewsList reviews={reviews} />
+        {/* Reviews (Real database reviews) */}
+        <EnhancedReviewsList reviews={reviews as any} />
       </section>
     </main>
   );

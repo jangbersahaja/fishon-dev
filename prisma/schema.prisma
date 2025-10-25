@@ -13,22 +13,37 @@ enum UserRole {
 }
 
 model User {
-  id            String        @id @default(cuid())
-  email         String        @unique
-  passwordHash  String?       // Optional for OAuth users
-  name          String?       // Display name (NextAuth standard)
-  phone         String?       // Phone number with country code
+  id            String    @id @default(cuid())
+  email         String    @unique
+  passwordHash  String? // Optional for OAuth users
+  name          String? // Display name (NextAuth standard)
+  phone         String? // Phone number with country code
   bio           String?
-  image         String?       // Avatar URL (NextAuth standard)
-  emailVerified DateTime?     // NextAuth standard field
-  role          UserRole      @default(ANGLER)
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
-  blogPosts     BlogPost[]
-  comments      BlogComment[]
-  bookings      Booking[]
-  accounts      Account[]     // OAuth accounts
-  sessions      Session[]     // NextAuth sessions
+  image         String? // Avatar URL (NextAuth standard)
+  emailVerified DateTime? // NextAuth standard field
+  role          UserRole  @default(ANGLER)
+
+  // Address fields (Phase 2)
+  streetAddress String?
+  city          String?
+  state         String?
+  postcode      String?
+  country       String? @default("Malaysia")
+
+  // Emergency contact (Phase 2)
+  emergencyName     String?
+  emergencyPhone    String?
+  emergencyRelation String?
+
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  blogPosts BlogPost[]
+  comments  BlogComment[]
+  bookings  Booking[]
+  favorites Favorite[] // Phase 2: Favorites system
+  reviews   Review[] // Phase 3: Reviews system
+  accounts  Account[] // OAuth accounts
+  sessions  Session[] // NextAuth sessions
 }
 
 // NextAuth OAuth Account model
@@ -203,8 +218,8 @@ model Booking {
   captainDecisionAt DateTime?
   paidAt            DateTime? // when payment was completed
 
-  note              String? // angler's note to captain
-  rejectionReason   String? // captain's rejection reason
+  note               String? // angler's note to captain
+  rejectionReason    String? // captain's rejection reason
   cancellationReason String? // angler-provided reason for cancellation
 
   createdAt DateTime @default(now())
@@ -214,4 +229,70 @@ model Booking {
   @@index([captainCharterId])
   @@index([status])
   @@index([createdAt])
+}
+
+// Reviews & Ratings system (Phase 3)
+model Review {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  bookingId String @unique // One review per booking
+
+  // Captain backend charter identifier (for aggregating reviews)
+  captainCharterId String
+  charterName      String
+
+  // Overall rating (1-5 stars)
+  overallRating Int // 1-5
+
+  // Review badges (instead of category ratings)
+  // Array of badge IDs from reviewBadges.ts
+  // e.g., ["crew_mvp", "safety_first", "expert_guide"]
+  badges String[] // Array of ReviewBadgeId
+
+  // Review content
+  comment String? // Optional text review
+
+  // Media (photos AND videos)
+  photos String[] // Array of photo URLs (no limit on photos)
+  videos String[] // Array of video URLs (limit: 3 videos)
+
+  // Moderation
+  approved  Boolean @default(false) // Admin approval required
+  published Boolean @default(false) // Visible on charter page
+
+  // Metadata
+  tripDate  DateTime // Date of the actual trip (from booking)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([captainCharterId])
+  @@index([approved, published])
+  @@index([createdAt])
+}
+
+// Favorites system (Phase 2)
+model Favorite {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Captain backend charter identifier
+  captainCharterId String
+  charterName      String
+  location         String
+
+  // Store charter snapshot for quick display
+  charterData Json? // Full charter object for offline display
+
+  // Optional angler notes
+  notes String?
+
+  addedAt DateTime @default(now())
+
+  @@unique([userId, captainCharterId]) // Prevent duplicate favorites
+  @@index([userId])
+  @@index([addedAt])
 }

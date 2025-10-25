@@ -11,21 +11,22 @@ export default function Chrome({ children }: { children: ReactNode }) {
   // 1) Hide Navbar & Footer on main page
   const hideChrome = pathname === "/";
 
-  // 2) Default: solid (#EC2227) background via Navbar default
+  // 2) Hide Chrome on dashboard pages (they have their own layout)
+  const isDashboard = pathname.startsWith("/account");
+
   // 3) Transparent on top for hero pages (e.g., home pages)
   const transparentOnTop = pathname.startsWith("/home");
 
-  if (hideChrome) return <>{children}</>;
+  if (hideChrome || isDashboard) return <> {children}</>;
 
   return (
     <>
+      {transparentOnTop && <div aria-hidden className="fixed top-0 -mt-16" />}
       <Navbar transparentOnTop={transparentOnTop} />
-      {/* Dynamic spacer: uses --nav-offset (set by Navbar) to avoid gap when navbar hides */}
-      {!transparentOnTop && (
-        <div aria-hidden style={{ height: "var(--nav-offset, 64px)" }} />
-      )}
+      {/* Spacer for non-transparent navbar */}
+
       {children}
-      <Footer />
+      {<Footer />}
     </>
   );
 }

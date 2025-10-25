@@ -165,119 +165,113 @@ export default async function SearchResults({
   ).sort((a, b) => a.localeCompare(b));
 
   return (
-    <>
-      <main className="bg-white min-h-dvh">
-        {/* Responsive SearchBox: non-sticky on mobile, sticky on desktop under fixed navbar */}
-        <div
-          className="sticky top-16 z-40 w-full border-b border-black/10 bg-white/80 backdrop-blur supports-[backdrop-filter]:bg-white/70"
-          style={{ willChange: "top" }}
-        >
-          <div className="px-3 py-3 mx-auto max-w-7xl">
-            <SearchBox />
-          </div>
+    <main className="bg-white min-h-dvh">
+      {/* Responsive SearchBox: non-sticky on mobile, sticky on desktop under fixed navbar */}
+      <div className="sticky top-0 z-40 w-full" style={{ willChange: "top" }}>
+        <div className="h-10 bg-[#ec2227] w-full rounded-b-full" />
+        <div className="w-full px-3 py-3 mx-auto -mt-10 max-w-7xl">
+          <SearchBox />
         </div>
-        <section className="px-5 py-3 mx-auto mt-20 max-w-7xl sm:px-5">
-          <nav className="text-sm text-gray-500">
-            <Link href="/home" className="hover:underline">
-              Home
-            </Link>{" "}
-            <span>/</span> <span className="text-gray-700">Search</span>
-          </nav>
-          {/* Header / Filters Summary */}
-          <div className="flex flex-col gap-1 mt-4">
-            <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
-              Search results
-            </h1>
-            <p className="text-sm text-gray-600">
-              {destination ? (
-                <>
-                  Showing trips near{" "}
-                  <span className="font-semibold">{destination}</span>
-                </>
-              ) : (
-                <>All available charters</>
-              )}
-              {(adults > 0 || children > 0) && (
-                <>
-                  {" "}
-                  • for
-                  {adults > 0 && (
-                    <>
-                      {" "}
-                      <span className="font-semibold">{adults}</span> adult
-                      {adults > 1 ? "s" : ""}
-                    </>
-                  )}
-                  {children > 0 && (
-                    <>
-                      {" "}
-                      + <span className="font-semibold">{children}</span> child
-                      {children > 1 ? "ren" : ""}
-                    </>
-                  )}
-                </>
-              )}
-              {date && (
-                <>
-                  {" "}
-                  • on <span className="font-semibold">{date}</span>
-                </>
-              )}
-              {priceRange && (
-                <>
-                  {" "}
-                  • budget{" "}
-                  <span className="font-semibold">
-                    {PRICE_BUCKETS.find((b) => b.key === priceRange)?.label}
-                  </span>
-                </>
-              )}
-              {filtered.length > 0 && (
-                <>
-                  {" "}
-                  • <span className="font-semibold">
-                    {filtered.length}
-                  </span>{" "}
-                  match{filtered.length === 1 ? "" : "es"}
-                </>
-              )}
-            </p>
-          </div>
-
-          {/* Sort & Filters */}
-          <FiltersBar
-            orderby={orderby}
-            priceRange={priceRange}
-            tripType={tripType}
-            pickup={pickupParam}
-            childFriendly={childFriendlyParam}
-            destination={destination}
-            date={date}
-            adults={adults}
-            tripNames={tripNames}
-          />
-
-          {/* Results */}
-          <div className="grid grid-cols-1 gap-6 mt-6 md:grid-cols-2">
-            {filtered.length === 0 && (
-              <div className="p-6 text-sm text-center text-gray-700 bg-white border col-span-full rounded-xl border-black/10">
-                No charters match your search.
-                <div className="mt-2 text-xs text-gray-500">
-                  Try a broader destination or reduce the number of guests.
-                </div>
-              </div>
+      </div>
+      <section className="px-5 py-3 mx-auto mt-5 max-w-7xl sm:px-5">
+        <nav className="text-sm text-gray-500">
+          <Link href="/home" className="hover:underline">
+            Home
+          </Link>{" "}
+          <span>/</span> <span className="text-gray-700">Search</span>
+        </nav>
+        {/* Header / Filters Summary */}
+        <div className="flex flex-col gap-1 mt-4">
+          <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
+            Search results
+          </h1>
+          <p className="text-sm text-gray-600">
+            {destination ? (
+              <>
+                Showing trips near{" "}
+                <span className="font-semibold">{destination}</span>
+              </>
+            ) : (
+              <>All available charters</>
             )}
+            {(adults > 0 || children > 0) && (
+              <>
+                {" "}
+                • for
+                {adults > 0 && (
+                  <>
+                    {" "}
+                    <span className="font-semibold">{adults}</span> adult
+                    {adults > 1 ? "s" : ""}
+                  </>
+                )}
+                {children > 0 && (
+                  <>
+                    {" "}
+                    + <span className="font-semibold">{children}</span> child
+                    {children > 1 ? "ren" : ""}
+                  </>
+                )}
+              </>
+            )}
+            {date && (
+              <>
+                {" "}
+                • on <span className="font-semibold">{date}</span>
+              </>
+            )}
+            {priceRange && (
+              <>
+                {" "}
+                • budget{" "}
+                <span className="font-semibold">
+                  {PRICE_BUCKETS.find((b) => b.key === priceRange)?.label}
+                </span>
+              </>
+            )}
+            {filtered.length > 0 && (
+              <>
+                {" "}
+                • <span className="font-semibold">{filtered.length}</span> match
+                {filtered.length === 1 ? "" : "es"}
+              </>
+            )}
+          </p>
+        </div>
 
-            {filtered.map((c) => (
-              <CharterCard
-                key={(c as any).backendId ?? `d:${String(c.id)}`}
-                charter={c}
-                context={{ date, adults, children, guestsParam }}
-              />
-            ))}
-          </div>
-        </section>
-      </main>
-    </>
+        {/* Sort & Filters */}
+        <FiltersBar
+          orderby={orderby}
+          priceRange={priceRange}
+          tripType={tripType}
+          pickup={pickupParam}
+          childFriendly={childFriendlyParam}
+          destination={destination}
+          date={date}
+          adults={adults}
+          tripNames={tripNames}
+        />
+
+        {/* Results */}
+        <div className="grid grid-cols-1 gap-6 mt-6 md:grid-cols-2">
+          {filtered.length === 0 && (
+            <div className="p-6 text-sm text-center text-gray-700 bg-white border col-span-full rounded-xl border-black/10">
+              No charters match your search.
+              <div className="mt-2 text-xs text-gray-500">
+                Try a broader destination or reduce the number of guests.
+              </div>
+            </div>
+          )}
+
+          {filtered.map((c) => (
+            <CharterCard
+              key={(c as any).backendId ?? `d:${String(c.id)}`}
+              charter={c}
+              context={{ date, adults, children, guestsParam }}
+            />
+          ))}
+        </div>
+      </section>
+    </main>
   );
 }
